@@ -15,7 +15,7 @@ Lerlingua will be an app containing three main functions:
 - Developed using the flutter framework
 - Testing
 - Open source
-- No server required
+- No server costs
 
 # Wireframes:
 Reading:
