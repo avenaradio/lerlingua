@@ -1,4 +1,4 @@
-# lerlingua
+# Lerlingua
 Learn languages reading.
 
 Lerlingua will be an app containing three main functions:
@@ -18,5 +18,7 @@ Lerlingua will be an app containing three main functions:
 - No server required
 
 # Wireframes:
-![[/documentation/wireframes/reading.jpg]]
-![[/documentation/wireframes/learning.jpg]]
+Reading:
+![reading wireframe](documentation/wireframes/reading.jpg)
+Learning:
+![learning wireframe](documentation/wireframes/learning.jpg)
