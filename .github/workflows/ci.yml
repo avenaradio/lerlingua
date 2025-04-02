@@ -28,7 +28,7 @@ jobs:
 
   build_androidApk:
     name: Build Flutter App (Android)
-    # needs: [flutter_test]
+    needs: [flutter_test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
