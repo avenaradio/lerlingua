@@ -44,6 +44,7 @@ jobs:
       - run: flutter build apk --release --build-name=1.0.0 --build-number=${{ github.run_number }}
       - name: Rename APK
         run: |
+          # Get variables
           APP_NAME=$(grep 'name:' pubspec.yaml | sed 's/.*: //')
           VERSION_NAME=$(grep 'version:' pubspec.yaml | sed 's/.*: //; s/+.*//')
           BUILD_NUMBER=${{ github.run_number }}
@@ -52,7 +53,7 @@ jobs:
           APP_NAME_CAPITALIZED="$(tr '[:lower:]' '[:upper:]' <<< "${APP_NAME:0:1}")${APP_NAME:1}"
           
           APK_PATH="build/app/outputs/apk/release/app-release.apk"
-          NEW_APK_NAME="${APP_NAME_CAPITALIZED} ${VERSION_NAME}+${BUILD_NUMBER}.apk"
+          NEW_APK_NAME="${APP_NAME_CAPITALIZED}_${VERSION_NAME}-${BUILD_NUMBER}.apk"
           mv "$APK_PATH" "$NEW_APK_NAME"
           echo "Renamed APK to $NEW_APK_NAME"
           
@@ -63,5 +64,5 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "${{ github.workspace }}/${{ env.new_apk_name }}"
-          tag: v${{ env.version_name }}+${{ env.build_number }}
+          tag: v${{ env.version_name }}-${{ env.build_number }}
           token: ${{ secrets.TOKEN}}
