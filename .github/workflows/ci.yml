@@ -28,7 +28,7 @@ jobs:
 
   build_androidApk:
     name: Build Flutter App (Android)
-    needs: [flutter_test]
+    # needs: [flutter_test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -46,11 +46,11 @@ jobs:
   
           # Give variables to github environment
           echo "full_app_name=$FULL_APP_NAME" >> $GITHUB_ENV
-          echo "version_name=VERSION_NAME" >> $GITHUB_ENV
+          echo "version_name=$VERSION_NAME" >> $GITHUB_ENV
   
           # Print variables for debugging
           echo "Full app name: $FULL_APP_NAME"
-          echo "Version and build number: VERSION_NAME"
+          echo "Version and build number: $VERSION_NAME"
         # --------- THIS SECTION CAN BE REUSED IN OTHER BUILD WORKFLOWS
       - uses: actions/setup-java@v3
         with:
