@@ -31,6 +31,7 @@ jobs:
     needs: [flutter_test]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - run: |
           # Get variables
           APP_NAME=$(grep 'name:' pubspec.yaml | sed 's/.*: //')
@@ -47,6 +48,10 @@ jobs:
           # Give variables to github environment
           echo "full_app_name=$FULL_APP_NAME" >> $GITHUB_ENV
           echo "version_and_build_number=$VERSION_AND_BUILD_NUMBER" >> $GITHUB_ENV
+          
+          # Print variables
+          echo "Full app name: ${{ env.full_app_name }}"
+          echo "Version and build number: ${{ env.version_and_build_number }}"
 
   build_androidApk:
     name: Build Flutter App (Android)
