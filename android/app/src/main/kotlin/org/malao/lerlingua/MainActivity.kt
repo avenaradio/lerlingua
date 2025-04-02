@@ -1,4 +1,4 @@
-package org.malao.lerlingua.lerlingua
+package org.malao.lerlingua
 
 import io.flutter.embedding.android.FlutterActivity
 

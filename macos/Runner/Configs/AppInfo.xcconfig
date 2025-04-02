@@ -8,7 +8,7 @@
 PRODUCT_NAME = lerlingua
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = org.malao.lerlingua.lerlingua
+PRODUCT_BUNDLE_IDENTIFIER = org.malao.lerlingua
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 org.malao.lerlingua. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 org.malao. All rights reserved.
