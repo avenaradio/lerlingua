@@ -52,11 +52,16 @@ jobs:
           APP_NAME_CAPITALIZED="$(tr '[:lower:]' '[:upper:]' <<< "${APP_NAME:0:1}")${APP_NAME:1}"
           
           APK_PATH="build/app/outputs/apk/release/app-release.apk"
-          NEW_APK_NAME="${APP_NAME_CAPITALIZED} ${VERSION_NAME}.${BUILD_NUMBER}.apk"
+          NEW_APK_NAME="${APP_NAME_CAPITALIZED} ${VERSION_NAME}+${BUILD_NUMBER}.apk"
           mv "$APK_PATH" "$NEW_APK_NAME"
           echo "Renamed APK to $NEW_APK_NAME"
+          
+          # Give variables to github environment
+          echo "new_apk_name=$NEW_APK_NAME" >> $GITHUB_ENV
+          echo "version_name=$VERSION_NAME" >> $GITHUB_ENV
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_ENV
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ github.workspace }}/${NEW_APK_NAME}"
-          tag: v1.0.${{ github.run_number}}
+          artifacts: "${{ github.workspace }}/${{ env.new_apk_name }}"
+          tag: v${{ env.version_name }}+${{ env.build_number }}
           token: ${{ secrets.TOKEN}}
