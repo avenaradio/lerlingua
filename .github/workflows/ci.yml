@@ -49,9 +49,9 @@ jobs:
           echo "full_app_name=$FULL_APP_NAME" >> $GITHUB_ENV
           echo "version_and_build_number=$VERSION_AND_BUILD_NUMBER" >> $GITHUB_ENV
           
-          # Print variables
-          echo "Full app name: ${{ env.full_app_name }}"
-          echo "Version and build number: ${{ env.version_and_build_number }}"
+          # Print variables for debugging
+          echo "Full app name: $FULL_APP_NAME"
+          echo "Version and build number: $VERSION_AND_BUILD_NUMBER"
 
   build_androidApk:
     name: Build Flutter App (Android)
@@ -68,6 +68,10 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter clean
+        # Print environment variables for debugging
+      - run: |
+         echo "Version and build number: ${{ env.version_and_build_number }}"
+         echo "Full app name: ${{ env.full_app_name }}"
       - run: flutter build apk --release --build-name=${{ env.version_and_build_number }} --build-number=${{ github.run_number }}
       - name: Rename APK
         run: |
