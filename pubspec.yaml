@@ -41,6 +41,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.14.3"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -48,6 +49,28 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+
+# To update run 'dart run flutter_launcher_icons'
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#ebe1ce"
+  adaptive_icon_foreground: "assets/icon/icon_transparent.png"
+  adaptive_icon_foreground_inset: 16 # default padding is 16
+  ios: true # SEE DOCUMENTATION FOR DIFFERENT IOS ICONS https://pub.dev/packages/flutter_launcher_icons
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#ebe1ce"
+    #theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
