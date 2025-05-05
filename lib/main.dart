@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:json_theme/json_theme.dart';
 
 import 'package:flutter/services.dart'; // For rootBundle
-import 'dart:convert'; // For jsonDecode
+import 'package:lerlingua/pages/home.dart';
+import 'dart:convert';
+
+import 'package:lerlingua/pages/loading.dart'; // For jsonDecode
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +25,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Text("Home"), theme: theme);
+    return MaterialApp(
+      title: 'Named Routes',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Loading(),
+        '/home': (context) => Home(),
+      },
+      theme: theme,
+    );
   }
 }
