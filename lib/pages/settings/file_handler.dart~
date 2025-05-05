@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 
 class FileHandler {
   // Method to load an EPUB file
-  Future<File?> loadEpubFile(BuildContext context) async {
+  static Future<File?> loadEpubFile() async {
     // Use file_picker to allow the user to select an EPUB file
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -27,19 +27,19 @@ class FileHandler {
   }
 
   // Method to get the app's document directory
-  Future<Directory> getAppDirectory() async {
+  static Future<Directory> getAppDirectory() async {
     return await getApplicationDocumentsDirectory();
   }
 
   // Method to save a file to the app's document directory
-  Future<void> saveFile(String fileName, String content) async {
+  static Future<void> saveFile(String fileName, String content) async {
     final directory = await getAppDirectory();
     final file = File('${directory.path}/epub/$fileName'); // Save to the "epub" directory
     await file.writeAsString(content);
   }
 
   // Method to read a file from the app's document directory
-  Future<String?> readFile(String fileName) async {
+  static Future<String?> readFile(String fileName) async {
     try {
       final directory = await getAppDirectory();
       final file = File('${directory.path}/$fileName');
