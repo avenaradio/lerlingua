@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/read/epub_view.dart';
+import 'package:lerlingua/pages/read/web_view.dart';
 
 import '../settings/file_handler.dart';
 
@@ -35,8 +36,8 @@ class _ReadState extends State<Read> {
               child: file != null ? EpubView(title: 'dummy title', file: file!) : const Placeholder(),
             ),
             Expanded(
-              flex: 20, // TODO make this dynamic
-              child: Text('translation widget'),
+              flex: 40, // TODO make this dynamic
+              child: WebView(),
             ),
 
           ]
