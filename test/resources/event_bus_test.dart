@@ -3,8 +3,6 @@ import 'package:lerlingua/resources/event_bus.dart';
 import 'package:lerlingua/resources/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'settings_test.dart';
-
 void main() {
   group('EventBus Tests', () {
     late Settings settings;
