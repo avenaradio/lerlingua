@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/read/epub_view.dart';
 import 'package:lerlingua/pages/read/web_view.dart';
 
-import '../settings/file_handler.dart';
+import '../../resources/file_handler.dart';
 
 class Read extends StatefulWidget {
   const Read({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lerlingua/pages/settings/settings.dart';
+import 'package:lerlingua/pages/settings/settings_widget.dart';
 import 'package:lerlingua/pages/learn/learn.dart';
 import 'package:lerlingua/pages/read/read.dart';
 
@@ -43,7 +43,7 @@ class _HomeState extends State<Home> {
         <Widget>[
           Read(),
           Learn(),
-          Settings(),
+          SettingsWidget(),
         ][currentPageIndex],
       ),
     );
