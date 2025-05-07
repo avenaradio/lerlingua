@@ -30,6 +30,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  json_theme: ^8.0.0+2
+  path_provider: ^2.1.5
+  file_picker: ^10.1.0
+  flutter_inappwebview: ^6.1.5
+  flutter_epub_viewer: ^1.2.1
+  event_bus: ^2.0.1
+  shared_preferences: ^2.5.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -40,6 +47,8 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.11.0
+  mockito: ^5.4.5
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -48,11 +57,36 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+# To update run 'dart run flutter_launcher_icons'
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#ebe1ce"
+  adaptive_icon_foreground: "assets/icon/icon_transparent.png"
+  adaptive_icon_foreground_inset: 16 # default padding is 16
+  ios: true # SEE DOCUMENTATION FOR DIFFERENT IOS ICONS https://pub.dev/packages/flutter_launcher_icons
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#ebe1ce"
+    #theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.png"
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/appainter_theme_bright.json
+    - assets/appainter_theme_dark.json
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
