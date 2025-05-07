@@ -10,12 +10,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Settings', () {
-    late MockSharedPreferences mockSharedPreferences;
     late Settings settings;
 
     setUp(() async {
       // Initialize the mock SharedPreferences
-      mockSharedPreferences = MockSharedPreferences();
       settings = Settings();
 
       // Use the mock SharedPreferences in place of the real one

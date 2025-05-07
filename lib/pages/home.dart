@@ -14,7 +14,6 @@ class _HomeState extends State<Home> {
   int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: NavigationBar(
