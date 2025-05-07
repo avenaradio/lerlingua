@@ -45,7 +45,7 @@ class FileHandler {
       String contents = await file.readAsString();
       return contents;
     } catch (e) {
-      print("Error reading file: $e");
+      //print("Error reading file: $e");
       return null;
     }
   }

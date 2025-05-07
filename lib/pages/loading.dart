@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../resources/settings.dart';
-import 'home.dart';
 
 class Loading extends StatefulWidget {
   const Loading({super.key});
