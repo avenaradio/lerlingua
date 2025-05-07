@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
+import '../../resources/event_bus.dart';
+
 class WebView extends StatefulWidget {
   const WebView({super.key});
 
@@ -17,15 +19,25 @@ class _WebViewState extends State<WebView> {
       isInspectable: kDebugMode,
       mediaPlaybackRequiresUserGesture: false,
       allowsInlineMediaPlayback: true,
-    initialScale: 50,
   );
 
   String url = "";
+  String wordA = "";
   double progress = 0;
   final urlController = TextEditingController();
 
+  _search({required String wordA, required String url}) {
+    WebUri webUri = WebUri(url + wordA);
+    webViewController?.loadUrl(urlRequest: URLRequest(url: webUri));
+  }
+
   @override
   void initState() {
+    // Subscribe to the event bus
+    eventBus.on<WordSelectedEvent>().listen((event) {
+      wordA = event.wordA;
+      _search(wordA: wordA, url: 'https://translate.google.de/?sl=auto&tl=en&text='); /// TODO make this dynamic
+    });
     super.initState();
   }
 
@@ -74,7 +86,7 @@ class _WebViewState extends State<WebView> {
                         onSubmitted: (value) {
                           var url = WebUri(value);
                           if (url.scheme.isEmpty) {
-                            url = WebUri("https://www.linguee.de/deutsch-portugiesisch/search?query=$value");
+                            url = WebUri("https://www.linguee.de/deutsch-portugiesisch/search?query=$value"); ///TODO make this dynamic
                           }
                           webViewController?.loadUrl(urlRequest: URLRequest(url: url));
                         },
@@ -94,7 +106,7 @@ class _WebViewState extends State<WebView> {
                   children: [
                     InAppWebView(
                       key: webViewKey,
-                      initialUrlRequest: URLRequest(url: WebUri("https://www.linguee.de/deutsch-portugiesisch/search?query=test")),
+                      initialUrlRequest: URLRequest(url: WebUri("https://www.deepl.com/de/translator#pt/en-us/ler%20lingua")), ///TODO make this dynamic
                       initialSettings: settings,
                       onWebViewCreated: (controller) {
                         webViewController = controller;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../resources/settings.dart';
 import 'home.dart';
 
 class Loading extends StatefulWidget {
@@ -11,9 +12,9 @@ class Loading extends StatefulWidget {
 
 class _LoadingState extends State<Loading> {
 
-  void navigateToHome() async {
+  _initializeApp() async {
     // Loading dummy
-    await Future.delayed(Duration(seconds: 1));
+    await Settings().loadSettings();
     // Mounted check because inside of async function
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/home');
@@ -21,8 +22,8 @@ class _LoadingState extends State<Loading> {
 
   @override
   void initState() {
+    _initializeApp();
     super.initState();
-    navigateToHome();
   }
 
   @override

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:flutter/material.dart';
 
+import '../../resources/event_bus.dart';
+
 class EpubView extends StatefulWidget {
   const EpubView({super.key, required this.title, required this.file});
 
@@ -33,7 +35,11 @@ class _EpubViewState extends State<EpubView> {
                   onChaptersLoaded: (chapters) {},
                   onEpubLoaded: () async {},
                   onRelocated: (value) {},
-                  onTextSelected: (epubTextSelection) {},
+                  onTextSelected: (epubTextSelection) {
+                    // Create and fire the event
+                    final event = WordSelectedEvent(epubTextSelection.selectedText);
+                    eventBus.fire(event);
+                  },
                 ),
               ),
             ],
