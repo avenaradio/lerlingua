@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../resources/sql_database.dart';
 import '../resources/settings.dart';
 
 class Loading extends StatefulWidget {
@@ -12,8 +13,9 @@ class Loading extends StatefulWidget {
 class _LoadingState extends State<Loading> {
 
   _initializeApp() async {
-    // Loading dummy
+    // Load persistent data
     await Settings().loadSettings();
+    await SqlDatabase().initSqlDatabase();
     // Mounted check because inside of async function
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/home');
