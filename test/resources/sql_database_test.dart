@@ -3,7 +3,11 @@ import 'package:lerlingua/resources/sql_database.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future main() async {
-  late Database db;
+  // Set directory to in-memory
+  SqlDatabase().dbDirectory = inMemoryDatabasePath;
+  // load db
+  await SqlDatabase().loadSqlDatabase();
+
   // Setup sqflite_common_ffi for flutter test
   setUpAll(() {
     // Initialize FFI
@@ -14,15 +18,9 @@ Future main() async {
 
   group('SqlDatabase query Tests', () {
     test('Load SQL Database and Create Table', () async {
-      // Load the database
-      db = await openDatabase(inMemoryDatabasePath, version: 1,
-          onCreate: (db, version) async {
-            await db
-                .execute(SqlDatabase().setupQuery);
-          });
 
       // Check if the table 'vocab' exists
-      final List<Map<String, dynamic>> result = await db.rawQuery(
+      final List<Map<String, dynamic>> result = await SqlDatabase().db.rawQuery(
           "SELECT name FROM sqlite_master WHERE type='table' AND name='vocab';");
 
       // Verify that the table was created
@@ -36,7 +34,7 @@ Future main() async {
 
     tearDown(() async {
       // Close the database after each test
-      await db.close();
+      await SqlDatabase().db.close();
     });
   });
 }
