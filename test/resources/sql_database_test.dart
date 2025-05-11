@@ -17,19 +17,15 @@ Future main() async {
   });
 
   group('SqlDatabase query Tests', () {
-    test('Load SQL Database and Create Table', () async {
+    test('Scema creation', () async {
 
       // Check if the table 'vocab' exists
       final List<Map<String, dynamic>> result = await SqlDatabase().db.rawQuery(
           "SELECT name FROM sqlite_master WHERE type='table' AND name='vocab';");
 
-      // Verify that the table was created
+      // Verify that the table exists
       expect(result.isNotEmpty, true);
       expect(result[0]['name'], 'vocab');
-    });
-
-    test('Fill with dummy data', () async {
-
     });
 
     tearDown(() async {
