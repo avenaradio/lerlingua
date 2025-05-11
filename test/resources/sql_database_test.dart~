@@ -106,21 +106,5 @@ Future main() async {
       expect(entry2.timeLearned, 1);
       expect(entry2.timeModified, 1);
     });
-    test('readAllEntries', () async {
-      await SqlDatabase().insertOrReplaceEntry(entry);
-      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 1);
-      VocabEntry entry2 = VocabEntry(
-          vocabKey: 2,
-          languageA: 'en',
-          wordA: 'test2',
-          languageB: 'es',
-          wordB: 'prueba2',
-          timeLearned: 1,
-          timeModified: 1);
-      await SqlDatabase().insertOrReplaceEntry(entry2);
-      entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 2);
-    });
   });
 }
