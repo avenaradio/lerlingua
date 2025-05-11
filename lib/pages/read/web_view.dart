@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import '../../resources/event_bus.dart';
+import '../../resources/settings.dart';
 
 class WebView extends StatefulWidget {
   const WebView({super.key});
@@ -126,7 +127,7 @@ class _WebViewState extends State<WebView> {
                       onLoadStop: (controller, url) async {
                         setState(() {
                           this.url = url.toString();
-                          urlController.text = this.url;
+                          urlController.text = Settings().wordA;
                         });
                       },
                       onReceivedError: (controller, request, error) {
