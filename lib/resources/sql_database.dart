@@ -1,16 +1,15 @@
 
 // Singleton
-import 'dart:io';
-
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
-
 import 'file_handler.dart';
 
 class SqlDatabase {
-  late Database _vocabDatabase;
-  late String _appDirectory;
-  String vocabDatabaseSubDirectory = '/lerlingua.db';
-  List<VocabEntry> _vocabDatabaseMirror = [];
+  @visibleForTesting
+  late Database db;
+  @visibleForTesting
+  late String dbDirectory;
+  List<VocabEntry> _dbMirror = [];
 
   // Private constructor
   SqlDatabase._internal();
@@ -23,11 +22,8 @@ class SqlDatabase {
     return _instance;
   }
 
-  // Getter and setter
-  String get _vocabDatabaseDirectory => '$_appDirectory$vocabDatabaseSubDirectory';
-
   // Queries
-  // Setup
+  @visibleForTesting
   String setupQuery =
     '''CREATE TABLE IF NOT EXISTS vocab (
     vocab_key INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,21 +40,29 @@ class SqlDatabase {
     );''';
 
 
-  // Method to initialize the database
-  Future<void> initSqlDatabase() async{
-    _appDirectory = (await FileHandler.getAppDirectory()).path;
+  // Retrieve directory
+  Future<void> getDirectory() async {
+    dbDirectory = '${(await FileHandler.getAppDirectory()).path}/lerlingua.db';
+  }
+
+  // Method to load the database
+  Future<void> loadSqlDatabase() async{
     // open the database
-    _vocabDatabase = await openDatabase(_vocabDatabaseDirectory, version: 1,
+    db = await openDatabase(dbDirectory, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(setupQuery);
         });
-    // for each in _db write to _dbMirror
+  }
 
+  // Method to initialize the database
+  Future<void> initSqlDatabase() async{
+    await getDirectory();
+    await loadSqlDatabase();
   }
 
   // Method to insert or replace entry
   Future<void> insertEntry(VocabEntry entry) async {
-    await _vocabDatabase.transaction((txn) async {
+    await db.transaction((txn) async {
       int id1 = await txn.rawInsert(
           'INSERT INTO Test(name, value, num) VALUES("some name", 1234, 456.789)');
     });
@@ -71,7 +75,7 @@ class SqlDatabase {
   // Method to delete the database file
   Future<void> deleteSqlDatabase() async {
     // delete the database file
-    await deleteDatabase(_vocabDatabaseDirectory);
+    await deleteDatabase(dbDirectory);
   }
 }
 
