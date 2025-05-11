@@ -1,7 +1,7 @@
 
 // Singleton
 import 'package:flutter/cupertino.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'file_handler.dart';
 
 class SqlDatabase {
@@ -47,6 +47,7 @@ class SqlDatabase {
 
   // Method to load the database
   Future<void> loadSqlDatabase() async{
+    databaseFactory = databaseFactoryFfi;
     // open the database
     db = await openDatabase(dbDirectory, version: 1,
         onCreate: (Database db, int version) async {
