@@ -1,12 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/sql_database.dart';
+import 'package:lerlingua/resources/vocab_entry.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future main() async {
   // Set directory to in-memory
   SqlDatabase().dbDirectory = inMemoryDatabasePath;
-  // load db
-  await SqlDatabase().loadSqlDatabase();
 
   // Setup sqflite_common_ffi for flutter test
   setUpAll(() {
@@ -16,73 +15,9 @@ Future main() async {
     databaseFactory = databaseFactoryFfi;
   });
 
-  late VocabEntry entry;
-
-  group('VocabEntry Tests', () {
-    entry = VocabEntry(
-        vocabKey: 1,
-        languageA: 'en',
-        wordA: 'test',
-        languageB: 'es',
-        wordB: 'prueba',
-        timeLearned: 1,
-        timeModified: 1);
-    Map<String, dynamic> map = {};
-    test('VocabEntry creation', () {
-      expect(entry.vocabKey, 1);
-      expect(entry.languageA, 'en');
-      expect(entry.wordA, 'test');
-      expect(entry.languageB, 'es');
-      expect(entry.wordB, 'prueba');
-      expect(entry.timeLearned, 1);
-      expect(entry.timeModified, 1);
-      expect(entry.sentenceB, null);
-      expect(entry.articleB, null);
-      expect(entry.comment, null);
-      expect(entry.boxNumber, null);
-
-      entry.sentenceB = 'This is a sentence.';
-      entry.articleB = 'The';
-      entry.comment = 'This is a comment.';
-      entry.boxNumber = 1;
-
-      expect(entry.sentenceB, 'This is a sentence.');
-      expect(entry.articleB, 'The');
-      expect(entry.comment, 'This is a comment.');
-      expect(entry.boxNumber, 1);
-    });
-    test('VocabEntry toMap', () {
-      map = entry.toMap();
-      expect(map['vocab_key'], 1);
-      expect(map['language_a'], 'en');
-      expect(map['word_a'], 'test');
-      expect(map['language_b'], 'es');
-      expect(map['word_b'], 'prueba');
-      expect(map['sentence_b'], 'This is a sentence.');
-      expect(map['article_b'], 'The');
-      expect(map['comment'], 'This is a comment.');
-      expect(map['box_number'], 1);
-      expect(map['time_learned'], 1);
-      expect(map['time_modified'], 1);
-    });
-    test('VocabEntry fromMap', () {
-      VocabEntry entry2 = VocabEntry.fromMap(map);
-      expect(entry2.vocabKey, 1);
-      expect(entry2.languageA, 'en');
-      expect(entry2.wordA, 'test');
-      expect(entry2.languageB, 'es');
-      expect(entry2.wordB, 'prueba');
-      expect(entry2.sentenceB, 'This is a sentence.');
-      expect(entry2.articleB, 'The');
-      expect(entry2.comment, 'This is a comment.');
-      expect(entry2.boxNumber, 1);
-      expect(entry2.timeLearned, 1);
-      expect(entry2.timeModified, 1);
-    });
-  });
   group('SqlDatabase query Tests', () {
     test('Scema creation', () async {
-
+      await SqlDatabase().loadSqlDatabase();
       // Check if the table 'vocab' exists
       final List<Map<String, dynamic>> result = await SqlDatabase().db.rawQuery(
           "SELECT name FROM sqlite_master WHERE type='table' AND name='vocab';");
@@ -90,10 +25,24 @@ Future main() async {
       // Verify that the table exists
       expect(result.isNotEmpty, true);
       expect(result[0]['name'], 'vocab');
+      await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
     test('Insert and Read VocabEntry', () async {
-      await SqlDatabase().insertOrReplaceEntry(entry);
-      VocabEntry? entry2 = await SqlDatabase().readSingleEntry(1);
+      await SqlDatabase().loadSqlDatabase();
+      VocabEntry entry = VocabEntry(
+          vocabKey: 1,
+          languageA: 'en',
+          wordA: 'test',
+          languageB: 'es',
+          wordB: 'prueba',
+          sentenceB: 'This is a sentence.',
+          articleB: 'The',
+          comment: 'This is a comment.',
+          boxNumber: 1,
+          timeLearned: 1,
+          timeModified: 1);
+      await SqlDatabase().insertOrReplaceEntry(entry: entry);
+      VocabEntry? entry2 = await SqlDatabase().readSingleEntry(vocabKey: 1);
       expect(entry2!.vocabKey, 1);
       expect(entry2.languageA, 'en');
       expect(entry2.wordA, 'test');
@@ -105,10 +54,26 @@ Future main() async {
       expect(entry2.boxNumber, 1);
       expect(entry2.timeLearned, 1);
       expect(entry2.timeModified, 1);
+      await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
     test('readAllEntries', () async {
-      await SqlDatabase().insertOrReplaceEntry(entry);
+      await SqlDatabase().loadSqlDatabase();
+      VocabEntry entry = VocabEntry(
+          vocabKey: 1,
+          languageA: 'en',
+          wordA: 'test',
+          languageB: 'es',
+          wordB: 'prueba',
+          sentenceB: 'This is a sentence.',
+          articleB: 'The',
+          comment: 'This is a comment.',
+          boxNumber: 1,
+          timeLearned: 1,
+          timeModified: 1);
       List<VocabEntry> entries = await SqlDatabase().readAllEntries();
+      expect(entries.length, 0);
+      await SqlDatabase().insertOrReplaceEntry(entry: entry);
+      entries = await SqlDatabase().readAllEntries();
       expect(entries.length, 1);
       VocabEntry entry2 = VocabEntry(
           vocabKey: 2,
@@ -118,9 +83,34 @@ Future main() async {
           wordB: 'prueba2',
           timeLearned: 1,
           timeModified: 1);
-      await SqlDatabase().insertOrReplaceEntry(entry2);
+      await SqlDatabase().insertOrReplaceEntry(entry: entry2);
       entries = await SqlDatabase().readAllEntries();
       expect(entries.length, 2);
+      await SqlDatabase().deleteSqlDatabase(); // Delete the database
+    });
+    test('deleteEntry', () async {
+      await SqlDatabase().loadSqlDatabase();
+      VocabEntry entry = VocabEntry(
+          vocabKey: 1,
+          languageA: 'en',
+          wordA: 'test',
+          languageB: 'es',
+          wordB: 'prueba',
+          sentenceB: 'This is a sentence.',
+          articleB: 'The',
+          comment: 'This is a comment.',
+          boxNumber: 1,
+          timeLearned: 1,
+          timeModified: 1);
+      await SqlDatabase().insertOrReplaceEntry(entry: entry);
+      entry.vocabKey = 2;
+      await SqlDatabase().insertOrReplaceEntry(entry: entry);
+      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
+      expect(entries.length, 2);
+      await SqlDatabase().deleteEntry(vocabKey: 1);
+      entries = await SqlDatabase().readAllEntries();
+      expect(entries.length, 1);
+      await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
   });
 }
