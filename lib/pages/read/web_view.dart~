@@ -41,7 +41,7 @@ class _WebViewState extends State<WebView> {
     });
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
