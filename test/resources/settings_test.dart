@@ -21,44 +21,46 @@ void main() {
       await settings.loadSettings();
     });
 
-    test('loadSettings should load wordA from SharedPreferences', () async {
+    test('loadSettings should load currentBox from SharedPreferences', () async {
       // Arrange
-      SharedPreferences.setMockInitialValues({'wordA': 'testValue'});
+      SharedPreferences.setMockInitialValues({'currentBox': 2});
 
       // Act
       await settings.loadSettings();
 
       // Assert
-      expect(settings.wordA, 'testValue');
+      expect(settings.currentBox, 2);
     });
 
-    test('wordA getter and setter should work correctly', () async {
+    test('currentBox getter and setter should work correctly', () async {
       // Act
-      settings.wordA = 'newValue';
+      settings.currentBox = 5;
 
       // Assert
-      expect(settings.wordA, 'newValue');
+      expect(settings.currentBox, 5);
     });
 
-    test('wordA setter should save to SharedPreferences', () async {
+    test('currentBox setter should save to SharedPreferences', () async {
       // Act
-      SharedPreferences.setMockInitialValues({'wordA': 'testValue'});
-      settings.wordA = 'newValue';
+      SharedPreferences.setMockInitialValues({'currentBox': 2});
+      settings.currentBox = 5;
+
+      // Assert
       await settings.loadSettings();
 
       // Assert
-      expect(settings.wordA, 'newValue');
+      expect(settings.currentBox, 5);
     });
 
-    test('loadSettings should set wordA to empty string if not found', () async {
+    test('loadSettings should set currentBox to empty string if not found', () async {
       // Arrange
-      SharedPreferences.setMockInitialValues({}); // No value for 'wordA'
+      SharedPreferences.setMockInitialValues({}); // No value
 
       // Act
       await settings.loadSettings();
 
       // Assert
-      expect(settings.wordA, '');
+      expect(settings.currentBox, 1);
     });
   });
 }

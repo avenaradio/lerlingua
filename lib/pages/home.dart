@@ -3,6 +3,8 @@ import 'package:lerlingua/pages/settings/settings_widget.dart';
 import 'package:lerlingua/pages/learn/learn.dart';
 import 'package:lerlingua/pages/read/read.dart';
 
+import 'list/list.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -11,7 +13,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int currentPageIndex = 0;
+  int currentPageIndex = 1;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -29,8 +31,12 @@ class _HomeState extends State<Home> {
               label: 'Read',
             ),
             NavigationDestination(
-              icon: Icon(Icons.list_alt),
+              icon: Icon(Icons.play_circle_outline_rounded),
               label: 'Learn',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.list_alt),
+              label: 'List',
             ),
             NavigationDestination(
               icon: Icon(Icons.settings),
@@ -42,6 +48,7 @@ class _HomeState extends State<Home> {
         <Widget>[
           Read(),
           Learn(),
+          ListPage(),
           SettingsWidget(),
         ][currentPageIndex],
       ),
