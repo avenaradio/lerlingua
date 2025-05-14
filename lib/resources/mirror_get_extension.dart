@@ -1,6 +1,6 @@
 import 'package:lerlingua/resources/mirror.dart';
 
-extension MirrorGetFunctions on Mirror {
+extension MirrorGetExtension on Mirror {
   // Get current entry
 
   // Get entries count of box
