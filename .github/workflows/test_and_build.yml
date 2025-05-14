@@ -1,9 +1,9 @@
-name: Test and Release
+name: Test and Build
 
 on:
   push:
     branches:
-      - main
+      - development
   pull_request:
     branches:
       - main
@@ -61,7 +61,7 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter clean
-      - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }}
+      - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --no-tree-shake-icons
       - name: Rename APK
         run: |
           APK_PATH="build/app/outputs/apk/release/app-release.apk"
@@ -71,8 +71,3 @@ jobs:
           
           # Give variables to github environment
           echo "new_apk_name=$NEW_APK_NAME" >> $GITHUB_ENV
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "${{ github.workspace }}/${{ env.new_apk_name }}"
-          tag: v${{ env.version_name }}
-          token: ${{ secrets.TOKEN}}
