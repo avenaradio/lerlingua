@@ -21,12 +21,12 @@ void main() {
       String settingsWord = '';
 
       // Subscribe to the event bus
-      eventBus.on<WordSelectedEvent>().listen((event) {
+      eventBus.on<WordASelectedEvent>().listen((event) {
         receivedWord = event.wordA;
       });
 
       // Create and fire the event
-      final event = WordSelectedEvent('Test Word');
+      final event = WordASelectedEvent('Test Word');
       eventBus.fire(event);
 
       // Allow some time for the event to be processed

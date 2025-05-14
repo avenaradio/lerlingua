@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 // 2. loadSettings()
 // 3. saveSettings()
 // 4. tests
-
 // Singleton
 class Settings {
   late SharedPreferences _sharedPreferences;
@@ -21,12 +20,13 @@ class Settings {
     return _instance;
   }
 
-  // Fields with getter and setter
+  // Fields
   String _wordA = '';
+
   String get wordA => _wordA;
   set wordA(String value) {
     _wordA = value;
-    saveSettings(); /// TODO dont save word A in shared preferences
+    saveSettings();
   }
 
   // Method to load settings
