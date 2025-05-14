@@ -10,7 +10,7 @@ import 'package:lerlingua/pages/loading.dart'; // For jsonDecode
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final themeStr = await rootBundle.loadString('assets/appainter_theme_dark.json');
+  final themeStr = await rootBundle.loadString('assets/appainter_theme_bright.json');
   final themeJson = jsonDecode(themeStr);
   final theme = ThemeDecoder.decodeThemeData(themeJson)!;
 
