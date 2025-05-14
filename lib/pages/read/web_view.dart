@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/mirror.dart';
@@ -69,19 +68,6 @@ class _WebViewState extends State<WebView> {
               _saveVocabEntry(await webViewController?.getSelectedText());
             })
       ],
-        onCreateContextMenu: (hitTestResult) async {
-          String selectedText = await webViewController?.getSelectedText() ?? "";
-        },
-        onContextMenuActionItemClicked: (menuItem) {
-          final snackBar = SnackBar(
-            content: Text(
-                "Menu item with ID ${menuItem.id} and title '${menuItem.title}' clicked!"),
-            duration: const Duration(seconds: 2),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          // copy id to clipboard
-          Clipboard.setData(ClipboardData(text: menuItem.id.toString()));
-        }
     );
     super.initState();
   }
