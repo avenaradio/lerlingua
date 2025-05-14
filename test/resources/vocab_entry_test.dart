@@ -2,7 +2,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
 
-Future main() async {
+void main() {
   late VocabEntry entry1;
 
   group('VocabEntry Tests', () {
@@ -12,6 +12,7 @@ Future main() async {
         wordA: 'test',
         languageB: 'es',
         wordB: 'prueba',
+        boxNumber: 0,
         timeLearned: 1,
         timeModified: 1);
     Map<String, dynamic> map = {};
@@ -26,7 +27,7 @@ Future main() async {
       expect(entry1.sentenceB, null);
       expect(entry1.articleB, null);
       expect(entry1.comment, null);
-      expect(entry1.boxNumber, null);
+      expect(entry1.boxNumber, 0);
 
       entry1.sentenceB = 'This is a sentence.';
       entry1.articleB = 'The';

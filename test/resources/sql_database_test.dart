@@ -81,6 +81,7 @@ Future main() async {
           wordA: 'test2',
           languageB: 'es',
           wordB: 'prueba2',
+          boxNumber: 0,
           timeLearned: 1,
           timeModified: 1);
       await SqlDatabase().insertOrReplaceEntry(entry: entry2);

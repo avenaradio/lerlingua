@@ -2,9 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/mirror.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
 
-Future main() async {
+void main() {
     group('DatabaseMirror Tests', () {
-    test('writeEntry to DatabaseMirror (without updating sql database)', () async {
+    test('writeEntry to DatabaseMirror (without updating sql database)', () {
       VocabEntry entry = VocabEntry(
           vocabKey: 1,
           languageA: 'en',
@@ -47,7 +47,7 @@ Future main() async {
       expect(Mirror().dbMirror.length, 4);
       expect(Mirror().dbMirror[3].vocabKey, 21);
     });
-    test('get entry from DatabaseMirror', () async {
+    test('get entry from DatabaseMirror', () {
       VocabEntry entry = VocabEntry(
           vocabKey: 2,
           languageA: 'en',
@@ -70,7 +70,7 @@ Future main() async {
       expect(Mirror().readEntry(vocabKey: 2)!.vocabKey, 2);
       expect(Mirror().readEntry(vocabKey: 99), null);
     });
-    test('delete entry from DatabaseMirror', () async {
+    test('delete entry from DatabaseMirror', () {
       VocabEntry entry = VocabEntry(
           vocabKey: 2,
           languageA: 'en',
@@ -98,6 +98,28 @@ Future main() async {
       expect(deleted, true);
       deleted = Mirror().deleteEntry(vocabKey: 99, test: true);
       expect(deleted, false);
+    });
+    test('get filtered entries from DatabaseMirror', () {
+      VocabEntry entry = VocabEntry(
+          vocabKey: 2,
+          languageA: 'en',
+          wordA: 'test',
+          languageB: 'es',
+          wordB: 'prueba',
+          sentenceB: 'This is a sentence.',
+          articleB: 'The',
+          comment: 'This is a comment.',
+          boxNumber: 1,
+          timeLearned: 1,
+          timeModified: 1);
+      Mirror().dbMirror.clear();
+      Mirror().writeEntry(entry: entry, test: true);
+      entry.vocabKey = 1;
+      Mirror().writeEntry(entry: entry, test: true);
+      entry.vocabKey = 3;
+      entry.boxNumber = 2;
+      Mirror().writeEntry(entry: entry, test: true);
+      expect(Mirror().filterEntries.filterByBoxNumber(1).sortByTimeLearned.entries.length, 2);
     });
   });
 }

@@ -7,7 +7,7 @@ class VocabEntry {
   String? sentenceB;
   String? articleB;
   String? comment;
-  int? boxNumber;
+  int boxNumber;
   int timeLearned;
   int timeModified;
 
@@ -20,7 +20,7 @@ class VocabEntry {
     this.sentenceB,
     this.articleB,
     this.comment,
-    this.boxNumber,
+    required this.boxNumber,
     required this.timeLearned,
     required this.timeModified});
 
@@ -69,7 +69,7 @@ class VocabEntry {
       sentenceB: map['sentence_b'] as String?,
       articleB: map['article_b'] as String?,
       comment: map['comment'] as String?,
-      boxNumber: map['box_number'] as int?,
+      boxNumber: map['box_number'] as int,
       timeLearned: map['time_learned'] as int,
       timeModified: map['time_modified'] as int,
     );

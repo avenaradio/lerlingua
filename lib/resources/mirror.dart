@@ -1,5 +1,6 @@
 // Singleton
 import 'package:flutter/cupertino.dart';
+import 'package:lerlingua/resources/entries_filter.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/undo.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
@@ -73,4 +74,8 @@ class Mirror {
     SqlDatabase().deleteEntry(vocabKey: vocabKey);
     return deleted;
   }
+
+  //Filter
+  EntriesFilter get filterEntries => EntriesFilter(entriesList: dbMirror);
+
 }
