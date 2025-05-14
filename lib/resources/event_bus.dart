@@ -3,10 +3,16 @@ import 'package:lerlingua/resources/settings.dart';
 
 EventBus eventBus = EventBus();
 
-class WordSelectedEvent {
+class WordASelectedEvent {
   String wordA;
 
-  WordSelectedEvent(this.wordA){
+  WordASelectedEvent(this.wordA){
     Settings().wordA = wordA;
   }
+}
+
+class WordBSelectedEvent {
+  String wordB;
+
+  WordBSelectedEvent(this.wordB);
 }

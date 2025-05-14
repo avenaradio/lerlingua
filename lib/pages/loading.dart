@@ -15,6 +15,7 @@ class _LoadingState extends State<Loading> {
     // Load persistent data
     await Settings().loadSettings();
     await Mirror().initDatabase();
+    Settings().wordA = 'ler lingua';
     // Mounted check because inside of async function
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/home');
