@@ -29,12 +29,12 @@ void main () {
           timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 1;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 3;
       entry.boxNumber = 2;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       // Assert
       expect(Mirror().filterEntries.filterByBoxNumber(1).sortByTimeLearned.entries.length, 2);
     });
@@ -49,17 +49,17 @@ void main () {
           timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 1;
       entry.timeLearned = 50;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 3;
       entry.timeLearned = 100;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 4;
       entry.boxNumber = 0;
       entry.timeLearned = 0;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       // Assert
       expect(Mirror().oldestLearnedBoxEntry(boxNumber: 1).timeLearned, 1);
     });
@@ -74,12 +74,12 @@ void main () {
           timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 1;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 3;
       entry.boxNumber = 2;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       // Assert
       expect(Mirror().boxSize(boxNumber: 1), 2);
       expect(Mirror().boxSize(boxNumber: 2), 1);
@@ -95,16 +95,16 @@ void main () {
           timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 2;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 3;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 4;
       entry.boxNumber = 2;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       // Act
-      Mirror().addStack(stackSize: 2, test: true);
+      Mirror().addStack(stackSize: 2);
       // Assert
       expect(Mirror().boxSize(boxNumber: 0), 1);
       expect(Mirror().boxSize(boxNumber: 1), 2);
@@ -130,17 +130,17 @@ void main () {
           timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 2;
       entry.timeModified = 2;
       entry.timeLearned = 2;
       entry.boxNumber = 5;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       // Act
       entry = Mirror().oldestLearnedBoxEntry(boxNumber: 1);
-      Mirror().move(entry: entry, direction: Direction.next, test: true, addNewUndo: true);
+      Mirror().move(entry: entry, direction: Direction.next, addNewUndo: true);
       entry = Mirror().oldestLearnedBoxEntry(boxNumber: 5);
-      Mirror().move(entry: entry, direction: Direction.next, test: true, addNewUndo: true);
+      Mirror().move(entry: entry, direction: Direction.next, addNewUndo: true);
       // Assert
       // Time is updating
       expect(Mirror().readEntry(vocabKey: 2)?.timeModified, greaterThan(1747307675463));
@@ -169,17 +169,17 @@ void main () {
           timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 2;
       entry.timeModified = 2;
       entry.timeLearned = 2;
       entry.boxNumber = 5;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       // Act
       entry = Mirror().oldestLearnedBoxEntry(boxNumber: 1);
-      Mirror().move(entry: entry, direction: Direction.previous, test: true, addNewUndo: true);
+      Mirror().move(entry: entry, direction: Direction.previous, addNewUndo: true);
       entry = Mirror().oldestLearnedBoxEntry(boxNumber: 5);
-      Mirror().move(entry: entry, direction: Direction.previous, test: true, addNewUndo: true);
+      Mirror().move(entry: entry, direction: Direction.previous, addNewUndo: true);
       // Assert
       expect(Mirror().filterEntries.filterByBoxNumber(0).entries.length, 0);
       expect(Mirror().filterEntries.filterByBoxNumber(1).entries.length, 1);
@@ -196,17 +196,17 @@ void main () {
           timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       entry.vocabKey = 2;
       entry.timeModified = 2;
       entry.timeLearned = 2;
       entry.boxNumber = 5;
-      Mirror().writeEntry(entry: entry, test: true);
+      Mirror().writeEntry(entry: entry);
       // Act
       entry = Mirror().oldestLearnedBoxEntry(boxNumber: 1);
-      Mirror().move(entry: entry, direction: Direction.first, test: true, addNewUndo: true);
+      Mirror().move(entry: entry, direction: Direction.first, addNewUndo: true);
       entry = Mirror().oldestLearnedBoxEntry(boxNumber: 5);
-      Mirror().move(entry: entry, direction: Direction.first, test: true, addNewUndo: true);
+      Mirror().move(entry: entry, direction: Direction.first, addNewUndo: true);
       // Assert
       expect(Mirror().filterEntries.filterByBoxNumber(2).entries.length, 0);
       expect(Mirror().filterEntries.filterByBoxNumber(1).entries.length, 2);
