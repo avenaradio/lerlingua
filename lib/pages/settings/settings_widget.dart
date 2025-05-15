@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../resources/mirror.dart';
 import '../../resources/sql_database.dart';
+import '../../resources/vocab_entry.dart';
+import '../loading.dart';
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({super.key});
@@ -19,15 +21,31 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Row(
-                children: [
-                  ElevatedButton(onPressed: () {
-                    SqlDatabase().deleteSqlDatabase();
-                    Mirror().initDatabase();
-                    }, child: const Text('Delete Datebase'))
-                ],
-              )
+              ElevatedButton(
+                onPressed: () {
+                  SqlDatabase().deleteSqlDatabase();
+                  Mirror().initDatabase();
+                },
+                child: const Text('Delete Datebase'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  for (VocabEntry entry in Mirror().dbMirror) {
+                    entry.boxNumber = 0;
+                    Mirror().writeEntry(entry: entry);
+                  }
+                },
+                child: const Text('Move all to first box'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Mirror().dbMirror.clear();
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Loading()));
+                },
+                child: const Text('Reload app'),
+              ),
             ],
           ),
         ),

@@ -44,7 +44,7 @@ class VocabEntry {
   // Convert VocabEntry to a Map for database insertion
   Map<String, dynamic> toMap() {
     return {
-      'vocab_key': vocabKey == 0 ? null : vocabKey,
+      'vocab_key': vocabKey,
       'language_a': languageA,
       'word_a': wordA,
       'language_b': languageB,

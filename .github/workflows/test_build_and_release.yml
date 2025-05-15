@@ -21,7 +21,7 @@ jobs:
       - run: flutter pub get
       - run: flutter --version
       - run: flutter analyze
-      - run: flutter test
+      - run: flutter test --dart-define=IS_TEST=true
 
   build_androidApk:
     name: Build and release Flutter App (Android)

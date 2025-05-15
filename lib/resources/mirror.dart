@@ -1,4 +1,5 @@
 // Singleton
+import 'package:lerlingua/global_variables.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/undo.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
@@ -28,7 +29,8 @@ class Mirror {
   }
 
   // Method to add or replace entry in mirror
-  VocabEntry writeEntry({required VocabEntry entry, bool? test}) {
+  VocabEntry writeEntry({required VocabEntry entry}) {
+    if (entry.vocabKey == -2) return entry;
     entry = entry.clone(); // Hard Copy
     bool replaced = false;
     for (int i = 0; i < dbMirror.length; i++) {
@@ -39,14 +41,14 @@ class Mirror {
       }
     }
     if (replaced == false) {
-      if (entry.vocabKey == -1) entry.vocabKey = dbMirror.length; // Add new key if -1
+      if (entry.vocabKey == -1 || entry.vocabKey == 0) entry.vocabKey = dbMirror.length; // Add new key if -1 or null TODO TEST FOR  if entry.vocabKey == 0
       // if key already exists find a new one
       while (dbMirror.any((element) => element.vocabKey == entry.vocabKey)) {
         entry.vocabKey++;
       }
       dbMirror.add(entry);
     } // Add
-    if (test == true) return entry;
+    if (isTesting == true) return entry;
     SqlDatabase().insertOrReplaceEntry(entry: entry); // Update SQL database
     return entry;
   }
@@ -60,7 +62,7 @@ class Mirror {
   }
 
   // Method to delete entry from mirror
-  bool deleteEntry({required int vocabKey, bool? test}) {
+  bool deleteEntry({required int vocabKey}) {
     bool deleted = false;
     for (int i = 0; i < dbMirror.length; i++) {
       if (dbMirror[i].vocabKey == vocabKey) {
@@ -68,7 +70,7 @@ class Mirror {
         deleted = true;
       }
     }
-    if (test == true) return deleted;
+    if (isTesting == true) return deleted;
     SqlDatabase().deleteEntry(vocabKey: vocabKey);
     return deleted;
   }
