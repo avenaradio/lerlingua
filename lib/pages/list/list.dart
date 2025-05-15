@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lerlingua/resources/mirror_utils_extension.dart';
 
 import '../../resources/mirror.dart';
 import '../../resources/vocab_entry.dart';

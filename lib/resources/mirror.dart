@@ -1,14 +1,10 @@
 // Singleton
-import 'package:flutter/cupertino.dart';
-import 'package:lerlingua/resources/entries_filter.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/undo.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
 
 class Mirror {
-  @visibleForTesting
   List<VocabEntry> dbMirror = [];
-  @visibleForTesting
   List<Undo> undoList = [];
 
   // Private constructor
@@ -21,6 +17,8 @@ class Mirror {
   factory Mirror() {
     return _instance;
   }
+
+  List<VocabEntry> get mirrorEntries => dbMirror;
 
   // Method to initialize the database
   Future<void> initDatabase() async{
@@ -74,8 +72,4 @@ class Mirror {
     SqlDatabase().deleteEntry(vocabKey: vocabKey);
     return deleted;
   }
-
-  //Filter
-  EntriesFilter get filterEntries => EntriesFilter(entriesList: dbMirror);
-
 }
