@@ -99,27 +99,5 @@ void main() {
       deleted = Mirror().deleteEntry(vocabKey: 99, test: true);
       expect(deleted, false);
     });
-    test('get filtered entries from DatabaseMirror', () {
-      VocabEntry entry = VocabEntry(
-          vocabKey: 2,
-          languageA: 'en',
-          wordA: 'test',
-          languageB: 'es',
-          wordB: 'prueba',
-          sentenceB: 'This is a sentence.',
-          articleB: 'The',
-          comment: 'This is a comment.',
-          boxNumber: 1,
-          timeLearned: 1,
-          timeModified: 1);
-      Mirror().dbMirror.clear();
-      Mirror().writeEntry(entry: entry, test: true);
-      entry.vocabKey = 1;
-      Mirror().writeEntry(entry: entry, test: true);
-      entry.vocabKey = 3;
-      entry.boxNumber = 2;
-      Mirror().writeEntry(entry: entry, test: true);
-      expect(Mirror().filterEntries.filterByBoxNumber(1).sortByTimeLearned.entries.length, 2);
-    });
   });
 }

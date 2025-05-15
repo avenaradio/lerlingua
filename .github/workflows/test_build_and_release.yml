@@ -24,7 +24,7 @@ jobs:
       - run: flutter test
 
   build_androidApk:
-    name: Build Flutter App (Android)
+    name: Build and release Flutter App (Android)
     needs: [flutter_test]
     runs-on: ubuntu-latest
     steps:
