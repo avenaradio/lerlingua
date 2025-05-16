@@ -215,6 +215,7 @@ class _LearnState extends State<Learn> {
                             : Container(),
                       ]
                   ),
+                  SizedBox(height: 10,),
                   ElevatedButton(
                     onPressed: () {
                       Mirror().dbMirror.clear();
