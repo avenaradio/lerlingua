@@ -14,7 +14,7 @@ void main () {
 
     expect(now2, greaterThan(now1));
   });
-  group('Mirror get extension', () {
+  group('Mirror utils extension', () {
     test('get filtered entries from DatabaseMirror', () {
       VocabEntry entry = VocabEntry(
           vocabKey: 2,
