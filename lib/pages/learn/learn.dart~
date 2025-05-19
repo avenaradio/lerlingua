@@ -61,8 +61,7 @@ class _LearnState extends State<Learn> {
   @override
   void initState() {
     _getCurrentEntry();
-    eventBus.on<LearningPageSetStateEvent>().listen((event) => setState(() {}));
-    eventBus.on<LearningPageNewDataEvent>().listen((event) => _getCurrentEntry());
+    eventBus.on<LearningPageChangedEvent>().listen((event) => setState(() {}));
     super.initState();
   }
 
