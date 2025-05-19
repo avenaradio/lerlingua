@@ -24,7 +24,7 @@ class SqlDatabase {
   // Queries
   final String _setupQuery =
     '''CREATE TABLE IF NOT EXISTS vocab (
-    vocab_key INTEGER PRIMARY KEY AUTOINCREMENT,
+    vocab_key INTEGER PRIMARY KEY,
     language_a TEXT NOT NULL,
     word_a TEXT NOT NULL,
     language_b TEXT NOT NULL,
@@ -60,12 +60,13 @@ class SqlDatabase {
   }
 
   // Method to insert or replace an entry
-  Future<void> insertOrReplaceEntry({required VocabEntry entry}) async {
-    await db.insert(
+  Future<int> insertOrReplaceEntry({required VocabEntry entry}) async {
+    int key = await db.insert(
       'vocab',
       entry.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    return key;
   }
 
   // Method to read an entry by its vocab_key
@@ -84,12 +85,13 @@ class SqlDatabase {
   }
 
   // Method to delete an entry by its vocab_key
-  Future<void> deleteEntry({required int vocabKey}) async {
-    await db.delete(
+  Future<int> deleteEntry({required int vocabKey}) async {
+    int key = await db.delete(
       'vocab',
       where: 'vocab_key = ?',
       whereArgs: [vocabKey],
     );
+    return key;
   }
 
   // Method to read all entries

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/extensions/string.dart';
+import 'package:lerlingua/extensions/string_extension.dart';
 
 Future main() async {
   test('string extension capitalizeFirst', () async {
