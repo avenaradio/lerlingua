@@ -25,7 +25,7 @@ void main() {
       for (int i = 0; i < cloze.widgets.length; i++) {
         if (cloze.widgets[i].runtimeType == Text) {
           textWidgets++;
-        } else if (cloze.widgets[i].runtimeType == TextFormField) {
+        } else if (cloze.widgets[i].runtimeType == SizedBox) {
           inputWidgets++;
         }
       }
