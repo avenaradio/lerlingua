@@ -13,3 +13,7 @@ class WordBSelectedEvent {
 
   WordBSelectedEvent(this.wordB);
 }
+
+class LearningPageSetStateEvent {}
+
+class LearningPageNewDataEvent {}
