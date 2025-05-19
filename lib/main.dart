@@ -5,7 +5,7 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'package:lerlingua/pages/home.dart';
 import 'dart:convert';
 
-import 'package:lerlingua/pages/loading.dart'; // For jsonDecode 
+import 'package:lerlingua/pages/loading.dart'; // For jsonDecode
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
