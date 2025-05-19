@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lerlingua/resources/mirror_undo_extension.dart';
+import 'package:lerlingua/resources/mirror_utils_extension.dart';
 import 'package:lerlingua/resources/settings.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
 
+import '../../enums/move_direction.dart';
 import '../../resources/mirror.dart';
+import '../loading.dart';
 
 class Learn extends StatefulWidget {
   const Learn({super.key});
@@ -85,22 +89,6 @@ class _LearnState extends State<Learn> {
                     ],
                   ),
                   SizedBox(height: 30,),
-                  /* Undo
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        HiveData.undoText != null ? Text(HiveData.undoText!, style: TextStyle(color: Theme.of(context).highlightColor),) : Container(),
-                        HiveData.isUndoNotEmpty() ?
-                        IconButton(
-                          icon: const Icon(Icons.undo),
-                          onPressed: () async{
-                            await HiveData.undoLastStep();
-                            eventBus.fire(DataUpdatedEvent());
-                          },
-                          color: Theme.of(context).highlightColor,
-                        ) : const SizedBox.shrink(),
-                      ]
-                  ),*/
                   // Buttons
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -113,7 +101,8 @@ class _LearnState extends State<Learn> {
                               backgroundColor: Colors.red,
                             ),
                             onPressed: () {
-                              // Add your onPressed logic here
+                              Mirror().move(entry: _currentEntry, direction: Direction.first, addNewUndo: true);
+                              _getCurrentEntry();
                             },
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
@@ -132,7 +121,8 @@ class _LearnState extends State<Learn> {
                               backgroundColor: Colors.green,
                             ),
                             onPressed: () {
-                              // Add your onPressed logic here
+                              Mirror().move(entry: _currentEntry, direction: Direction.next, addNewUndo: true);
+                              _getCurrentEntry();
                             },
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
@@ -146,7 +136,6 @@ class _LearnState extends State<Learn> {
                       ],
                     ),
                   ),
-
                   // Vocabulary box
                   Align(
                     alignment: Alignment.topCenter,
@@ -164,6 +153,10 @@ class _LearnState extends State<Learn> {
                           switch (index) {
                             case 1:
                               return GestureDetector(
+                                onTap: () {
+                                  Mirror().addStack(stackSize: Settings().stackSize);
+                                  _getCurrentEntry();
+                                },
                                 child: Container(
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
@@ -202,7 +195,34 @@ class _LearnState extends State<Learn> {
                         }
                         ),
                     ),
-                  )
+                  ),
+                  //* Undo
+                  Row(
+                    // flex
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Mirror().undoList.isNotEmpty ?
+                        IconButton(
+                          icon: const Icon(Icons.undo),
+                          onPressed: () async{
+                            Mirror().undo();
+                            _getCurrentEntry();
+                          },
+                          color: Theme.of(context).highlightColor,
+                        ) : const SizedBox.shrink(),
+                        Mirror().undoList.isNotEmpty ?
+                        Flexible(child: Text(Mirror().undoList.last.description, style: TextStyle(color: Theme.of(context).highlightColor),))
+                            : Container(),
+                      ]
+                  ),
+                  SizedBox(height: 10,),
+                  ElevatedButton(
+                    onPressed: () {
+                      Mirror().dbMirror.clear();
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Loading()));
+                    },
+                    child: const Text('Reload app'),
+                  ),
                 ],
               ),
             ),

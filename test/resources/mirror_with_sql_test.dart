@@ -1,22 +1,37 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/mirror.dart';
+import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
-    group('DatabaseMirror Tests', () {
+//Must run with 'flutter test test/resources/mirror_with_sql_test.dart --dart-define=IS_TEST=false' otherwise mirror will skip using sql database
+Future main() async {
+  // Set directory to in-memory
+  SqlDatabase().dbDirectory = inMemoryDatabasePath;
+
+  // Setup sqflite_common_ffi for flutter test
+  setUpAll(() {
+    // Initialize FFI
+    sqfliteFfiInit();
+    // Change the default factory
+    databaseFactory = databaseFactoryFfi;
+  });
+  await SqlDatabase().loadSqlDatabase();
+  group('DatabaseMirror Tests', () {
     test('writeEntry to DatabaseMirror (without updating sql database)', () {
       VocabEntry entry = VocabEntry(
-          vocabKey: 1,
-          languageA: 'en',
-          wordA: 'test',
-          languageB: 'es',
-          wordB: 'prueba',
-          sentenceB: 'This is a sentence.',
-          articleB: 'The',
-          comment: 'This is a comment.',
-          boxNumber: 1,
-          timeLearned: 1,
-          timeModified: 1);
+        vocabKey: 1,
+        languageA: 'en',
+        wordA: 'test',
+        languageB: 'es',
+        wordB: 'prueba',
+        sentenceB: 'This is a sentence.',
+        articleB: 'The',
+        comment: 'This is a comment.',
+        boxNumber: 1,
+        timeLearned: 1,
+        timeModified: 1,
+      );
       Mirror().dbMirror.clear();
       // Write entry to DatabaseMirror
       VocabEntry entryClone = Mirror().writeEntry(entry: entry);
@@ -28,7 +43,10 @@ void main() {
       entry.vocabKey = 2;
       VocabEntry entryClone2 = Mirror().writeEntry(entry: entry);
       expect(entry.hashCode, isNot(entryClone2.hashCode));
-      expect(entryClone.hashCode, isNot(entryClone2.hashCode)); // 3 different objects
+      expect(
+        entryClone.hashCode,
+        isNot(entryClone2.hashCode),
+      ); // 3 different objects
       expect(Mirror().dbMirror.length, 2);
       expect(Mirror().dbMirror[1].vocabKey, 2);
       // override first entry
@@ -49,31 +67,33 @@ void main() {
     });
     test('writeEntry should not save if vocabKey is -2', () {
       VocabEntry entry = VocabEntry(
-          vocabKey: -2,
-          languageA: 'en',
-          wordA: 'test',
-          languageB: 'es',
-          wordB: 'prueba',
-          boxNumber: 1,
-          timeLearned: 1,
-          timeModified: 1);
+        vocabKey: -2,
+        languageA: 'en',
+        wordA: 'test',
+        languageB: 'es',
+        wordB: 'prueba',
+        boxNumber: 1,
+        timeLearned: 1,
+        timeModified: 1,
+      );
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
       expect(Mirror().dbMirror.length, 0);
     });
     test('get entry from DatabaseMirror', () {
       VocabEntry entry = VocabEntry(
-          vocabKey: 2,
-          languageA: 'en',
-          wordA: 'test',
-          languageB: 'es',
-          wordB: 'prueba',
-          sentenceB: 'This is a sentence.',
-          articleB: 'The',
-          comment: 'This is a comment.',
-          boxNumber: 1,
-          timeLearned: 1,
-          timeModified: 1);
+        vocabKey: 2,
+        languageA: 'en',
+        wordA: 'test',
+        languageB: 'es',
+        wordB: 'prueba',
+        sentenceB: 'This is a sentence.',
+        articleB: 'The',
+        comment: 'This is a comment.',
+        boxNumber: 1,
+        timeLearned: 1,
+        timeModified: 1,
+      );
       Mirror().dbMirror.clear();
       expect(Mirror().readEntry(vocabKey: 0), null);
       Mirror().writeEntry(entry: entry);
@@ -86,17 +106,18 @@ void main() {
     });
     test('delete entry from DatabaseMirror', () {
       VocabEntry entry = VocabEntry(
-          vocabKey: 2,
-          languageA: 'en',
-          wordA: 'test',
-          languageB: 'es',
-          wordB: 'prueba',
-          sentenceB: 'This is a sentence.',
-          articleB: 'The',
-          comment: 'This is a comment.',
-          boxNumber: 1,
-          timeLearned: 1,
-          timeModified: 1);
+        vocabKey: 2,
+        languageA: 'en',
+        wordA: 'test',
+        languageB: 'es',
+        wordB: 'prueba',
+        sentenceB: 'This is a sentence.',
+        articleB: 'The',
+        comment: 'This is a comment.',
+        boxNumber: 1,
+        timeLearned: 1,
+        timeModified: 1,
+      );
       Mirror().dbMirror.clear();
       bool deleted = Mirror().deleteEntry(vocabKey: 0);
       expect(deleted, false);
