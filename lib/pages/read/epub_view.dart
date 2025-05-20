@@ -37,7 +37,7 @@ class _EpubViewState extends State<EpubView> {
                   onRelocated: (value) {},
                   onTextSelected: (epubTextSelection) {
                     // Create and fire the event
-                    final event = WordASelectedEvent(epubTextSelection.selectedText);
+                    final event = WordBSelectedEvent(epubTextSelection.selectedText);
                     eventBus.fire(event);
                   },
                 ),

@@ -24,10 +24,10 @@ class _WebViewState extends State<WebView> {
   double progress = 0;
   final urlController = TextEditingController();
   String url = "";
-  String wordA = "lerlingua";
+  String wordB = "lerlingua";
 
-  _search({required String wordA, required String url}) {
-    WebUri webUri = WebUri(url + wordA);
+  _search({required String wordB, required String url}) {
+    WebUri webUri = WebUri(url + wordB);
     webViewController?.loadUrl(urlRequest: URLRequest(url: webUri));
   }
 
@@ -36,9 +36,9 @@ class _WebViewState extends State<WebView> {
       Mirror().writeEntry(entry: VocabEntry(
         vocabKey: -1,
         languageA: 'bookLanguage',
-        wordA: wordA,
+        wordB: wordB,
         languageB: 'translationLanguage',
-        wordB: selectedText,
+        wordA: selectedText,
         boxNumber: 0,
         timeLearned: DateTime.now().millisecondsSinceEpoch,
         timeModified: DateTime.now().millisecondsSinceEpoch,
@@ -49,10 +49,10 @@ class _WebViewState extends State<WebView> {
   @override
   void initState() {
     // Subscribe to the event bus
-    eventBus.on<WordASelectedEvent>().listen((event) {
-      wordA = event.wordA;
+    eventBus.on<WordBSelectedEvent>().listen((event) {
+      wordB = event.wordB;
       _search(
-        wordA: wordA,
+        wordB: wordB,
         url: 'https://translate.google.de/?sl=auto&tl=en&text=',
       );
       /// TODO make this dynamic
@@ -138,7 +138,7 @@ class _WebViewState extends State<WebView> {
                         var url = WebUri(value);
                         if (url.scheme.isEmpty) {
                           url = WebUri("https://www.linguee.de/deutsch-portugiesisch/search?query=$value",);
-                          wordA = value;
+                          wordB = value;
                           ///TODO make this dynamic
                         }
                         webViewController?.loadUrl(
@@ -193,7 +193,7 @@ class _WebViewState extends State<WebView> {
                     onLoadStop: (controller, url) async {
                       setState(() {
                         this.url = url.toString();
-                        urlController.text = wordA;
+                        urlController.text = wordB;
                       });
                     },
                     onReceivedError: (controller, request, error) {},
