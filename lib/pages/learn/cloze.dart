@@ -14,12 +14,16 @@ class Cloze {
   @visibleForTesting
   List<String> parts = [];
   List<Widget> widgets = [];
-  List<TextEditingController> _controllersForRestore = [];
-  final List<TextEditingController> _controllers = [];
+  @visibleForTesting
+  List<TextEditingController> controllersForRestore = [];
+  @visibleForTesting
+  final List<TextEditingController> controllers = [];
   final List<FocusNode> _focusNodes = [];
-  final List<String> _hiddenTexts = [];
+  @visibleForTesting
+  final List<String> hiddenTexts = [];
   final TextStyle _commonTextStyle = const TextStyle(fontSize: 15.0);
-  bool _showAnswers = false;
+  @visibleForTesting
+  bool showAnswers = false;
 
   Cloze({required VocabEntry card, BuildContext? context}) : _context = context, _card = card {
     // Split sentenceB in %
@@ -27,6 +31,8 @@ class Cloze {
     _createWidgets();
   }
 
+  /// Function to create the widgets
+  /// - Tested
   void _createWidgets() {
     int counter = 0;
     for (String text in parts) {
@@ -39,15 +45,17 @@ class Cloze {
     }
   }
 
+  /// Function to add a text widget
   void _addTextWidget(String text) {
     widgets.add(Text(text, style: const TextStyle(fontSize: 19)));
   }
 
+  /// Function to add an input widget
   void _addInputWidget(String hiddenText) {
     final TextEditingController controller = TextEditingController();
     final FocusNode focusNode = FocusNode();
-    _hiddenTexts.add(hiddenText);
-    _controllers.add(controller);
+    hiddenTexts.add(hiddenText);
+    controllers.add(controller);
     _focusNodes.add(focusNode);
     final double textWidth = _calculateTextWidth(hiddenText, _commonTextStyle);
     widgets.add(
@@ -65,14 +73,14 @@ class Cloze {
             contentPadding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
           ),
           onChanged: (String value) {
-            _checkInput(value: value, hiddenText: hiddenText, controller: controller, focusNode: focusNode);
+            _checkInput(hiddenText: hiddenText, controller: controller, focusNode: focusNode);
           },
         ),
       ),
     );
   }
 
-  // Function to calculate the width of the text based on a given TextStyle
+  /// Function to calculate the width of the text based on a given TextStyle
   double _calculateTextWidth(String text, TextStyle style) {
     final TextPainter textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
@@ -82,36 +90,42 @@ class Cloze {
     return textPainter.size.width + Random().nextInt(21) + 15;  // Add random padding to the width
   }
 
-  void _checkInput({required String value, required String hiddenText, required TextEditingController controller, required FocusNode focusNode}) {
-    _showCharacterOnSpace(value: value, hiddenText: hiddenText, controller: controller);
+  /// Function to check if the input is correct and move focus to the next field
+  void _checkInput({required String hiddenText, required TextEditingController controller, required FocusNode focusNode}) {
+    showCharacterOnSpace(hiddenText: hiddenText, controller: controller);
     // If the text is correct, move focus to the next field
-    _moveFocusIfCorrect(value: value, hiddenText: hiddenText, controller: controller, focusNode: focusNode);
+    _moveFocusIfCorrect(hiddenText: hiddenText, controller: controller, focusNode: focusNode);
     // Store the current controllers
-    if (!_showAnswers) {
-      _controllersForRestore = _controllers.map((controller) => TextEditingController(text: controller.text)).toList();
+    if (!showAnswers) {
+      controllersForRestore = controllers.map((controller) => TextEditingController(text: controller.text)).toList();
     }
   }
 
-  // Function to show the next correct character if space is pressed
-  void _showCharacterOnSpace({required String value, required String hiddenText, required TextEditingController controller}) {
+  /// Function to show the next correct character if space is pressed
+  ///  - Tested
+  @visibleForTesting
+  void showCharacterOnSpace({required String hiddenText, required TextEditingController controller}) {
     // If last character is not a space, do nothing
-    if (value.endsWith(' ')) {
+    if (controller.text.endsWith(' ')) {
       if (controller.text != hiddenText) {
         //loop to find the first wrong character
         int i = 0; // i is used to not cut off last space if controller.text.length = i
         for (i = 0; i < hiddenText.length; i++) {
           if (i >= controller.text.length) break;
           if (controller.text[i] != hiddenText[i]) {
+            // Use the (correct + 1) first characters
             controller.text = hiddenText.substring(0, i + 1);
             break;
           } else if (i == hiddenText.length - 1) {
+            // If all characters are correct cut off the end
             controller.text = hiddenText;
           }
         }
-        //if last letter is a space cut it off
+        /* //if last letter is a space cut it off
         if (controller.text[controller.text.length - 1] == ' ' && controller.text.length > i) {
           controller.text = controller.text.substring(0, controller.text.length - 1);
-        }
+        } */
+        // Move the cursor to the end
         controller.selection = TextSelection.fromPosition(
           TextPosition(offset: controller.text.length),
         );
@@ -119,8 +133,9 @@ class Cloze {
     }
   }
 
-  // Function to move focus to the next field if the current field is correct
-  void _moveFocusIfCorrect({required String value, required String hiddenText, required TextEditingController controller, required FocusNode focusNode}) {
+  /// Function to move focus to the next field if the current field is correct
+  /// - No unit test because it needs a context, but it works
+  void _moveFocusIfCorrect({required String hiddenText, required TextEditingController controller, required FocusNode focusNode}) {
     if (controller.text == hiddenText) {
       if (_focusNodes.indexOf(focusNode) < _focusNodes.length - 1) {
         // mounted check
@@ -129,7 +144,7 @@ class Cloze {
             _focusNodes[_focusNodes.indexOf(focusNode) + 1]);
       }
       // check if all fields are correct
-      if (_controllers.every((controller) => controller.text == _hiddenTexts[_controllers.indexOf(controller)])) {
+      if (controllers.every((controller) => controller.text == hiddenTexts[controllers.indexOf(controller)])) {
         Mirror().move( entry: _card, direction: Direction.next, addNewUndo: true);
         // fire LearningPage event
         LearningPageNewDataEvent event = LearningPageNewDataEvent();
@@ -138,24 +153,26 @@ class Cloze {
     }
   }
 
-  toggleShowAnswers() {
-    _showAnswers = !_showAnswers;
-    if (_showAnswers) {
+  /// Function to toggle the display of the correct answers
+  ///  - Tested
+  void toggleShowAnswers() {
+    showAnswers = !showAnswers;
+    if (showAnswers) {
       // Show the correct answers
-      for (int i = 0; i < _controllers.length; i++) {
-        _controllers[i].text = _hiddenTexts[i];
+      for (int i = 0; i < controllers.length; i++) {
+        controllers[i].text = hiddenTexts[i];
       }
     } else {
       // Restore the text fields from _controllersForRestore
-      for (int i = 0; i < _controllers.length; i++) {
-        if (_controllersForRestore.isEmpty) {
-          _controllers[i].text = '';
+      for (int i = 0; i < controllers.length; i++) {
+        if (controllersForRestore.isEmpty) {
+          controllers[i].text = '';
         } else {
-          _controllers[i].text = _controllersForRestore[i].text;
+          controllers[i].text = controllersForRestore[i].text;
         }
       }
     }
-    // fire LearningPage event
+    // Fire LearningPage event
     LearningPageSetStateEvent event = LearningPageSetStateEvent();
     eventBus.fire(event);
   }
