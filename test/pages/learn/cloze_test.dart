@@ -114,7 +114,6 @@ void main() {
       test('controllers should contain hiddenTexts when showAnswers is true', () {
         VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeLearned: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
-        bool showAnswersOnCreation = cloze.showAnswers;
         expect(cloze.controllersForRestore.length, 0);
         // Act
         cloze.toggleShowAnswers();
@@ -126,7 +125,6 @@ void main() {
       test('controllers should be restored when showAnswers is false', () {
         VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeLearned: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
-        bool showAnswersOnCreation = cloze.showAnswers;
         expect(cloze.controllersForRestore.length, 0);
         // Act
         cloze.toggleShowAnswers();
