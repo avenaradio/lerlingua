@@ -1,3 +1,5 @@
+# Download
+[Releases](https://github.com/malao/lerlingua/releases)
 # Lerlingua
 Learn languages reading.
 
