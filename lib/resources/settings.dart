@@ -35,6 +35,20 @@ class Settings {
     saveSettings();
   }
 
+  // GitHub credentials
+  String _token = '';
+  String get token => _token;
+  String _repoOwner = '';
+  String get repoOwner => _repoOwner;
+  String _repoName = '';
+  String get repoName => _repoName;
+  void saveCredentials({String? token, required String repoOwner, required String repoName}) {
+    _token = (token == null || token == '') ? _token : token;
+    _repoOwner = repoOwner;
+    _repoName = repoName;
+    saveSettings();
+  }
+
   // Method to load settings
   Future<void> loadSettings() async{
     // Obtain shared preferences
@@ -42,10 +56,16 @@ class Settings {
     // Write all settings to Settings()
     _currentBox = _sharedPreferences.getInt('currentBox') ?? 1;
     _stackSize = _sharedPreferences.getInt('stackSize') ?? 10;
+    _token = _sharedPreferences.getString('token') ?? '';
+    _repoOwner = _sharedPreferences.getString('repoOwner') ?? '';
+    _repoName = _sharedPreferences.getString('repoName') ?? '';
   }
 
   saveSettings() async{
     await _sharedPreferences.setInt('currentBox', _currentBox);
     await _sharedPreferences.setInt('stackSize', _stackSize);
+    await _sharedPreferences.setString('token', _token);
+    await _sharedPreferences.setString('repoOwner', _repoOwner);
+    await _sharedPreferences.setString('repoName', _repoName);
   }
 }

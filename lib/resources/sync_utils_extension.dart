@@ -1,50 +1,53 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:lerlingua/resources/sync.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
 
 extension SyncUtils on Sync {
-  /// Converts a List of VocabEntry to a JSON string.
+  /// Converts a list of VocabEntry to a JSON string.
+  /// Returns JSON string
   /// - Tested
-  @visibleForTesting
   String vocabEntriesToJson(List<VocabEntry> vocabEntries) {
+    syncLog += ('Converting List of VocabEntry to JSON string...\n');
     // Map each VocabEntry to a Map and then convert the list to JSON
     return jsonEncode(vocabEntries.map((entry) => entry.toMap()).toList());
   }
 
-  /// Converts a JSON string back to a List of VocabEntry.
+  /// Converts a JSON string back to a List of VocabEntry. <br>
+  /// Returns List&lt;VocabEntry&gt;, null if error
   /// - Tested
-  @visibleForTesting
-  List<VocabEntry>? vocabEntriesFromJson(String jsonString) {
-    if(jsonString == '') {
+  List<VocabEntry>? vocabEntriesFromJson(String? jsonString) {
+    syncLog += ('Converting JSON string to List of VocabEntry...\n');
+    if(jsonString == '' || jsonString == null) {
+      syncLog += ('JSON string is empty, returning empty list\n');
       return [];
     }
-    if(!jsonString.endsWith(']')) {
+    // Decode the JSON string to a List of dynamic
+    late List<dynamic> jsonList;
+    try {
+      jsonList = jsonDecode(jsonString);
+    } catch (e) {
+      syncLog += ('Error decoding JSON: $e\n');
       return null;
     }
-    // Decode the JSON string to a List of dynamic
-    final List<dynamic> jsonList = jsonDecode(jsonString);
     // Map each dynamic to a VocabEntry using fromMap
-    return jsonList.map((json) => VocabEntry.fromMap(json)).toList();
+    List<VocabEntry> vocabEntries = [];
+    for (var map in jsonList) {
+      try {
+        vocabEntries.add(VocabEntry.fromMap(map));
+      } catch (e) {
+        syncLog += ('Error while converting card from JSON: $e\n');
+      }
+    }
+    syncLog += ('List of VocabEntry created from JSON string\n');
+    return vocabEntries;
   }
 
-  /// Uploads a List of VocabEntry to GitHub.
-  Future<int> uploadEntries(List<VocabEntry> entries) async {
-    String jsonString = vocabEntriesToJson(entries);
-    return await uploadJsonToGitHub(jsonString: jsonString, fileType: FileType.cards);
-  }
-
-  /// Downloads a List of VocabEntry from GitHub.
-  Future<List<VocabEntry>?> downloadEntries() async {
-    String? jsonString = await downloadJsonFromGithub(fileType: FileType.cards);
-    if (jsonString == null) return null;
-    return vocabEntriesFromJson(jsonString);
-  }
-
-  /// Merges two lists of VocabEntry. Uses newer entries for conflicts.
-  /// Tested
+  /// Merges two List&lt;VocabEntry&gt;. <br>
+  /// Uses newer entries for conflicts.
+  /// - Tested
   List<VocabEntry> mergeLists({required List<VocabEntry> listA, required List<VocabEntry> listB}) {
+    syncLog += ('Merging lists...\n');
+    int lehgthA = listA.length, lengthB = listB.length;
     List<VocabEntry> listSync = [];
     // Copy listA to listSync
     for(VocabEntry entry in listA) {
@@ -63,6 +66,7 @@ extension SyncUtils on Sync {
         listSync.add(entry);
       }
     }
+    syncLog += ('Lists merged: From: $lehgthA and $lengthB to ${listSync.length} cards.\n');
     return listSync;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lerlingua/pages/settings/credentials_dialog.dart';
 
 import '../../resources/mirror.dart';
 import '../../resources/sql_database.dart';
@@ -24,6 +25,12 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              ElevatedButton(
+                onPressed: () {
+                  CredentialsDialog().show(context);
+                },
+                child: const Text('Edit GitHub Credentials'),
+              ),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -66,7 +73,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 },
                 child: const Text('Sync download test'),
               ),
-              Text('Sync Log:\n${Sync().syncLog}'),
+              Text(Sync().syncLog),
             ],
           ),
         ),
