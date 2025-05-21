@@ -50,7 +50,7 @@ class _ListPageState extends State<ListPage> {
                             overflow: TextOverflow.ellipsis, // Handle overflow
                           ),
                           Text(
-                            'Learned: ${entries[index].timeLearned}, Modified: ${entries[index].timeModified}',
+                            'Modified: ${entries[index].timeModified}',
                             style: TextStyle(fontSize: 12),
                             overflow: TextOverflow.ellipsis, // Handle overflow
                           ),

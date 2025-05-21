@@ -13,7 +13,6 @@ void main() {
         languageB: 'es',
         wordB: 'prueba',
         boxNumber: 0,
-        timeLearned: 1,
         timeModified: 1);
     Map<String, dynamic> map = {};
     test('VocabEntry creation', () {
@@ -22,7 +21,6 @@ void main() {
       expect(entry1.wordA, 'test');
       expect(entry1.languageB, 'es');
       expect(entry1.wordB, 'prueba');
-      expect(entry1.timeLearned, 1);
       expect(entry1.timeModified, 1);
       expect(entry1.sentenceB, null);
       expect(entry1.articleB, null);
@@ -50,7 +48,6 @@ void main() {
       expect(map['article_b'], 'The');
       expect(map['comment'], 'This is a comment.');
       expect(map['box_number'], 1);
-      expect(map['time_learned'], 1);
       expect(map['time_modified'], 1);
     });
     test('VocabEntry fromMap', () {
@@ -64,7 +61,6 @@ void main() {
       expect(entry1CopyFromMap.articleB, 'The');
       expect(entry1CopyFromMap.comment, 'This is a comment.');
       expect(entry1CopyFromMap.boxNumber, 1);
-      expect(entry1CopyFromMap.timeLearned, 1);
       expect(entry1CopyFromMap.timeModified, 1);
       expect(entry1.hashCode, isNot(entry1CopyFromMap.hashCode));
       // Proof, that the hashCode is unique for an object
@@ -84,7 +80,6 @@ void main() {
       expect(entry1.articleB, entry1Copy.articleB);
       expect(entry1.comment, entry1Copy.comment);
       expect(entry1.boxNumber, entry1Copy.boxNumber);
-      expect(entry1.timeLearned, entry1Copy.timeLearned);
       expect(entry1.timeModified, entry1Copy.timeModified);
     });
   });

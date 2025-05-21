@@ -138,15 +138,15 @@ class Cloze {
   void _moveFocusIfCorrect({required String hiddenText, required TextEditingController controller, required FocusNode focusNode}) {
     if (controller.text == hiddenText) {
       if (_focusNodes.indexOf(focusNode) < _focusNodes.length - 1) {
-        // Mounted check
+        // mounted check
         if (!(_context?.mounted ?? false)) return;
         FocusScope.of(_context!).requestFocus(
             _focusNodes[_focusNodes.indexOf(focusNode) + 1]);
       }
-      // Check if all fields are correct
+      // check if all fields are correct
       if (controllers.every((controller) => controller.text == hiddenTexts[controllers.indexOf(controller)])) {
         Mirror().move( entry: _card, direction: Direction.next, addNewUndo: true);
-        // Fire LearningPage event
+        // fire LearningPage event
         LearningPageNewDataEvent event = LearningPageNewDataEvent();
         eventBus.fire(event);
       }

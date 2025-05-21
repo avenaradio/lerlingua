@@ -22,7 +22,7 @@ jobs:
       - run: flutter --version
       - run: flutter analyze
       - run: flutter test --dart-define=IS_TEST=true
-      - run: flutter test test/resources/mirror_with_sql_test.dart --dart-define=IS_TEST=false
+      - run: flutter test test/resources/mirror_with_sql_test.dart --dart-define=IS_TEST=false --dart-define=SYNC_TEST_TOKEN=${{ secrets.SYNC_TEST_TOKEN}}
 
   build_androidApk:
     name: Build and release Flutter App (Android)

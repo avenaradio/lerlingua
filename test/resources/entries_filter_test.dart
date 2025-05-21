@@ -16,7 +16,6 @@ void main() {
           languageB: 'Spanish',
           wordB: 'Hola',
           boxNumber: 1,
-          timeLearned: 10,
           timeModified: 5,
         ),
         VocabEntry(
@@ -26,7 +25,6 @@ void main() {
           languageB: 'Spanish',
           wordB: 'Adiós',
           boxNumber: 2,
-          timeLearned: 20,
           timeModified: 15,
         ),
         VocabEntry(
@@ -36,7 +34,6 @@ void main() {
           languageB: 'English',
           wordB: 'Hello',
           boxNumber: 1,
-          timeLearned: 5,
           timeModified: 2,
         ),
       ];
@@ -76,13 +73,6 @@ void main() {
       expect(sortedEntries[0].boxNumber, 1);
       expect(sortedEntries[1].boxNumber, 1);
       expect(sortedEntries[2].boxNumber, 2);
-    });
-
-    test('sorts by timeLearned', () {
-      final sortedEntries = entriesFilter.sortByTimeLearned.entries;
-      expect(sortedEntries[0].timeLearned, 5);
-      expect(sortedEntries[1].timeLearned, 10);
-      expect(sortedEntries[2].timeLearned, 20);
     });
 
     test('sorts by timeModified', () {
@@ -126,12 +116,6 @@ void main() {
     test('filters by boxNumber', () {
       final filteredEntries = entriesFilter.filterByBoxNumber(1).entries;
       expect(filteredEntries.length, 2);
-    });
-
-    test('filters by timeLearned', () {
-      final filteredEntries = entriesFilter.filterByTimeLearned(10).entries;
-      expect(filteredEntries.length, 1);
-      expect(filteredEntries[0].timeLearned, 10);
     });
 
     test('filters by timeModified', () {

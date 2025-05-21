@@ -38,12 +38,6 @@ class EntriesFilter {
     return EntriesFilter(entriesList: sortedEntries);
   }
 
-  EntriesFilter get sortByTimeLearned {
-    List<VocabEntry> sortedEntries = List.from(entriesList);
-    sortedEntries.sort((a, b) => a.timeLearned.compareTo(b.timeLearned));
-    return EntriesFilter(entriesList: sortedEntries);
-  }
-
   EntriesFilter get sortByTimeModified {
     List<VocabEntry> sortedEntries = List.from(entriesList);
     sortedEntries.sort((a, b) => a.timeModified.compareTo(b.timeModified));
@@ -79,11 +73,6 @@ class EntriesFilter {
 
   EntriesFilter filterByBoxNumber(int boxNumber) {
     List<VocabEntry> filteredEntries = entriesList.where((entry) => entry.boxNumber == boxNumber).toList();
-    return EntriesFilter(entriesList: filteredEntries);
-  }
-
-  EntriesFilter filterByTimeLearned(int timeLearned) {
-    List<VocabEntry> filteredEntries = entriesList.where((entry) => entry.timeLearned == timeLearned).toList();
     return EntriesFilter(entriesList: filteredEntries);
   }
 

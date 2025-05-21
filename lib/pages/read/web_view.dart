@@ -40,7 +40,6 @@ class _WebViewState extends State<WebView> {
         languageB: 'translationLanguage',
         wordA: selectedText,
         boxNumber: 0,
-        timeLearned: DateTime.now().millisecondsSinceEpoch,
         timeModified: DateTime.now().millisecondsSinceEpoch,
       ));
     }

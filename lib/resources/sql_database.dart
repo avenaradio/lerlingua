@@ -21,7 +21,7 @@ class SqlDatabase {
     return _instance;
   }
 
-  // Queries
+  /// SQL query to create the vocab table
   final String _setupQuery =
     '''CREATE TABLE IF NOT EXISTS vocab (
     vocab_key INTEGER PRIMARY KEY,
@@ -33,17 +33,17 @@ class SqlDatabase {
     article_b TEXT,
     comment TEXT,
     box_number INTEGER,
-    time_learned INTEGER NOT NULL,
     time_modified INTEGER NOT NULL
     );''';
 
 
-  // Retrieve directory
+  /// Gets the database directory
   Future<void> getDirectory() async {
     dbDirectory = '${(await FileHandler.getAppDirectory()).path}/lerlingua.db';
   }
 
-  // Method to load the database file
+  /// Loads the database file
+  /// - Tested
   Future<void> loadSqlDatabase() async{
     databaseFactory = databaseFactoryFfi;
     // open the database
@@ -53,13 +53,14 @@ class SqlDatabase {
         });
   }
 
-  // Method to initialize the database
+  /// Initializes the database
   Future<void> initSqlDatabase() async{
     await getDirectory();
     await loadSqlDatabase();
   }
 
-  // Method to insert or replace an entry
+  /// Inserts or replaces an entry
+  /// - Tested
   Future<int> insertOrReplaceEntry({required VocabEntry entry}) async {
     int key = await db.insert(
       'vocab',
@@ -69,7 +70,8 @@ class SqlDatabase {
     return key;
   }
 
-  // Method to read an entry by its vocab_key
+  /// Reads a single entry by its vocabKey
+  /// - Tested
   Future<VocabEntry?> readSingleEntry({required int vocabKey}) async {
     List<Map<String, dynamic>> maps = await db.query(
       'vocab',
@@ -84,7 +86,8 @@ class SqlDatabase {
     }
   }
 
-  // Method to delete an entry by its vocab_key
+  /// Deletes an entry by its vocabKey
+  /// - Tested
   Future<int> deleteEntry({required int vocabKey}) async {
     int key = await db.delete(
       'vocab',
@@ -94,13 +97,31 @@ class SqlDatabase {
     return key;
   }
 
-  // Method to read all entries
+  /// Reads all entries
+  /// - Tested
   Future<List<VocabEntry>> readAllEntries() async {
     List<Map<String, dynamic>> maps = await db.query('vocab');
     return List.generate(maps.length, (i) => VocabEntry.fromMap(maps[i]));
   }
 
-  // Method to delete the database file
+  /// Overrides all entries with a new list of entries
+  /// - Tested (not tested if entries are restored if transaction fails)
+  Future<void> overrideAllEntries(List<VocabEntry> entries) async {
+    await db.transaction((txn) async {
+      await txn.rawDelete('DELETE FROM vocab;');
+      for (VocabEntry entry in entries) {
+        await txn.insert('vocab', entry.toMap());
+      }
+    });
+  }
+
+  /// Deletes all entries
+  /// - Tested
+  Future<void> deleteAllEntries() async {
+    await db.rawDelete('DELETE FROM vocab;');
+  }
+
+  /// Deletes the database file
   Future<void> deleteSqlDatabase() async {
     // delete the database file
     await deleteDatabase(dbDirectory);
