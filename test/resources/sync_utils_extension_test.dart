@@ -35,18 +35,33 @@ void main() {
       expect(entries[0].boxNumber, 1);
       expect(entries[0].timeModified, 1);
     });
-    test('jsonToVocabEntries should return null if jsin not ending with ]', () {
-      String jsonString = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1';
-      List<VocabEntry>? entries = Sync().vocabEntriesFromJson(jsonString);
-      expect(entries, null);
-    });
-    test('jsonToVocabEntries should return empty list if json is empty or []', () {
-      String jsonString1 = '[]';
-      String jsonString2 = '';
+    test('jsonToVocabEntries should return null if not valid json', () {
+      String jsonString1 = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1}';
+      String jsonString2 = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1]';
+      String jsonString3 = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1},]';
       List<VocabEntry>? entries1 = Sync().vocabEntriesFromJson(jsonString1);
       List<VocabEntry>? entries2 = Sync().vocabEntriesFromJson(jsonString2);
+      List<VocabEntry>? entries3 = Sync().vocabEntriesFromJson(jsonString3);
+      expect(entries1, null);
+      expect(entries2, null);
+      expect(entries3, null);
+    });
+    test('jsonToVocabEntries should return empty list if json is "" or [] or null', () {
+      String? jsonString1 = '[]';
+      String? jsonString2 = '';
+      String? jsonString3;
+      List<VocabEntry>? entries1 = Sync().vocabEntriesFromJson(jsonString1);
+      List<VocabEntry>? entries2 = Sync().vocabEntriesFromJson(jsonString2);
+      List<VocabEntry>? entries3 = Sync().vocabEntriesFromJson(jsonString3);
       expect(entries1, []);
       expect(entries2, []);
+      expect(entries3, []);
+    });
+    test('jsonToVocabEntries valid json but broken card should skip broken card', () {
+      String jsonString = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1},'
+          '{"vocab_key":2,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1}]';
+      List<VocabEntry>? entries = Sync().vocabEntriesFromJson(jsonString);
+      expect(entries!.length, 1);
     });
   });
   group('mergeLists Tests', () {
