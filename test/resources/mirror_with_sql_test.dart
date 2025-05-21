@@ -29,7 +29,6 @@ Future main() async {
         articleB: 'The',
         comment: 'This is a comment.',
         boxNumber: 1,
-        timeLearned: 1,
         timeModified: 1,
       );
       Mirror().dbMirror.clear();
@@ -73,7 +72,6 @@ Future main() async {
         languageB: 'es',
         wordB: 'prueba',
         boxNumber: 1,
-        timeLearned: 1,
         timeModified: 1,
       );
       Mirror().dbMirror.clear();
@@ -91,7 +89,6 @@ Future main() async {
         articleB: 'The',
         comment: 'This is a comment.',
         boxNumber: 1,
-        timeLearned: 1,
         timeModified: 1,
       );
       Mirror().dbMirror.clear();
@@ -115,7 +112,6 @@ Future main() async {
         articleB: 'The',
         comment: 'This is a comment.',
         boxNumber: 1,
-        timeLearned: 1,
         timeModified: 1,
       );
       Mirror().dbMirror.clear();

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/settings/settings_widget.dart';
 import 'package:lerlingua/pages/learn/learn.dart';
 import 'package:lerlingua/pages/read/read.dart';
-
+import 'package:lerlingua/resources/mirror_sync_extension.dart';
+import '../resources/event_bus.dart';
+import '../resources/mirror.dart';
 import 'list/list.dart';
 
 class Home extends StatefulWidget {
@@ -14,10 +16,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int currentPageIndex = 1;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        body: <Widget>[
+          Read(),
+          Learn(),
+          ListPage(),
+          SettingsWidget(),
+        ][currentPageIndex],
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
             setState(() {
@@ -44,13 +53,26 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        body:
-        <Widget>[
-          Read(),
-          Learn(),
-          ListPage(),
-          SettingsWidget(),
-        ][currentPageIndex],
+        floatingActionButton: currentPageIndex > 2
+            ? null
+            : Stack(
+          alignment: Alignment.center,
+          children: [
+            FloatingActionButton.small(
+              onPressed: () async {
+                await Mirror().sync();
+                // Fire LearningPage event
+                LearningPageNewDataEvent event = LearningPageNewDataEvent();
+                eventBus.fire(event);
+              },
+              tooltip: 'Sync',
+              shape: const CircleBorder(),
+              elevation: 0,
+              child: Icon(Icons.sync_outlined),
+            ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
       ),
     );
   }

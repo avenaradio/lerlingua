@@ -22,7 +22,9 @@ class _LearnState extends State<Learn> {
   late Cloze _cloze;
 
   _getCurrentEntry() {
-    setState(() {
+    // Mounted check
+    if (mounted) {
+      setState(() {
       VocabEntry? entry;
       try {
         entry = Mirror().filterEntries.filterByBoxNumber(Settings().currentBox).sortByTimeModified.entries.first;
@@ -35,13 +37,13 @@ class _LearnState extends State<Learn> {
           wordB: 'Learn languages reading.',
           sentenceB: '%This% is a %cloze% with percent %signs%.',
           boxNumber: 1,
-          timeLearned: 0,
           timeModified: 0
         );
         }
       _currentEntry = entry;
       _cloze = Cloze(context: context, card: _currentEntry);
     });
+    }
   }
   _selectBox(int boxNumber) {
     if (boxNumber <= 0 || boxNumber >= 5) {

@@ -8,7 +8,6 @@ class VocabEntry {
   String? articleB;
   String? comment;
   int boxNumber;
-  int timeLearned;
   int timeModified;
 
   VocabEntry({
@@ -21,7 +20,6 @@ class VocabEntry {
     this.articleB,
     this.comment,
     required this.boxNumber,
-    required this.timeLearned,
     required this.timeModified});
 
   // Clone method
@@ -36,7 +34,6 @@ class VocabEntry {
       articleB: articleB,
       comment: comment,
       boxNumber: boxNumber,
-      timeLearned: timeLearned,
       timeModified: timeModified,
     );
   }
@@ -53,7 +50,6 @@ class VocabEntry {
       'article_b': articleB,
       'comment': comment,
       'box_number': boxNumber,
-      'time_learned': timeLearned,
       'time_modified': timeModified,
     };
   }
@@ -70,7 +66,6 @@ class VocabEntry {
       articleB: map['article_b'] as String?,
       comment: map['comment'] as String?,
       boxNumber: map['box_number'] as int,
-      timeLearned: map['time_learned'] as int,
       timeModified: map['time_modified'] as int,
     );
   }

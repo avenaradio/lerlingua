@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../resources/mirror.dart';
 import '../../resources/sql_database.dart';
+import '../../resources/sync.dart';
 import '../../resources/vocab_entry.dart';
 import '../loading.dart';
 
@@ -25,6 +26,13 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             children: [
               ElevatedButton(
                 onPressed: () {
+                  setState(() {
+                  });
+                },
+                child: const Text('SetState'),
+              ),
+              ElevatedButton(
+                onPressed: () {
                   SqlDatabase().deleteSqlDatabase();
                   Mirror().initDatabase();
                 },
@@ -46,6 +54,19 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 },
                 child: const Text('Reload app'),
               ),
+              ElevatedButton(
+                onPressed: () {
+                  Sync().uploadJsonToGitHub('{"test": "test3"}');
+                },
+                child: const Text('Sync upload test'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Sync().downloadJsonFromGithub();
+                },
+                child: const Text('Sync download test'),
+              ),
+              Text('Sync Log:\n${Sync().syncLog}'),
             ],
           ),
         ),

@@ -15,7 +15,6 @@ void main() {
           articleB: 'The',
           comment: 'This is a comment.',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       // Write entry to DatabaseMirror
@@ -55,7 +54,6 @@ void main() {
           languageB: 'es',
           wordB: 'prueba',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
@@ -72,7 +70,6 @@ void main() {
           articleB: 'The',
           comment: 'This is a comment.',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       expect(Mirror().readEntry(vocabKey: 0), null);
@@ -95,7 +92,6 @@ void main() {
           articleB: 'The',
           comment: 'This is a comment.',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       bool deleted = Mirror().deleteEntry(vocabKey: 0);

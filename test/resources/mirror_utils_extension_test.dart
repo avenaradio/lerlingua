@@ -26,7 +26,6 @@ void main () {
           articleB: 'The',
           comment: 'This is a comment.',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
@@ -36,7 +35,7 @@ void main () {
       entry.boxNumber = 2;
       Mirror().writeEntry(entry: entry);
       // Assert
-      expect(Mirror().filterEntries.filterByBoxNumber(1).sortByTimeLearned.entries.length, 2);
+      expect(Mirror().filterEntries.filterByBoxNumber(1).sortByTimeModified.entries.length, 2);
     });
     test('get oldest entry from DatabaseMirror', () {
       VocabEntry entry = VocabEntry(
@@ -46,22 +45,21 @@ void main () {
           languageB: 'es',
           wordB: 'prueba',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
       entry.vocabKey = 1;
-      entry.timeLearned = 50;
+      entry.timeModified = 50;
       Mirror().writeEntry(entry: entry);
       entry.vocabKey = 3;
-      entry.timeLearned = 100;
+      entry.timeModified = 100;
       Mirror().writeEntry(entry: entry);
       entry.vocabKey = 4;
       entry.boxNumber = 0;
-      entry.timeLearned = 0;
+      entry.timeModified = 0;
       Mirror().writeEntry(entry: entry);
       // Assert
-      expect(Mirror().oldestLearnedBoxEntry(boxNumber: 1).timeLearned, 1);
+      expect(Mirror().oldestLearnedBoxEntry(boxNumber: 1).timeModified, 1);
     });
     test('get amount of entries in a box', () {
       VocabEntry entry = VocabEntry(
@@ -71,7 +69,6 @@ void main () {
           languageB: 'es',
           wordB: 'prueba',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
@@ -92,7 +89,6 @@ void main () {
           languageB: 'es',
           wordB: 'prueba',
           boxNumber: 0,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
@@ -115,9 +111,7 @@ void main () {
       expect(Mirror().boxSize(boxNumber: 1), 0);
       expect(Mirror().boxSize(boxNumber: 2), 1);
       expect(Mirror().readEntry(vocabKey: 1)?.timeModified, 1);
-      expect(Mirror().readEntry(vocabKey: 1)?.timeLearned, 1);
       expect(Mirror().readEntry(vocabKey: 2)?.timeModified, 1);
-      expect(Mirror().readEntry(vocabKey: 2)?.timeLearned, 1);
     });
     test('move entry to next', () {
       VocabEntry entry = VocabEntry(
@@ -127,13 +121,11 @@ void main () {
           languageB: 'es',
           wordB: 'prueba',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
       entry.vocabKey = 2;
       entry.timeModified = 2;
-      entry.timeLearned = 2;
       entry.boxNumber = 5;
       Mirror().writeEntry(entry: entry);
       // Act
@@ -144,16 +136,13 @@ void main () {
       // Assert
       // Time is updating
       expect(Mirror().readEntry(vocabKey: 2)?.timeModified, greaterThan(1747307675463));
-      expect(Mirror().readEntry(vocabKey: 2)?.timeLearned, greaterThan(1747307675463));
       expect(Mirror().filterEntries.filterByBoxNumber(2).entries.length, 1);
       expect(Mirror().filterEntries.filterByBoxNumber(1).entries.length, 0);
       expect(Mirror().filterEntries.filterByBoxNumber(5).entries.length, 1);
       // Test Undo
       Mirror().undo();
       expect(Mirror().readEntry(vocabKey: 2)?.timeModified, 2);
-      expect(Mirror().readEntry(vocabKey: 2)?.timeLearned, 2);
       expect(Mirror().readEntry(vocabKey: 1)?.timeModified, greaterThan(1747307675463));
-      expect(Mirror().readEntry(vocabKey: 1)?.timeLearned, greaterThan(1747307675463));
       expect(Mirror().filterEntries.filterByBoxNumber(2).entries.length, 1);
       expect(Mirror().filterEntries.filterByBoxNumber(1).entries.length, 0);
       expect(Mirror().filterEntries.filterByBoxNumber(5).entries.length, 1);
@@ -166,13 +155,11 @@ void main () {
           languageB: 'es',
           wordB: 'prueba',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
       entry.vocabKey = 2;
       entry.timeModified = 2;
-      entry.timeLearned = 2;
       entry.boxNumber = 5;
       Mirror().writeEntry(entry: entry);
       // Act
@@ -193,13 +180,11 @@ void main () {
           languageB: 'es',
           wordB: 'prueba',
           boxNumber: 1,
-          timeLearned: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
       Mirror().writeEntry(entry: entry);
       entry.vocabKey = 2;
       entry.timeModified = 2;
-      entry.timeLearned = 2;
       entry.boxNumber = 5;
       Mirror().writeEntry(entry: entry);
       // Act

@@ -10,7 +10,7 @@ extension MirrorGetExtension on Mirror {
   //Filter
   EntriesFilter get filterEntries => EntriesFilter(entriesList: dbMirror);
 
-  VocabEntry oldestLearnedBoxEntry({required int boxNumber}) => filterEntries.filterByBoxNumber(boxNumber).sortByTimeLearned.entries.first;
+  VocabEntry oldestLearnedBoxEntry({required int boxNumber}) => filterEntries.filterByBoxNumber(boxNumber).sortByTimeModified.entries.first;
 
   int boxSize({required int boxNumber}) => filterEntries.filterByBoxNumber(boxNumber).entries.length;
 
@@ -20,7 +20,7 @@ extension MirrorGetExtension on Mirror {
     if (boxSize == 0) return;
     if (stackSize > boxSize) stackSize = boxSize;
     Undo undo = Undo(description: 'Move $stackSize Cards back.');
-    List<VocabEntry> stack = filterEntries.filterByBoxNumber(0).sortByTimeLearned.invertedOrder.entries.take(stackSize).toList();
+    List<VocabEntry> stack = filterEntries.filterByBoxNumber(0).sortByTimeModified.invertedOrder.entries.take(stackSize).toList();
     for(VocabEntry entry in stack) {
       VocabEntry entryCopy = entry.clone();
       undo.addFunction(() => writeEntry(entry: entryCopy));
@@ -40,7 +40,6 @@ extension MirrorGetExtension on Mirror {
     }
     int timeNow = DateTime.now().millisecondsSinceEpoch;
     entry.timeModified = timeNow;
-    entry.timeLearned = timeNow;
     switch (direction) {
       case Direction.next:
         entry.boxNumber++; // Move to next box
