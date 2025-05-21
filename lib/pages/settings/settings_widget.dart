@@ -56,13 +56,13 @@ class _SettingsWidgetState extends State<SettingsWidget> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Sync().uploadJsonToGitHub('{"test": "test3"}');
+                  Sync().uploadJsonToGitHub(jsonString: '{"test": "test3"}', fileType: FileType.test);
                 },
                 child: const Text('Sync upload test'),
               ),
               ElevatedButton(
                 onPressed: () async {
-                  Sync().downloadJsonFromGithub();
+                  Sync().downloadJsonFromGithub(fileType: FileType.test);
                 },
                 child: const Text('Sync download test'),
               ),

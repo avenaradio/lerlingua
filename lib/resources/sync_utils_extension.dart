@@ -30,14 +30,14 @@ extension SyncUtils on Sync {
   }
 
   /// Uploads a List of VocabEntry to GitHub.
-  Future<bool> uploadEntries(List<VocabEntry> entries) async {
+  Future<int> uploadEntries(List<VocabEntry> entries) async {
     String jsonString = vocabEntriesToJson(entries);
-    return await uploadJsonToGitHub(jsonString);
+    return await uploadJsonToGitHub(jsonString: jsonString, fileType: FileType.cards);
   }
 
   /// Downloads a List of VocabEntry from GitHub.
   Future<List<VocabEntry>?> downloadEntries() async {
-    String? jsonString = await downloadJsonFromGithub();
+    String? jsonString = await downloadJsonFromGithub(fileType: FileType.cards);
     if (jsonString == null) return null;
     return vocabEntriesFromJson(jsonString);
   }
