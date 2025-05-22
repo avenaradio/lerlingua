@@ -17,7 +17,7 @@ void main() {
     test('deleteFileOnGithub should return 1 if file exists', () async {
       Sync().clearLog();
       Sync().credentials(token: syncTestToken, repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test');
-      await Sync().uploadJsonToGitHub(jsonString: '[{"test":"test"}]', fileType: FileType.test);
+      await Sync().uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test', fileType: FileType.test);
       int result = await Sync().deleteFileOnGithub(fileType: FileType.test);
       // Assert
       if (kDebugMode) {
@@ -64,108 +64,108 @@ void main() {
       expect(result, 2);
     });
   });
-  group('downloadJsonFromGithub Tests', () {
-    test('downloadJsonFromGithub if file / repo not found should return -2', () async {
+  group('downloadCsvFromGithub Tests', () {
+    test('downloadCsvFromGithub if file / repo not found should return -2', () async {
       Sync().clearLog();
       await Sync().credentials(token: syncTestToken, repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').deleteFileOnGithub(fileType: FileType.test);
-      Map<int, String?> map = await Sync().downloadJsonFromGithub(fileType: FileType.test);
+      Map<int, String?> map = await Sync().downloadCsvFromGithub(fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\ndownloadJsonFromGithub if file / repo not found should return -2');
+        print('\ndownloadCsvFromGithub if file / repo not found should return -2');
         print(Sync().syncLog);
       }
       expect(map, {-2: null});
     });
-    test('downloadJsonFromGithub if wrong token should return -1', () async {
+    test('downloadCsvFromGithub if wrong token should return -1', () async {
       Sync().clearLog();
-      Map<int, String?> map = await Sync().credentials(token: 'wrong_token', repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').downloadJsonFromGithub(fileType: FileType.test);
+      Map<int, String?> map = await Sync().credentials(token: 'wrong_token', repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').downloadCsvFromGithub(fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\ndownloadJsonFromGithub if wrong token should return -1');
+        print('\ndownloadCsvFromGithub if wrong token should return -1');
         print(Sync().syncLog);
       }
       expect(map, {-1: null});
     });
-    test('downloadJsonFromGithub if file exists should return 1 and file content', () async {
+    test('downloadCsvFromGithub if file exists should return 1 and file content', () async {
       Sync().clearLog();
       await Sync().credentials(token: syncTestToken, repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').deleteFileOnGithub(fileType: FileType.test);
-      await Sync().uploadJsonToGitHub(jsonString: '[{"test":"test"}]', fileType: FileType.test);
-      Map<int, String?> map = await Sync().downloadJsonFromGithub(fileType: FileType.test);
+      await Sync().uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test', fileType: FileType.test);
+      Map<int, String?> map = await Sync().downloadCsvFromGithub(fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\ndownloadJsonFromGithub if file exists should return 1 and file content');
+        print('\ndownloadCsvFromGithub if file exists should return 1 and file content');
         print(Sync().syncLog);
       }
-      expect(map, {1: '[{"test":"test"}]'});
+      expect(map, {1: 'Name,Description\nTest,Test'});
     });
-    test('downloadJsonFromGithub if file is empty should return 1 and ""', () async {
+    test('downloadCsvFromGithub if file is empty should return 1 and ""', () async {
       Sync().clearLog();
       await Sync().credentials(token: syncTestToken, repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').deleteFileOnGithub(fileType: FileType.test);
-      await Sync().uploadJsonToGitHub(jsonString: '', fileType: FileType.test); // Upload empty file
-      Map<int, String?> map = await Sync().downloadJsonFromGithub(fileType: FileType.test);
+      await Sync().uploadCsvToGitHub(csvString: '', fileType: FileType.test); // Upload empty file
+      Map<int, String?> map = await Sync().downloadCsvFromGithub(fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\ndownloadJsonFromGithub if file is empty should return 1 and null');
+        print('\ndownloadCsvFromGithub if file is empty should return 1 and null');
         print(Sync().syncLog);
       }
       expect(map, {1: ''});
     });
   });
-  group('uploadJsonToGitHub Tests', () {
-    test('uploadJsonToGitHub if wrong token should return -1', () async {
+  group('uploadCsvToGitHub Tests', () {
+    test('uploadCsvToGitHub if wrong token should return -1', () async {
       Sync().clearLog();
       await Sync().credentials(token: 'wrong_token', repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').deleteFileOnGithub(fileType: FileType.test);
-      int result = await Sync().uploadJsonToGitHub(jsonString: '[{"test":"test"}]', fileType: FileType.test);
+      int result = await Sync().uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test', fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\nuploadJsonToGitHub if wrong token should return -1');
+        print('\nuploadCsvToGitHub if wrong token should return -1');
         print(Sync().syncLog);
       }
       expect(result, -1);
     });
-    test('uploadJsonToGitHub if correct token and wrong repo should return -2', () async {
+    test('uploadCsvToGitHub if correct token and wrong repo should return -2', () async {
       Sync().clearLog();
       await Sync().credentials(token: syncTestToken, repoOwner: 'non_existant', repoName: 'non_existant').deleteFileOnGithub(fileType: FileType.test);
-      int result = await Sync().uploadJsonToGitHub(jsonString: '[{"test":"test"}]', fileType: FileType.test);
+      int result = await Sync().uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test', fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\nuploadJsonToGitHub if correct token and wrong repo should return -2');
+        print('\nuploadCsvToGitHub if correct token and wrong repo should return -2');
         print(Sync().syncLog);
       }
       expect(result, -2);
     });
-    test('uploadJsonToGitHub if created should return 1', () async {
+    test('uploadCsvToGitHub if created should return 1', () async {
       Sync().clearLog();
       await Sync().credentials(token: syncTestToken, repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').deleteFileOnGithub(fileType: FileType.test);
-      int result = await Sync().uploadJsonToGitHub(jsonString: '[{"test":"test"}]', fileType: FileType.test);
+      int result = await Sync().uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test', fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\nuploadJsonToGitHub if created should return 1');
+        print('\nuploadCsvToGitHub if created should return 1');
         print(Sync().syncLog);
       }
       expect(result, 1);
-      expect(await Sync().downloadJsonFromGithub(fileType: FileType.test), {1: '[{"test":"test"}]'});
+      expect(await Sync().downloadCsvFromGithub(fileType: FileType.test), {1: 'Name,Description\nTest,Test'});
     });
-    test('uploadJsonToGitHub if updated should return 2', () async {
+    test('uploadCsvToGitHub if updated should return 2', () async {
       Sync().clearLog();
       await Sync().credentials(token: syncTestToken, repoOwner: 'avenaradio', repoName: 'lerlingua_sync_test').deleteFileOnGithub(fileType: FileType.test);
-      await Sync().uploadJsonToGitHub(jsonString: '[{"test":"test1"}]', fileType: FileType.test);
-      int result = await Sync().uploadJsonToGitHub(jsonString: '[{"test":"test2"}]', fileType: FileType.test);
+      await Sync().uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test1', fileType: FileType.test);
+      int result = await Sync().uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test2', fileType: FileType.test);
       // Assert
       if (kDebugMode) {
         // print test name
-        print('\nuploadJsonToGitHub if updated should return 2');
+        print('\nuploadCsvToGitHub if updated should return 2');
         print(Sync().syncLog);
       }
       expect(result, 2);
-      expect(await Sync().downloadJsonFromGithub(fileType: FileType.test), {1: '[{"test":"test2"}]'});
+      expect(await Sync().downloadCsvFromGithub(fileType: FileType.test), {1: 'Name,Description\nTest,Test2'});
     });
   });
   test('stringFromResponse Test', () async {

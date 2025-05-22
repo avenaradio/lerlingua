@@ -16,11 +16,6 @@ void main() {
       Cloze cloze = Cloze(card: card,);
       expect(cloze.parts, ['', 'This', ' is a ', 'cloze', ' with percent ', 'signs', '.']);
     });
-    test('if sentenceB is empty use wordB', () {
-      VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: null, boxNumber: 1, timeModified: 1,);
-      Cloze cloze = Cloze(card: card,);
-      expect(cloze.parts, ['', 'prueba']);
-    });
     test('createWidgets', () {
       VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: '%This% is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);

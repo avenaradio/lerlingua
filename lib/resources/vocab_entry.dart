@@ -4,11 +4,14 @@ class VocabEntry {
   String wordA;
   String languageB;
   String wordB;
-  String? sentenceB;
-  String? articleB;
-  String? comment;
+  String sentenceB;
+  String articleB;
+  String comment;
   int boxNumber;
   int timeModified;
+
+  /// The number of parameters in the VocabEntry
+  static int get parametersCount => 10;
 
   VocabEntry({
     required this.vocabKey,
@@ -16,13 +19,16 @@ class VocabEntry {
     required this.wordA,
     required this.languageB,
     required this.wordB,
-    this.sentenceB,
-    this.articleB,
-    this.comment,
+    String? sentenceB,
+    String? articleB,
+    String? comment,
     required this.boxNumber,
-    required this.timeModified});
+    required this.timeModified,
+  }) : sentenceB = sentenceB ?? '',
+       articleB = articleB ?? '',
+       comment = comment ?? '';
 
-  // Clone method
+  /// Create a hard copy of the VocabEntry
   VocabEntry clone() {
     return VocabEntry(
       vocabKey: vocabKey,
@@ -38,7 +44,10 @@ class VocabEntry {
     );
   }
 
-  // Convert VocabEntry to a Map for database insertion
+  @override
+  String toString() => 'VocabEntry: $vocabKey - $languageA - $wordA - $languageB - $wordB - $sentenceB - $articleB - $comment - $boxNumber - $timeModified';
+
+  /// Converts a VocabEntry to a Map for database insertion
   Map<String, dynamic> toMap() {
     return {
       'vocab_key': vocabKey,
@@ -54,7 +63,7 @@ class VocabEntry {
     };
   }
 
-  // Converts a Map to a VocabEntry instance
+  /// Converts a Map to a VocabEntry instance
   static VocabEntry fromMap(Map<String, dynamic> map) {
     return VocabEntry(
       vocabKey: map['vocab_key'] as int,
@@ -67,6 +76,70 @@ class VocabEntry {
       comment: map['comment'] as String?,
       boxNumber: map['box_number'] as int,
       timeModified: map['time_modified'] as int,
+    );
+  }
+
+  /// Converts the VocabEntry instance to a CSV-formatted string.
+  String toCsv() {
+    // Escape fields that may contain commas or quotes
+    String escape(String? value) {
+      if (value == null) return '';
+      String escapedValue =
+          '"${value.replaceAll('"', '""')}"'; // Escape quotes by doubling them
+      return escapedValue == '""' ? '' : escapedValue;
+    }
+
+    return [
+      vocabKey,
+      escape(languageA),
+      escape(wordA),
+      escape(languageB),
+      escape(wordB),
+      escape(sentenceB),
+      escape(articleB),
+      escape(comment),
+      boxNumber,
+      timeModified,
+    ].join(',');
+  }
+
+  /// Converts a CSV-formatted string to a VocabEntry instance
+  static VocabEntry fromCsv(String csv) {
+    List<String> fieldsCommaSeparated = csv.split(',');
+    List<String> fields = [];
+    // Join fields starting with " but not ending with " until ending with "
+    for (int i = 0; i < fieldsCommaSeparated.length; i++) {
+      String field = fieldsCommaSeparated[i];
+      if (field.isNotEmpty) {
+        // Count the number of quotes in the field
+        int quoteCount = field.split('"').length - 1;
+        while (quoteCount % 2 == 1 && i < fieldsCommaSeparated.length - 1) {
+          field += ',${fieldsCommaSeparated[++i]}';
+          quoteCount = field.split('"').length - 1;
+        }
+      }
+      if (field.startsWith('"') && field.endsWith('"')) {
+        field = field.substring(1, field.length - 1);
+      }
+      field = field.replaceAll('""', '"');
+      fields.add(field);
+    }
+    // Error handling for parsing integers
+    int parseInt(String? value) {
+      if (value == null) return 0;
+      return int.tryParse(value) ?? 0;
+    }
+    return VocabEntry(
+      vocabKey: parseInt(fields[0]),
+      languageA: fields[1],
+      wordA: fields[2],
+      languageB: fields[3],
+      wordB: fields[4],
+      sentenceB: fields[5],
+      articleB: fields[6],
+      comment: fields[7],
+      boxNumber: parseInt(fields[8]),
+      timeModified: parseInt(fields[9]),
     );
   }
 }

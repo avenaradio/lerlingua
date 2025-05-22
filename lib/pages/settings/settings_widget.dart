@@ -61,18 +61,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 },
                 child: const Text('Reload app'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Sync().uploadJsonToGitHub(jsonString: '{"test": "test3"}', fileType: FileType.test);
-                },
-                child: const Text('Sync upload test'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Sync().downloadJsonFromGithub(fileType: FileType.test);
-                },
-                child: const Text('Sync download test'),
-              ),
               Text(Sync().syncLog),
             ],
           ),
