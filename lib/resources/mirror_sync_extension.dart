@@ -13,11 +13,13 @@ extension MirrorSync on Mirror {
   /// - Bad credentials
   /// - Synchronization successful
   /// - Or specific error message
+  /// <br> <br>
+  /// - Needs integration test
   Future<String> sync() async {
     Sync().clearLog();
     // Test credentials
     Sync().syncLog += ('Testing credentials...\n');
-    int credentialsStatus = await Sync().credentials(token: Settings().token, repoOwner: Settings().repoOwner, repoName: Settings().repoName).uploadJsonToGitHub(jsonString: '[{"test":"credentials_test"}]', fileType: FileType.test);
+    int credentialsStatus = await Sync().credentials(token: Settings().token, repoOwner: Settings().repoOwner, repoName: Settings().repoName).uploadCsvToGitHub(csvString: 'Name,Description\nTest,Test', fileType: FileType.test);
     switch (credentialsStatus) {
       case 2:
       case 1:
@@ -32,10 +34,10 @@ extension MirrorSync on Mirror {
     List<VocabEntry> entriesFromMirror = Mirror().dbMirror;
     // Download entries from GitHub
     Sync().syncLog += ('Trying to download cards from GitHub...\n');
-    Map<int, String?> map = await Sync().downloadJsonFromGithub(fileType: FileType.cards);
+    Map<int, String?> map = await Sync().downloadCsvFromGithub(fileType: FileType.cards);
     int downloadStatus = map.keys.first;
-    String? jsonString = map.values.first;
-    if (jsonString == null) {
+    String? csvString = map.values.first;
+    if (csvString == null) {
       Sync().syncLog += ('Failed to download cards from GitHub...\n');
       switch (downloadStatus) {
         case -2: // Repo / file not found but token accepted
@@ -46,7 +48,7 @@ extension MirrorSync on Mirror {
       }
     }
     // Will continue here if success or file not found
-    List<VocabEntry>? entriesFromSync = Sync().vocabEntriesFromJson(jsonString);
+    List<VocabEntry>? entriesFromSync = Sync().vocabEntriesFromCsv(csvString);
     if(entriesFromSync == null) return 'File on server corrupted, see synchronization log in settings for more info.';
     List<VocabEntry> entriesMerged = Sync().mergeLists(listA: entriesFromMirror, listB: entriesFromSync);
       // Override mirror
@@ -57,8 +59,8 @@ extension MirrorSync on Mirror {
       SqlDatabase().overrideAllEntries(entriesMerged);
       // Upload entries to GitHub
       Sync().syncLog += 'Uploading merged cards to GitHub...\n';
-      final String jsonStringForUpload = Sync().vocabEntriesToJson(entriesMerged);
-      int uploadStatus = await Sync().uploadJsonToGitHub(jsonString: jsonStringForUpload, fileType: FileType.cards);
+      final String csvStringForUpload = Sync().vocabEntriesToCsv(entriesMerged);
+      int uploadStatus = await Sync().uploadCsvToGitHub(csvString: csvStringForUpload, fileType: FileType.cards);
       switch (uploadStatus) {
         case 2: // File updated
         case 1: // File created

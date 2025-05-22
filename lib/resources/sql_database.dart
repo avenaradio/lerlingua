@@ -21,6 +21,9 @@ class SqlDatabase {
     return _instance;
   }
 
+  /// Database version
+  final int _version = 1;
+  get version => _version;
   /// SQL query to create the vocab table
   final String _setupQuery =
     '''CREATE TABLE IF NOT EXISTS vocab (

@@ -36,11 +36,11 @@ class Sync {
   String url({required FileType fileType}) {
     switch (fileType) {
       case FileType.test:
-        return 'https://api.github.com/repos/$repoOwner/$repoName/contents/test.json';
+        return 'https://api.github.com/repos/$repoOwner/$repoName/contents/test.csv';
       case FileType.cards:
-        return 'https://api.github.com/repos/$repoOwner/$repoName/contents/cards.json';
+        return 'https://api.github.com/repos/$repoOwner/$repoName/contents/cards.csv';
       case FileType.settings:
-        return 'https://api.github.com/repos/$repoOwner/$repoName/contents/settings.json';
+        return 'https://api.github.com/repos/$repoOwner/$repoName/contents/settings.csv';
     }
   }
 
@@ -76,7 +76,7 @@ class Sync {
     }
   }
 
-  /// Uploads a json string to GitHub <br>
+  /// Uploads a csv string to GitHub <br>
   /// Returns [int] status:
   /// - -2 Repo not found but token accepted
   /// - -1 Bad credentials
@@ -84,8 +84,8 @@ class Sync {
   /// - 1 File created
   /// - 2 File updated
   /// - Tested
-  Future<int> uploadJsonToGitHub({
-    required String jsonString,
+  Future<int> uploadCsvToGitHub({
+    required String csvString,
     required FileType fileType,
   }) async {
     int result = 0;
@@ -124,7 +124,7 @@ class Sync {
     // Prepare the request body
     final Map<String, dynamic> body = {
       'message': 'Lerlingua Sync',
-      'content': base64Encode(utf8.encode(jsonString)),
+      'content': base64Encode(utf8.encode(csvString)),
     };
     // Include sha if the file exists
     if (sha != null) {
@@ -161,7 +161,7 @@ class Sync {
     }
   }
 
-  /// Downloads JSON file from GitHub <br>
+  /// Downloads csv file from GitHub <br>
   /// Returns [Map&lt;int, String?&gt;] where [int] is the status and [String] is the content <br>
   /// - -3 Error while decoding
   /// - -2 Repo / file not found but token accepted
@@ -170,7 +170,7 @@ class Sync {
   /// - 1 Success
   /// <br> <br>
   /// - Tested
-  Future<Map<int, String?>> downloadJsonFromGithub({required FileType fileType}) async {
+  Future<Map<int, String?>> downloadCsvFromGithub({required FileType fileType}) async {
     try {
       final response = await http.get(
         Uri.parse(url(fileType: fileType)),

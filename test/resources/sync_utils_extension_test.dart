@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/sync.dart';
 import 'package:lerlingua/resources/sync_utils_extension.dart';
 import 'package:lerlingua/resources/vocab_entry.dart';
@@ -6,7 +8,8 @@ import 'package:lerlingua/resources/vocab_entry.dart';
 
 void main() {
   group('Sync Tests', () {
-    test('vocabEntriesToJson', () {
+    Sync().clearLog();
+    test('vocabEntriesToCsv', () {
       VocabEntry entry1 = VocabEntry(
           vocabKey: 1,
           languageA: 'a',
@@ -15,53 +18,70 @@ void main() {
           wordB: 'd',
           boxNumber: 1,
           timeModified: 1);
-      String jsonString = Sync().vocabEntriesToJson([entry1]);
-      expect(jsonString, '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1}]');
+      VocabEntry entry2 = VocabEntry(
+          vocabKey: 2,
+          languageA: 'k',
+          wordA: 'l',
+          languageB: 'm',
+          wordB: 'n',
+          boxNumber: 2,
+          timeModified: 2);
+      String csvString = Sync().vocabEntriesToCsv([entry1, entry2]);
+      if (kDebugMode) {
+        // print test name
+        print('\nvocabEntriesToCsv');
+        print(Sync().syncLog);
+      }
+      expect(csvString, '${SqlDatabase().version}${List.filled(VocabEntry.parametersCount - 1, ',').join()}\n1,"a","b","c","d",,,,1,1\n2,"k","l","m","n",,,,2,2');
     });
   });
-  group('jsonToVocabEntries Tests', () {
-    test('jsonToVocabEntries should convert json to list of VocabEntry', () {
-      String jsonString = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1}]';
-      List<VocabEntry>? entries = Sync().vocabEntriesFromJson(jsonString);
+  group('csvToVocabEntries Tests', () {
+    test('csvToVocabEntries should convert csv to list of VocabEntry', () {
+      Sync().clearLog();
+      String csvString = '${SqlDatabase().version}${List.filled(VocabEntry.parametersCount - 1, ',').join()}\n1,"a","b","c","d",,,,1,1';
+      List<VocabEntry>? entries = Sync().vocabEntriesFromCsv(csvString);
+      if (kDebugMode) {
+        // print test name
+        print('\ncsvToVocabEntries should convert csv to list of VocabEntry');
+        print(Sync().syncLog);
+      }
       expect(entries!.length, 1);
       expect(entries[0].vocabKey, 1);
       expect(entries[0].languageA, 'a');
       expect(entries[0].wordA, 'b');
       expect(entries[0].languageB, 'c');
       expect(entries[0].wordB, 'd');
-      expect(entries[0].sentenceB, null);
-      expect(entries[0].articleB, null);
-      expect(entries[0].comment, null);
+      expect(entries[0].sentenceB, '');
+      expect(entries[0].articleB, '');
+      expect(entries[0].comment, '');
       expect(entries[0].boxNumber, 1);
       expect(entries[0].timeModified, 1);
     });
-    test('jsonToVocabEntries should return null if not valid json', () {
-      String jsonString1 = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1}';
-      String jsonString2 = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1]';
-      String jsonString3 = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1},]';
-      List<VocabEntry>? entries1 = Sync().vocabEntriesFromJson(jsonString1);
-      List<VocabEntry>? entries2 = Sync().vocabEntriesFromJson(jsonString2);
-      List<VocabEntry>? entries3 = Sync().vocabEntriesFromJson(jsonString3);
-      expect(entries1, null);
-      expect(entries2, null);
-      expect(entries3, null);
-    });
-    test('jsonToVocabEntries should return empty list if json is "" or [] or null', () {
-      String? jsonString1 = '[]';
-      String? jsonString2 = '';
-      String? jsonString3;
-      List<VocabEntry>? entries1 = Sync().vocabEntriesFromJson(jsonString1);
-      List<VocabEntry>? entries2 = Sync().vocabEntriesFromJson(jsonString2);
-      List<VocabEntry>? entries3 = Sync().vocabEntriesFromJson(jsonString3);
+    test('csvToVocabEntries should return empty list if csv is empty or null', () {
+      Sync().clearLog();
+      String? csvString1 = '';
+      String? csvString2;
+      List<VocabEntry>? entries1 = Sync().vocabEntriesFromCsv(csvString1);
+      List<VocabEntry>? entries2 = Sync().vocabEntriesFromCsv(csvString2);
+      if (kDebugMode) {
+        // print test name
+        print('\ncsvToVocabEntries should return empty list if csv is empty or null');
+        print(Sync().syncLog);
+      }
       expect(entries1, []);
       expect(entries2, []);
-      expect(entries3, []);
     });
-    test('jsonToVocabEntries valid json but broken card should skip broken card', () {
-      String jsonString = '[{"vocab_key":1,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1,"time_modified":1},'
-          '{"vocab_key":2,"language_a":"a","word_a":"b","language_b":"c","word_b":"d","sentence_b":null,"article_b":null,"comment":null,"box_number":1}]';
-      List<VocabEntry>? entries = Sync().vocabEntriesFromJson(jsonString);
-      expect(entries!.length, 1);
+    test('csvToVocabEntries valid csv but broken card should skip broken card', () {
+      Sync().clearLog();
+      String csvString = '${SqlDatabase().version}${List.filled(VocabEntry.parametersCount - 1, ',').join()}\n1,"a","b","c","d",,,,1,1\n2,"k","l","m","n",,,,2,2\n3,,,,1,1\n4,"k","l","m","n",,,,2,2';
+      List<VocabEntry>? entries = Sync().vocabEntriesFromCsv(csvString);
+      if (kDebugMode) {
+        // print test name
+        print('\ncsvToVocabEntries valid csv but broken card should skip broken card');
+        print(Sync().syncLog);
+        print(entries);
+      }
+      expect(entries!.length, 3);
     });
   });
   group('mergeLists Tests', () {
