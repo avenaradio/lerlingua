@@ -4,7 +4,7 @@ import 'package:lerlingua/pages/settings/credentials_dialog.dart';
 import '../../resources/mirror.dart';
 import '../../resources/sql_database.dart';
 import '../../resources/sync.dart';
-import '../../resources/vocab_entry.dart';
+import '../../resources/vocab_card.dart';
 import '../loading.dart';
 
 class SettingsWidget extends StatefulWidget {
@@ -47,9 +47,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  for (VocabEntry entry in Mirror().dbMirror) {
-                    entry.boxNumber = 0;
-                    Mirror().writeEntry(entry: entry);
+                  for (VocabCard card in Mirror().dbMirror) {
+                    card.boxNumber = 0;
+                    Mirror().writeCard(card: card);
                   }
                 },
                 child: const Text('Move all to first box'),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lerlingua/resources/mirror_utils_extension.dart';
 
 import '../../resources/mirror.dart';
-import '../../resources/vocab_entry.dart';
+import '../../resources/vocab_card.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
@@ -12,11 +12,11 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  List<VocabEntry> entries = [];
+  List<VocabCard> cards = [];
 
   @override
   void initState() {
-    entries = Mirror().filterEntries.sortByTimeModified.invertedOrder.entries;
+    cards = Mirror().filterCards.sortByTimeModified.invertedOrder.cards;
     super.initState();
   }
 
@@ -25,7 +25,7 @@ class _ListPageState extends State<ListPage> {
     return SafeArea(
       child: Scaffold(
         body: ListView.builder(
-          itemCount: entries.length,
+          itemCount: cards.length,
           itemBuilder: (context, index) {
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
@@ -33,29 +33,29 @@ class _ListPageState extends State<ListPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(entries[index].vocabKey.toString()),
+                    child: Text(cards[index].vocabKey.toString()),
                   ),
                   Expanded( // Use Expanded to allow ListTile to take remaining space
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(8.0),
                       title: Text(
-                        entries[index].wordA,
+                        cards[index].wordA,
                         overflow: TextOverflow.ellipsis, // Handle overflow
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            entries[index].wordB,
+                            cards[index].wordB,
                             overflow: TextOverflow.ellipsis, // Handle overflow
                           ),
                           Text(
-                            'Modified: ${entries[index].timeModified}',
+                            'Modified: ${cards[index].timeModified}',
                             style: TextStyle(fontSize: 12),
                             overflow: TextOverflow.ellipsis, // Handle overflow
                           ),
                           Text(
-                            entries[index].boxNumber.toString(),
+                            cards[index].boxNumber.toString(),
                             overflow: TextOverflow.ellipsis, // Handle overflow
                           ),
                         ],

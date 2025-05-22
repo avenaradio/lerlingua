@@ -8,19 +8,19 @@ import 'cards_filter.dart';
 
 extension MirrorGetExtension on Mirror {
   //Filter
-  CardsFilter get filterCards => CardsFilter(cardsList: dbMirror);
+  EardsFilter get filterEards => EardsFilter(cardsList: dbMirror);
 
-  VocabCard oldestLearnedBoxCard({required int boxNumber}) => filterCards.filterByBoxNumber(boxNumber).sortByTimeModified.cards.first;
+  VocabCard oldestLearnedBoxCard({required int boxNumber}) => filterEards.filterByBoxNumber(boxNumber).sortByTimeModified.cards.first;
 
-  int boxSize({required int boxNumber}) => filterCards.filterByBoxNumber(boxNumber).cards.length;
+  int boxSize({required int boxNumber}) => filterEards.filterByBoxNumber(boxNumber).cards.length;
 
   // Add stack from box null to box number
   void addStack({required int stackSize}) {
-    int boxSize = filterCards.filterByBoxNumber(0).cards.length;
+    int boxSize = filterEards.filterByBoxNumber(0).cards.length;
     if (boxSize == 0) return;
     if (stackSize > boxSize) stackSize = boxSize;
     Undo undo = Undo(description: 'Move $stackSize Cards back.');
-    List<VocabCard> stack = filterCards.filterByBoxNumber(0).sortByTimeModified.invertedOrder.cards.take(stackSize).toList();
+    List<VocabCard> stack = filterEards.filterByBoxNumber(0).sortByTimeModified.invertedOrder.cards.take(stackSize).toList();
     for(VocabCard card in stack) {
       VocabCard cardCopy = card.clone();
       undo.addFunction(() => writeCard(card: cardCopy));

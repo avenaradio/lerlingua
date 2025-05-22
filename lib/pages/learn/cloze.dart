@@ -1,15 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lerlingua/resources/mirror_utils_extension.dart';
-import 'package:lerlingua/resources/vocab_entry.dart';
-
+import 'package:lerlingua/resources/vocab_card.dart';
 import '../../enums/move_direction.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/mirror.dart';
 
-// If no sentence use word
 class Cloze {
-  final VocabEntry _card;
+  final VocabCard _card;
   final BuildContext? _context;
   @visibleForTesting
   List<String> parts = [];
@@ -25,7 +23,7 @@ class Cloze {
   @visibleForTesting
   bool showAnswers = false;
 
-  Cloze({required VocabEntry card, BuildContext? context}) : _context = context, _card = card {
+  Cloze({required VocabCard card, BuildContext? context}) : _context = context, _card = card {
     // Split sentenceB in %
     parts = card.sentenceB == '' ? ['', card.wordB] : card.sentenceB.split('%');
     _createWidgets();
@@ -145,7 +143,7 @@ class Cloze {
       }
       // Check if all fields are correct
       if (controllers.every((controller) => controller.text == hiddenTexts[controllers.indexOf(controller)])) {
-        Mirror().move( entry: _card, direction: Direction.next, addNewUndo: true);
+        Mirror().move( card: _card, direction: Direction.next, addNewUndo: true);
         // Fire LearningPage event
         LearningPageNewDataEvent event = LearningPageNewDataEvent();
         eventBus.fire(event);
