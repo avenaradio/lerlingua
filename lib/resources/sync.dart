@@ -8,7 +8,6 @@ class Sync {
   String token = '';
   String repoOwner = '';
   String repoName = '';
-  final String filePath = 'lerlingua.json'; // Path in the repo
 
   // Private constructor
   Sync._internal();

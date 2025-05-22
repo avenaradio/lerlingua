@@ -41,8 +41,10 @@ class Mirror {
       }
     }
     if (replaced == false) {
-      if (entry.vocabKey == -1 || entry.vocabKey == 0) {
-        entry.vocabKey = DateTime.now().millisecondsSinceEpoch; // Add new key if -1 or 0
+      if (entry.vocabKey == -1 || entry.vocabKey == 0) entry.vocabKey = Datetime.now().millisecondsSinceEpoch / 1000; // Add new key if -1 or null
+      // if key already exists find a new one
+      while (dbMirror.any((element) => element.vocabKey == entry.vocabKey)) {
+        entry.vocabKey++;
       }
       dbMirror.add(entry);
     } // Add

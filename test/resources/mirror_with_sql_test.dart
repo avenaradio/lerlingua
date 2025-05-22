@@ -57,7 +57,7 @@ Future main() async {
       entry.vocabKey = -1;
       Mirror().writeEntry(entry: entry);
       expect(Mirror().dbMirror.length, 3);
-      expect(Mirror().dbMirror[2].vocabKey, 3);
+      expect(Mirror().dbMirror[2].vocabKey, greaterThan(1747913373956));
       // Add entry with key not in DatabaseMirror (key = 21)
       entry.vocabKey = 21;
       Mirror().writeEntry(entry: entry);
