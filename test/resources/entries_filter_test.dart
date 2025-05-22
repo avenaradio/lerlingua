@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/resources/vocab_entry.dart';
-import 'package:lerlingua/resources/entries_filter.dart';
+import 'package:lerlingua/resources/vocab_card.dart';
+import 'package:lerlingua/resources/cards_filter.dart';
 
 void main() {
-  group('EntriesFilter', () {
-    late List<VocabEntry> entries;
-    late EntriesFilter entriesFilter;
+  group('CardsFilter', () {
+    late List<VocabCard> cards;
+    late CardsFilter cardsFilter;
 
     setUp(() {
-      entries = [
-        VocabEntry(
+      cards = [
+        VocabCard(
           vocabKey: 1,
           languageA: 'English',
           wordA: 'Hello',
@@ -18,7 +18,7 @@ void main() {
           boxNumber: 1,
           timeModified: 5,
         ),
-        VocabEntry(
+        VocabCard(
           vocabKey: 2,
           languageA: 'English',
           wordA: 'Goodbye',
@@ -27,7 +27,7 @@ void main() {
           boxNumber: 2,
           timeModified: 15,
         ),
-        VocabEntry(
+        VocabCard(
           vocabKey: 3,
           languageA: 'French',
           wordA: 'Bonjour',
@@ -37,101 +37,101 @@ void main() {
           timeModified: 2,
         ),
       ];
-      entriesFilter = EntriesFilter(entriesList: entries);
+      cardsFilter = CardsFilter(cardsList: cards);
     });
 
     test('sorts by languageA', () {
-      final sortedEntries = entriesFilter.sortByLanguageA.entries;
-      expect(sortedEntries[0].languageA, 'English');
-      expect(sortedEntries[1].languageA, 'English');
-      expect(sortedEntries[2].languageA, 'French');
+      final sortedCards = cardsFilter.sortByLanguageA.cards;
+      expect(sortedCards[0].languageA, 'English');
+      expect(sortedCards[1].languageA, 'English');
+      expect(sortedCards[2].languageA, 'French');
     });
 
     test('sorts by wordA', () {
-      final sortedEntries = entriesFilter.sortByWordA.entries;
-      expect(sortedEntries[0].wordA, 'Bonjour');
-      expect(sortedEntries[1].wordA, 'Goodbye');
-      expect(sortedEntries[2].wordA, 'Hello');
+      final sortedCards = cardsFilter.sortByWordA.cards;
+      expect(sortedCards[0].wordA, 'Bonjour');
+      expect(sortedCards[1].wordA, 'Goodbye');
+      expect(sortedCards[2].wordA, 'Hello');
     });
 
     test('sorts by languageB', () {
-      final sortedEntries = entriesFilter.sortByLanguageB.entries;
-      expect(sortedEntries[0].languageB, 'English');
-      expect(sortedEntries[1].languageB, 'Spanish');
-      expect(sortedEntries[2].languageB, 'Spanish');
+      final sortedCards = cardsFilter.sortByLanguageB.cards;
+      expect(sortedCards[0].languageB, 'English');
+      expect(sortedCards[1].languageB, 'Spanish');
+      expect(sortedCards[2].languageB, 'Spanish');
     });
 
     test('sorts by wordB', () {
-      final sortedEntries = entriesFilter.sortByWordB.entries;
-      expect(sortedEntries[0].wordB, 'Adiós');
-      expect(sortedEntries[1].wordB, 'Hello');
-      expect(sortedEntries[2].wordB, 'Hola');
+      final sortedCards = cardsFilter.sortByWordB.cards;
+      expect(sortedCards[0].wordB, 'Adiós');
+      expect(sortedCards[1].wordB, 'Hello');
+      expect(sortedCards[2].wordB, 'Hola');
     });
 
     test('sorts by boxNumber', () {
-      final sortedEntries = entriesFilter.sortByBoxNumber.entries;
-      expect(sortedEntries[0].boxNumber, 1);
-      expect(sortedEntries[1].boxNumber, 1);
-      expect(sortedEntries[2].boxNumber, 2);
+      final sortedCards = cardsFilter.sortByBoxNumber.cards;
+      expect(sortedCards[0].boxNumber, 1);
+      expect(sortedCards[1].boxNumber, 1);
+      expect(sortedCards[2].boxNumber, 2);
     });
 
     test('sorts by timeModified', () {
-      final sortedEntries = entriesFilter.sortByTimeModified.entries;
-      expect(sortedEntries[0].timeModified, 2);
-      expect(sortedEntries[1].timeModified, 5);
-      expect(sortedEntries[2].timeModified, 15);
+      final sortedCards = cardsFilter.sortByTimeModified.cards;
+      expect(sortedCards[0].timeModified, 2);
+      expect(sortedCards[1].timeModified, 5);
+      expect(sortedCards[2].timeModified, 15);
     });
 
     test('inverts order', () {
-      final invertedEntries = entriesFilter.invertedOrder.entries;
-      expect(invertedEntries[0].vocabKey, 3);
-      expect(invertedEntries[1].vocabKey, 2);
-      expect(invertedEntries[2].vocabKey, 1);
+      final invertedCards = cardsFilter.invertedOrder.cards;
+      expect(invertedCards[0].vocabKey, 3);
+      expect(invertedCards[1].vocabKey, 2);
+      expect(invertedCards[2].vocabKey, 1);
     });
 
     test('filters by languageA', () {
-      final filteredEntries = entriesFilter.filterByLanguageA('English').entries;
-      expect(filteredEntries.length, 2);
-      expect(filteredEntries[0].wordA, 'Hello');
-      expect(filteredEntries[1].wordA, 'Goodbye');
+      final filteredCards = cardsFilter.filterByLanguageA('English').cards;
+      expect(filteredCards.length, 2);
+      expect(filteredCards[0].wordA, 'Hello');
+      expect(filteredCards[1].wordA, 'Goodbye');
     });
 
     test('filters by wordA', () {
-      final filteredEntries = entriesFilter.filterByWordA('Hello').entries;
-      expect(filteredEntries.length, 1);
-      expect(filteredEntries[0].wordA, 'Hello');
+      final filteredCards = cardsFilter.filterByWordA('Hello').cards;
+      expect(filteredCards.length, 1);
+      expect(filteredCards[0].wordA, 'Hello');
     });
 
     test('filters by languageB', () {
-      final filteredEntries = entriesFilter.filterByLanguageB('Spanish').entries;
-      expect(filteredEntries.length, 2);
+      final filteredCards = cardsFilter.filterByLanguageB('Spanish').cards;
+      expect(filteredCards.length, 2);
     });
 
     test('filters by wordB', () {
-      final filteredEntries = entriesFilter.filterByWordB('Hola').entries;
-      expect(filteredEntries.length, 1);
-      expect(filteredEntries[0].wordB, 'Hola');
+      final filteredCards = cardsFilter.filterByWordB('Hola').cards;
+      expect(filteredCards.length, 1);
+      expect(filteredCards[0].wordB, 'Hola');
     });
 
     test('filters by boxNumber', () {
-      final filteredEntries = entriesFilter.filterByBoxNumber(1).entries;
-      expect(filteredEntries.length, 2);
+      final filteredCards = cardsFilter.filterByBoxNumber(1).cards;
+      expect(filteredCards.length, 2);
     });
 
     test('filters by timeModified', () {
-      final filteredEntries = entriesFilter.filterByTimeModified(5).entries;
-      expect(filteredEntries.length, 1);
-      expect(filteredEntries[0].timeModified, 5);
+      final filteredCards = cardsFilter.filterByTimeModified(5).cards;
+      expect(filteredCards.length, 1);
+      expect(filteredCards[0].timeModified, 5);
     });
 
     test('original List should not be modified', () {
-      expect(entries.length, 3);
-      expect(entries[0].vocabKey, 1);
-      expect(entries[1].vocabKey, 2);
-      expect(entries[2].vocabKey, 3);
-      final filteredEntries = entriesFilter.filterByLanguageA('English').entries;
-      expect(filteredEntries.length, 2);
-      expect(entries.hashCode, isNot(filteredEntries.hashCode));
+      expect(cards.length, 3);
+      expect(cards[0].vocabKey, 1);
+      expect(cards[1].vocabKey, 2);
+      expect(cards[2].vocabKey, 3);
+      final filteredCards = cardsFilter.filterByLanguageA('English').cards;
+      expect(filteredCards.length, 2);
+      expect(cards.hashCode, isNot(filteredCards.hashCode));
     });
   });
 }

@@ -2,27 +2,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/pages/learn/cloze.dart';
-import 'package:lerlingua/resources/vocab_entry.dart';
+import 'package:lerlingua/resources/vocab_card.dart';
 
 void main() {
   group('Cloze creation', () {
     test('Splits sentenceB on %', () {
-      VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+      VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);
       expect(cloze.parts, ['This is a ', 'cloze', ' with percent ', 'signs', '.']);
     });
     test('if sentenceB starts with % first String should be empty', () {
-      VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: '%This% is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+      VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: '%This% is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);
       expect(cloze.parts, ['', 'This', ' is a ', 'cloze', ' with percent ', 'signs', '.']);
     });
     test('if sentenceB is empty use wordB', () {
-      VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: null, boxNumber: 1, timeModified: 1,);
+      VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: null, boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);
       expect(cloze.parts, ['', 'prueba']);
     });
     test('createWidgets', () {
-      VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: '%This% is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+      VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: '%This% is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);
       // Act
       int textWidgets = 0;
@@ -40,7 +40,7 @@ void main() {
     /// #showCharacterOnSpace
     group('showCharacterOnSpace Tests', () {
       test('if not ending on space, do nothing', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         // Arrange
         TextEditingController controller = TextEditingController(text: 'wrong input');
@@ -51,7 +51,7 @@ void main() {
         expect(controller.text, 'wrong input');
       });
       test('space should show next correct character', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         // Arrange
         TextEditingController controller = TextEditingController(text: 'inp ');
@@ -62,7 +62,7 @@ void main() {
         expect(controller.text, 'inpu');
       });
       test('show next correct character if input ends with space and next correct character is space', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         // Arrange
         TextEditingController controller = TextEditingController(text: 'inputtt ');
@@ -73,7 +73,7 @@ void main() {
         expect(controller.text, 'input ');
       });
       test('correct input ending with space should leave the space', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         // Arrange
         TextEditingController controller = TextEditingController(text: 'input ');
@@ -84,7 +84,7 @@ void main() {
         expect(controller.text, 'input ');
       });
       test('if first part of input is correct but input is longer, cut off the rest', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         // Arrange
         TextEditingController controller = TextEditingController(text: 'input should be this and some wrong stuff ');
@@ -95,7 +95,7 @@ void main() {
         expect(controller.text, 'input should be this');
       });
       test('if input and hidden text are the same, do nothing', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         // Arrange
         TextEditingController controller = TextEditingController(text: 'input should be this');
@@ -108,7 +108,7 @@ void main() {
     });
     group('toggleShowAnswers Tests', () {
       test('toggle show answers', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         bool showAnswersOnCreation = cloze.showAnswers;
         // Act
@@ -117,7 +117,7 @@ void main() {
         expect(cloze.showAnswers, !showAnswersOnCreation);
       });
       test('controllers should contain hiddenTexts when showAnswers is true', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         expect(cloze.controllersForRestore.length, 0);
         // Act
@@ -128,7 +128,7 @@ void main() {
         }
       });
       test('controllers should be restored when showAnswers is false', () {
-        VocabEntry card =  VocabEntry(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
+        VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %cloze% with percent %signs%.', boxNumber: 1, timeModified: 1,);
         Cloze cloze = Cloze(card: card,); // Any cloze object will do
         expect(cloze.controllersForRestore.length, 0);
         // Act

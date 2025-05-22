@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/sql_database.dart';
-import 'package:lerlingua/resources/vocab_entry.dart';
+import 'package:lerlingua/resources/vocab_card.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future main() async {
@@ -25,86 +25,86 @@ Future main() async {
       expect(result[0]['name'], 'vocab');
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
-    test('Insert and Read one VocabEntry', () async {
+    test('Insert and Read one VocabCard', () async {
       await SqlDatabase().loadSqlDatabase();
       int cardKey = 5;
-      VocabEntry entry = VocabEntry(vocabKey: cardKey, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a sentence.', articleB: 'The', comment: 'This is a comment.', boxNumber: 1, timeModified: 1);
-      int key = await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      VocabEntry? entry2 = await SqlDatabase().readSingleEntry(vocabKey: cardKey);
-      expect(entry2!.vocabKey, cardKey);
-      expect(entry2.languageA, 'en');
-      expect(entry2.wordA, 'test');
-      expect(entry2.languageB, 'es');
-      expect(entry2.wordB, 'prueba');
-      expect(entry2.sentenceB, 'This is a sentence.');
-      expect(entry2.articleB, 'The');
-      expect(entry2.comment, 'This is a comment.');
-      expect(entry2.boxNumber, 1);
-      expect(entry2.timeModified, 1);
+      VocabCard card = VocabCard(vocabKey: cardKey, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a sentence.', articleB: 'The', comment: 'This is a comment.', boxNumber: 1, timeModified: 1);
+      int key = await SqlDatabase().insertOrReplaceCard(card: card);
+      VocabCard? card2 = await SqlDatabase().readSingleCard(vocabKey: cardKey);
+      expect(card2!.vocabKey, cardKey);
+      expect(card2.languageA, 'en');
+      expect(card2.wordA, 'test');
+      expect(card2.languageB, 'es');
+      expect(card2.wordB, 'prueba');
+      expect(card2.sentenceB, 'This is a sentence.');
+      expect(card2.articleB, 'The');
+      expect(card2.comment, 'This is a comment.');
+      expect(card2.boxNumber, 1);
+      expect(card2.timeModified, 1);
       expect(key, cardKey);
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
-    test('Override and Read VocabEntrys awaiting each insert', () async {
+    test('Override and Read VocabCards awaiting each insert', () async {
       await SqlDatabase().loadSqlDatabase();
       int cardKey1 = 0;
       int cardKey2 = 0;
       int cardKey3 = 3;
       int cardKey4 = 3;
-      VocabEntry entry1 = VocabEntry(vocabKey: cardKey1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      VocabEntry entry2 = VocabEntry(vocabKey: cardKey2, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      VocabEntry entry3 = VocabEntry(vocabKey: cardKey3, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      VocabEntry entry4 = VocabEntry(vocabKey: cardKey4, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      int key1 = await SqlDatabase().insertOrReplaceEntry(entry: entry1);
-      int key2 = await SqlDatabase().insertOrReplaceEntry(entry: entry2);
-      int key3 = await SqlDatabase().insertOrReplaceEntry(entry: entry3);
-      int key4 = await SqlDatabase().insertOrReplaceEntry(entry: entry4);
-      VocabEntry? entry1read = await SqlDatabase().readSingleEntry(vocabKey: cardKey1);
-      VocabEntry? entry2read = await SqlDatabase().readSingleEntry(vocabKey: cardKey2);
-      VocabEntry? entry3read = await SqlDatabase().readSingleEntry(vocabKey: cardKey3);
-      VocabEntry? entry4read = await SqlDatabase().readSingleEntry(vocabKey: cardKey4);
+      VocabCard card1 = VocabCard(vocabKey: cardKey1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      VocabCard card2 = VocabCard(vocabKey: cardKey2, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      VocabCard card3 = VocabCard(vocabKey: cardKey3, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      VocabCard card4 = VocabCard(vocabKey: cardKey4, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      int key1 = await SqlDatabase().insertOrReplaceCard(card: card1);
+      int key2 = await SqlDatabase().insertOrReplaceCard(card: card2);
+      int key3 = await SqlDatabase().insertOrReplaceCard(card: card3);
+      int key4 = await SqlDatabase().insertOrReplaceCard(card: card4);
+      VocabCard? card1read = await SqlDatabase().readSingleCard(vocabKey: cardKey1);
+      VocabCard? card2read = await SqlDatabase().readSingleCard(vocabKey: cardKey2);
+      VocabCard? card3read = await SqlDatabase().readSingleCard(vocabKey: cardKey3);
+      VocabCard? card4read = await SqlDatabase().readSingleCard(vocabKey: cardKey4);
       // Assert
-      expect(entry1read?.vocabKey, cardKey1);
-      expect(entry2read?.vocabKey, cardKey2);
-      expect(entry3read?.vocabKey, cardKey3);
-      expect(entry4read?.vocabKey, cardKey4);
+      expect(card1read?.vocabKey, cardKey1);
+      expect(card2read?.vocabKey, cardKey2);
+      expect(card3read?.vocabKey, cardKey3);
+      expect(card4read?.vocabKey, cardKey4);
       expect(key1, cardKey1);
       expect(key2, cardKey2);
       expect(key3, cardKey3);
       expect(key4, cardKey4);
-      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 2);
+      List<VocabCard> cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 2);
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
-    test('Override and Read VocabEntrys not awaiting each insert', () async {
+    test('Override and Read VocabCards not awaiting each insert', () async {
       await SqlDatabase().loadSqlDatabase();
       int cardKey1 = 0;
       int cardKey2 = 11;
       int cardKey3 = 3;
       int cardKey4 = 20;
-      VocabEntry entry1 = VocabEntry(vocabKey: cardKey1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      VocabEntry entry2 = VocabEntry(vocabKey: cardKey2, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      VocabEntry entry3 = VocabEntry(vocabKey: cardKey3, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      VocabEntry entry4 = VocabEntry(vocabKey: cardKey4, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
-      SqlDatabase().insertOrReplaceEntry(entry: entry1);
-      SqlDatabase().insertOrReplaceEntry(entry: entry2);
-      SqlDatabase().insertOrReplaceEntry(entry: entry3);
-      SqlDatabase().insertOrReplaceEntry(entry: entry4);
-      VocabEntry? entry1read = await SqlDatabase().readSingleEntry(vocabKey: cardKey1);
-      VocabEntry? entry2read = await SqlDatabase().readSingleEntry(vocabKey: cardKey2);
-      VocabEntry? entry3read = await SqlDatabase().readSingleEntry(vocabKey: cardKey3);
-      VocabEntry? entry4read = await SqlDatabase().readSingleEntry(vocabKey: cardKey4);
+      VocabCard card1 = VocabCard(vocabKey: cardKey1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      VocabCard card2 = VocabCard(vocabKey: cardKey2, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      VocabCard card3 = VocabCard(vocabKey: cardKey3, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      VocabCard card4 = VocabCard(vocabKey: cardKey4, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', boxNumber: 1, timeModified: 1);
+      SqlDatabase().insertOrReplaceCard(card: card1);
+      SqlDatabase().insertOrReplaceCard(card: card2);
+      SqlDatabase().insertOrReplaceCard(card: card3);
+      SqlDatabase().insertOrReplaceCard(card: card4);
+      VocabCard? card1read = await SqlDatabase().readSingleCard(vocabKey: cardKey1);
+      VocabCard? card2read = await SqlDatabase().readSingleCard(vocabKey: cardKey2);
+      VocabCard? card3read = await SqlDatabase().readSingleCard(vocabKey: cardKey3);
+      VocabCard? card4read = await SqlDatabase().readSingleCard(vocabKey: cardKey4);
       // Assert
-      expect(entry1read?.vocabKey, cardKey1);
-      expect(entry2read?.vocabKey, cardKey2);
-      expect(entry3read?.vocabKey, cardKey3);
-      expect(entry4read?.vocabKey, cardKey4);
-      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 4);
+      expect(card1read?.vocabKey, cardKey1);
+      expect(card2read?.vocabKey, cardKey2);
+      expect(card3read?.vocabKey, cardKey3);
+      expect(card4read?.vocabKey, cardKey4);
+      List<VocabCard> cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 4);
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
-    test('readAllEntries', () async {
+    test('readAllCards', () async {
       await SqlDatabase().loadSqlDatabase();
-      VocabEntry entry = VocabEntry(
+      VocabCard card = VocabCard(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -115,12 +115,12 @@ Future main() async {
           comment: 'This is a comment.',
           boxNumber: 1,
           timeModified: 1);
-      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 0);
-      await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 1);
-      VocabEntry entry2 = VocabEntry(
+      List<VocabCard> cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 0);
+      await SqlDatabase().insertOrReplaceCard(card: card);
+      cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 1);
+      VocabCard card2 = VocabCard(
           vocabKey: 2,
           languageA: 'en',
           wordA: 'test2',
@@ -128,14 +128,14 @@ Future main() async {
           wordB: 'prueba2',
           boxNumber: 0,
           timeModified: 1);
-      await SqlDatabase().insertOrReplaceEntry(entry: entry2);
-      entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 2);
+      await SqlDatabase().insertOrReplaceCard(card: card2);
+      cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 2);
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
-    test('deleteEntry', () async {
+    test('deleteCard', () async {
       await SqlDatabase().loadSqlDatabase();
-      VocabEntry entry = VocabEntry(
+      VocabCard card = VocabCard(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -146,21 +146,21 @@ Future main() async {
           comment: 'This is a comment.',
           boxNumber: 1,
           timeModified: 1);
-      await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      entry.vocabKey = 2;
-      await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 2);
-      int key =await SqlDatabase().deleteEntry(vocabKey: 1);
-      entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 1);
+      await SqlDatabase().insertOrReplaceCard(card: card);
+      card.vocabKey = 2;
+      await SqlDatabase().insertOrReplaceCard(card: card);
+      List<VocabCard> cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 2);
+      int key =await SqlDatabase().deleteCard(vocabKey: 1);
+      cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 1);
       expect(key, 1);
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
-    test('overrideAllEntries', () async {
+    test('overrideAllCards', () async {
       await SqlDatabase().loadSqlDatabase();
-      List<VocabEntry> entriesForOverride = [];
-      VocabEntry entry = VocabEntry(
+      List<VocabCard> cardsForOverride = [];
+      VocabCard card = VocabCard(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -168,20 +168,20 @@ Future main() async {
           wordB: 'prueba',
           boxNumber: 1,
           timeModified: 1);
-      await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      entry.vocabKey = 2;
-      await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      entry.vocabKey = 3;
-      entriesForOverride.add(entry);
-      await SqlDatabase().overrideAllEntries(entriesForOverride);
-      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 1);
-      expect(entries[0].vocabKey, 3);
+      await SqlDatabase().insertOrReplaceCard(card: card);
+      card.vocabKey = 2;
+      await SqlDatabase().insertOrReplaceCard(card: card);
+      card.vocabKey = 3;
+      cardsForOverride.add(card);
+      await SqlDatabase().overrideAllCards(cardsForOverride);
+      List<VocabCard> cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 1);
+      expect(cards[0].vocabKey, 3);
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
-    test('deleteAllEntries', () async {
+    test('deleteAllCards', () async {
       await SqlDatabase().loadSqlDatabase();
-      VocabEntry entry = VocabEntry(
+      VocabCard card = VocabCard(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -189,14 +189,14 @@ Future main() async {
           wordB: 'prueba',
           boxNumber: 1,
           timeModified: 1);
-      await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      entry.vocabKey = 2;
-      await SqlDatabase().insertOrReplaceEntry(entry: entry);
-      List<VocabEntry> entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 2);
-      await SqlDatabase().deleteAllEntries();
-      entries = await SqlDatabase().readAllEntries();
-      expect(entries.length, 0);
+      await SqlDatabase().insertOrReplaceCard(card: card);
+      card.vocabKey = 2;
+      await SqlDatabase().insertOrReplaceCard(card: card);
+      List<VocabCard> cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 2);
+      await SqlDatabase().deleteAllCards();
+      cards = await SqlDatabase().readAllCards();
+      expect(cards.length, 0);
       await SqlDatabase().deleteSqlDatabase(); // Delete the database
     });
   });

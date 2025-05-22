@@ -6,16 +6,16 @@ extension SyncUtils on Sync {
   /// Converts a List&lt;VocabCard&gt; to a csv string.
   /// Returns csv string
   /// - Tested
-  String vocabCardsToCsv(List<VocabCard> vocabCards) {
+  String vocabEardsToCsv(List<VocabCard> vocabEards) {
     syncLog += ('Converting List of VocabCard to csv string...\n');
     // Convert each VocabCard to a csv string and join them with \n into a single string
-    String csvString = vocabCards.map((e) => e.toCsv()).join('\n');
+    String csvString = vocabEards.map((e) => e.toCsv()).join('\n');
     csvString = '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}\n$csvString'; // Add database version as first line
     return csvString;
   }
 
   /// Converts a csv string to a List&lt;String&gt; <br>
-  /// - Indirect Test of vocabCardsFromCsv
+  /// - Indirect Test of vocabEardsFromCsv
   List<String> csvDecode(String csv) {
     syncLog += ('Decoding csv string...\n');
     List<String> csvList = csv.split('\n');
@@ -38,7 +38,7 @@ extension SyncUtils on Sync {
   /// Converts a csv string back to a List&lt;VocabCard&gt. <br>
   /// Returns List&lt;VocabCard&gt;, null if error
   /// - Tested
-  List<VocabCard>? vocabCardsFromCsv(String? csvString) {
+  List<VocabCard>? vocabEardsFromCsv(String? csvString) {
     syncLog += ('Converting csv string to List of VocabCard...\n');
     if(csvString == '' || csvString == null) {
       syncLog += ('CSV string is empty, returning empty list\n');
@@ -56,16 +56,16 @@ extension SyncUtils on Sync {
     syncLog += ('Database version of csv: ${csvDataVersion == 0 ? 'error' : csvDataVersion}\n');
     csvList.removeAt(0);
     // Convert each String into VocabCard
-    List<VocabCard> vocabCards = [];
+    List<VocabCard> vocabEards = [];
     for (String cardString in csvList) {
       try {
-        vocabCards.add(VocabCard.fromCsv(cardString));
+        vocabEards.add(VocabCard.fromCsv(cardString));
       } catch (e) {
         syncLog += ('Error while converting card from csv: $e\n');
       }
     }
     syncLog += ('List of VocabCard created from JSON csv\n');
-    return vocabCards;
+    return vocabEards;
   }
 
   /// Merges two List&lt;VocabCard&gt;. <br>

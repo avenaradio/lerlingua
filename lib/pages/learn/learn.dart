@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lerlingua/resources/mirror_undo_extension.dart';
 import 'package:lerlingua/resources/mirror_utils_extension.dart';
 import 'package:lerlingua/resources/settings.dart';
-import 'package:lerlingua/resources/vocab_entry.dart';
+import 'package:lerlingua/resources/vocab_card.dart';
 
 import '../../enums/move_direction.dart';
 import '../../resources/event_bus.dart';
@@ -18,18 +18,18 @@ class Learn extends StatefulWidget {
 }
 
 class _LearnState extends State<Learn> {
-  late VocabEntry _currentEntry;
+  late VocabCard _currentCard;
   late Cloze _cloze;
 
-  _getCurrentEntry() {
+  _getCurrentCard() {
     // Mounted check
     if (mounted) {
       setState(() {
-      VocabEntry? entry;
+      VocabCard? card;
       try {
-        entry = Mirror().filterEntries.filterByBoxNumber(Settings().currentBox).sortByTimeModified.entries.first;
+        card = Mirror().filterCards.filterByBoxNumber(Settings().currentBox).sortByTimeModified.cards.first;
       }catch (e) {
-        entry = VocabEntry(
+        card = VocabCard(
           vocabKey: -2,
           languageA: 'Welcome',
           wordA: 'This is the leaning page.',
@@ -40,8 +40,8 @@ class _LearnState extends State<Learn> {
           timeModified: 0
         );
         }
-      _currentEntry = entry;
-      _cloze = Cloze(context: context, card: _currentEntry);
+      _currentCard = card;
+      _cloze = Cloze(context: context, card: _currentCard);
     });
     }
   }
@@ -49,7 +49,7 @@ class _LearnState extends State<Learn> {
     if (boxNumber <= 0 || boxNumber >= 5) {
       return;
     }
-    while (Mirror().filterEntries.filterByBoxNumber(boxNumber).entries.isEmpty) {
+    while (Mirror().filterCards.filterByBoxNumber(boxNumber).cards.isEmpty) {
       boxNumber--;
       if (boxNumber <= 1) {
         boxNumber = 1;
@@ -57,14 +57,14 @@ class _LearnState extends State<Learn> {
       }
     }
     Settings().currentBox = boxNumber;
-    _getCurrentEntry();
+    _getCurrentCard();
   }
 
   @override
   void initState() {
-    _getCurrentEntry();
+    _getCurrentCard();
     eventBus.on<LearningPageSetStateEvent>().listen((event) => setState(() {}));
-    eventBus.on<LearningPageNewDataEvent>().listen((event) => _getCurrentEntry());
+    eventBus.on<LearningPageNewDataEvent>().listen((event) => _getCurrentCard());
     super.initState();
   }
 
@@ -72,7 +72,7 @@ class _LearnState extends State<Learn> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // List from the List  Mirror().filterEntries.sortByTimeModified.entries which is a list of VocabEntry
+        // List from the List  Mirror().filterCards.sortByTimeModified.cards which is a list of VocabCard
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -81,7 +81,7 @@ class _LearnState extends State<Learn> {
                 children: [
                   // LanguageA
                   Center(
-                    child: Text('${_currentEntry.languageA}: ${_currentEntry.wordA}',
+                    child: Text('${_currentCard.languageA}: ${_currentCard.wordA}',
                       style: const TextStyle(fontSize: 19),
                     ),
                   ),
@@ -91,7 +91,7 @@ class _LearnState extends State<Learn> {
                     spacing: 8.0, // Space between items
                     runSpacing: 8.0, // Space between lines
                     children: [
-                      Text('${_currentEntry.languageB}: ',
+                      Text('${_currentCard.languageB}: ',
                         style: const TextStyle(fontSize: 19),),
                       ..._cloze.widgets,
                     ],
@@ -109,8 +109,8 @@ class _LearnState extends State<Learn> {
                               backgroundColor: Colors.red,
                             ),
                             onPressed: () {
-                              Mirror().move(entry: _currentEntry, direction: Direction.first, addNewUndo: true);
-                              _getCurrentEntry();
+                              Mirror().move(card: _currentCard, direction: Direction.first, addNewUndo: true);
+                              _getCurrentCard();
                             },
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
@@ -129,8 +129,8 @@ class _LearnState extends State<Learn> {
                               backgroundColor: Colors.green,
                             ),
                             onPressed: () {
-                              Mirror().move(entry: _currentEntry, direction: Direction.next, addNewUndo: true);
-                              _getCurrentEntry();
+                              Mirror().move(card: _currentCard, direction: Direction.next, addNewUndo: true);
+                              _getCurrentCard();
                             },
                             onLongPress: (){
                               _cloze.toggleShowAnswers();
@@ -166,7 +166,7 @@ class _LearnState extends State<Learn> {
                               return GestureDetector(
                                 onTap: () {
                                   Mirror().addStack(stackSize: Settings().stackSize);
-                                  _getCurrentEntry();
+                                  _getCurrentCard();
                                 },
                                 child: Container(
                                   alignment: Alignment.center,
@@ -199,7 +199,7 @@ class _LearnState extends State<Learn> {
                                             : Colors.transparent,
                                         width: 1.0,
                                       )),
-                                  child: Text(Mirror().filterEntries.filterByBoxNumber(index == 0 ? 0 : index - 1).entries.length.toString()),
+                                  child: Text(Mirror().filterCards.filterByBoxNumber(index == 0 ? 0 : index - 1).cards.length.toString()),
                                 ),
                               );
                           }
@@ -217,7 +217,7 @@ class _LearnState extends State<Learn> {
                           icon: const Icon(Icons.undo),
                           onPressed: () async{
                             Mirror().undo();
-                            _getCurrentEntry();
+                            _getCurrentCard();
                           },
                           color: Theme.of(context).highlightColor,
                         ) : const SizedBox.shrink(),

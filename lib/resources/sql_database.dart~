@@ -27,15 +27,15 @@ class SqlDatabase {
   /// SQL query to create the vocab table
   final String _setupQuery =
     '''CREATE TABLE IF NOT EXISTS vocab (
-    vocab_key INTEGER PRIMARY KEY NOT NULL,
+    vocab_key INTEGER PRIMARY KEY,
     language_a TEXT NOT NULL,
     word_a TEXT NOT NULL,
     language_b TEXT NOT NULL,
     word_b TEXT NOT NULL,
-    sentence_b TEXT NOT NULL,
-    article_b TEXT NOT NULL,
-    comment TEXT NOT NULL,
-    box_number INTEGER NOT NULL,
+    sentence_b TEXT,
+    article_b TEXT,
+    comment TEXT,
+    box_number INTEGER,
     time_modified INTEGER NOT NULL
     );''';
 

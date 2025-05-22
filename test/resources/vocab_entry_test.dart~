@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/vocab_card.dart';
 
 void main() {
-  group('VocabCard Tests', () {
-    test('VocabCard creation', () {
-      VocabCard card1 = VocabCard(
+  group('VocabEntry Tests', () {
+    test('VocabEntry creation', () {
+      VocabEntry card1 = VocabEntry(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -34,8 +34,8 @@ void main() {
       expect(card1.comment, 'This is a comment.');
       expect(card1.boxNumber, 1);
     });
-    test('VocabCard toMap', () {
-      VocabCard card1 = VocabCard(
+    test('VocabEntry toMap', () {
+      VocabEntry card1 = VocabEntry(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -58,8 +58,8 @@ void main() {
       expect(map['box_number'], 1);
       expect(map['time_modified'], 1);
     });
-    test('VocabCard fromMap', () {
-      VocabCard card1 = VocabCard(
+    test('VocabEntry fromMap', () {
+      VocabEntry card1 = VocabEntry(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -71,7 +71,7 @@ void main() {
           boxNumber: 1,
           timeModified: 1);
       Map<String, dynamic> map = card1.toMap();
-      VocabCard card1CopyFromMap = VocabCard.fromMap(map);
+      VocabEntry card1CopyFromMap = VocabEntry.fromMap(map);
       expect(card1CopyFromMap.vocabKey, 1);
       expect(card1CopyFromMap.languageA, 'en');
       expect(card1CopyFromMap.wordA, 'test');
@@ -84,11 +84,11 @@ void main() {
       expect(card1CopyFromMap.timeModified, 1);
       expect(card1.hashCode, isNot(card1CopyFromMap.hashCode));
       // Proof, that the hashCode is unique for an object
-      VocabCard card1same = card1;
+      VocabEntry card1same = card1;
       expect(card1.hashCode, card1same.hashCode);
     });
     test('Copy constructor', () {
-      VocabCard card1 = VocabCard(
+      VocabEntry card1 = VocabEntry(
           vocabKey: 1,
           languageA: 'en',
           wordA: 'test',
@@ -99,7 +99,7 @@ void main() {
           comment: 'This is a comment.',
           boxNumber: 0,
           timeModified: 1);
-      VocabCard card1Copy = card1.clone();
+      VocabEntry card1Copy = card1.clone();
       expect(card1.hashCode, isNot(card1Copy.hashCode)); // Proof, that its not the same object
       // Proof, that the values are the same
       expect(card1.vocabKey, card1Copy.vocabKey);
@@ -115,7 +115,7 @@ void main() {
     });
     group('toCsv', () {
       test('toCsv with null values', () {
-        VocabCard card1 = VocabCard(
+        VocabEntry card1 = VocabEntry(
             vocabKey: 1,
             languageA: 'en',
             wordA: 'test',
@@ -127,7 +127,7 @@ void main() {
         expect(csv, '1,"en","test","es","prueba",,,,1,1');
       });
       test('toCsv without null values', () {
-        VocabCard card1 = VocabCard(
+        VocabEntry card1 = VocabEntry(
             vocabKey: 1,
             languageA: 'en',
             wordA: 'test',
@@ -142,7 +142,7 @@ void main() {
         expect(csv, '1,"en","test","es","prueba","This is a sentence.","The","This is a comment.",1,1');
       });
       test('toCsv with comma, line break and double quote', () {
-        VocabCard card1 = VocabCard(
+        VocabEntry card1 = VocabEntry(
             vocabKey: 1,
             languageA: 'en',
             wordA: 'test',
@@ -159,7 +159,7 @@ void main() {
     });
     group('fromCsv', () {
       test('fromCsv with null values', () {
-        VocabCard card1 = VocabCard.fromCsv('1,"en","test","es","prueba",,,,1,1');
+        VocabEntry card1 = VocabEntry.fromCsv('1,"en","test","es","prueba",,,,1,1');
         expect(card1.vocabKey, 1);
         expect(card1.languageA, 'en');
         expect(card1.wordA, 'test');
@@ -172,7 +172,7 @@ void main() {
         expect(card1.timeModified, 1);
       });
       test('fromCsv without null values', () {
-        VocabCard card1 = VocabCard.fromCsv('1,"en","test","es","prueba","This is a sentence.","The","This is a comment.",1,1');
+        VocabEntry card1 = VocabEntry.fromCsv('1,"en","test","es","prueba","This is a sentence.","The","This is a comment.",1,1');
         expect(card1.vocabKey, 1);
         expect(card1.languageA, 'en');
         expect(card1.wordA, 'test');
@@ -185,7 +185,7 @@ void main() {
         expect(card1.timeModified, 1);
       });
       test('fromCsv with comma, line break and double quote', () {
-        VocabCard card1 = VocabCard.fromCsv('1,"""","test","es","prueba","This is a sentence with all combinations of comma, line\n break\n, double"""" ""quote"", and carriage\n\r return\r.","The","This is a comment.",1,1');
+        VocabEntry card1 = VocabEntry.fromCsv('1,"""","test","es","prueba","This is a sentence with all combinations of comma, line\n break\n, double"""" ""quote"", and carriage\n\r return\r.","The","This is a comment.",1,1');
         expect(card1.vocabKey, 1);
         expect(card1.languageA, '"');
         expect(card1.wordA, 'test');
@@ -198,7 +198,7 @@ void main() {
         expect(card1.timeModified, 1);
       });
       test('fromCsv with comma, line break and starting / ending with double quote', () {
-        VocabCard card1 = VocabCard.fromCsv('1,"""en","","""""","prueba","""This is a sentence with all combinations of comma, line\n break\n, double"""" ""quote"", and carriage\n\r return\r.""","The","This is a comment.",1,1');
+        VocabEntry card1 = VocabEntry.fromCsv('1,"""en","","""""","prueba","""This is a sentence with all combinations of comma, line\n break\n, double"""" ""quote"", and carriage\n\r return\r.""","The","This is a comment.",1,1');
         expect(card1.vocabKey, 1);
         expect(card1.languageA, '"en');
         expect(card1.wordA, '');

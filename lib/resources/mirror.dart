@@ -2,10 +2,10 @@
 import 'package:lerlingua/global_variables.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/undo.dart';
-import 'package:lerlingua/resources/vocab_entry.dart';
+import 'package:lerlingua/resources/vocab_card.dart';
 
 class Mirror {
-  List<VocabEntry> dbMirror = [];
+  List<VocabCard> dbMirror = [];
   List<Undo> undoList = [];
 
   // Private constructor
@@ -19,48 +19,48 @@ class Mirror {
     return _instance;
   }
 
-  List<VocabEntry> get mirrorEntries => dbMirror;
+  List<VocabCard> get mirrorCards => dbMirror;
 
   // Method to initialize the database
   Future<void> initDatabase() async{
     if (dbMirror.isNotEmpty) return;
     await SqlDatabase().initSqlDatabase();
-    dbMirror = await SqlDatabase().readAllEntries();
+    dbMirror = await SqlDatabase().readAllCards();
   }
 
-  // Method to add or replace entry in mirror
-  VocabEntry writeEntry({required VocabEntry entry}) {
-    if (entry.vocabKey == -2) return entry;
-    entry = entry.clone(); // Hard Copy
+  // Method to add or replace card in mirror
+  VocabCard writeCard({required VocabCard card}) {
+    if (card.vocabKey == -2) return card;
+    card = card.clone(); // Hard Copy
     bool replaced = false;
     for (int i = 0; i < dbMirror.length; i++) {
-      if (dbMirror[i].vocabKey == entry.vocabKey) {
-        dbMirror[i] = entry; // Replace
+      if (dbMirror[i].vocabKey == card.vocabKey) {
+        dbMirror[i] = card; // Replace
         replaced = true;
         break;
       }
     }
     if (replaced == false) {
-      if (entry.vocabKey == -1 || entry.vocabKey == 0) {
-        entry.vocabKey = DateTime.now().millisecondsSinceEpoch; // Add new key if -1 or 0
+      if (card.vocabKey == -1 || card.vocabKey == 0) {
+        card.vocabKey = DateTime.now().millisecondsSinceEpoch; // Add new key if -1 or 0
       }
-      dbMirror.add(entry);
+      dbMirror.add(card);
     } // Add
-    if (isTesting == true) return entry;
-    SqlDatabase().insertOrReplaceEntry(entry: entry); // Update SQL database
-    return entry;
+    if (isTesting == true) return card;
+    SqlDatabase().insertOrReplaceCard(card: card); // Update SQL database
+    return card;
   }
 
-  // Method to get entry from mirror
-  VocabEntry? readEntry({required int vocabKey}) {
+  // Method to get card from mirror
+  VocabCard? readCard({required int vocabKey}) {
     for (int i = 0; i < dbMirror.length; i++) {
       if (dbMirror[i].vocabKey == vocabKey) return dbMirror[i];
     }
     return null;
   }
 
-  // Method to delete entry from mirror
-  bool deleteEntry({required int vocabKey}) {
+  // Method to delete card from mirror
+  bool deleteCard({required int vocabKey}) {
     bool deleted = false;
     for (int i = 0; i < dbMirror.length; i++) {
       if (dbMirror[i].vocabKey == vocabKey) {
@@ -69,7 +69,7 @@ class Mirror {
       }
     }
     if (isTesting == true) return deleted;
-    SqlDatabase().deleteEntry(vocabKey: vocabKey);
+    SqlDatabase().deleteCard(vocabKey: vocabKey);
     return deleted;
   }
 }

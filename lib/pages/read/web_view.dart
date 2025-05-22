@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/mirror.dart';
-import '../../resources/vocab_entry.dart';
+import '../../resources/vocab_card.dart';
 
 class WebView extends StatefulWidget {
   const WebView({super.key});
@@ -31,9 +31,9 @@ class _WebViewState extends State<WebView> {
     webViewController?.loadUrl(urlRequest: URLRequest(url: webUri));
   }
 
-  _saveVocabEntry(String? selectedText) async {
+  _saveVocabCard(String? selectedText) async {
     if (selectedText != null) {
-      Mirror().writeEntry(entry: VocabEntry(
+      Mirror().writeCard(card: VocabCard(
         vocabKey: -1,
         languageA: 'bookLanguage',
         wordB: wordB,
@@ -64,7 +64,7 @@ class _WebViewState extends State<WebView> {
             id: 1,
             title: "Add",
             action: () async {
-              _saveVocabEntry(await webViewController?.getSelectedText());
+              _saveVocabCard(await webViewController?.getSelectedText());
             })
       ],
     );

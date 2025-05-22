@@ -2,7 +2,7 @@ import 'package:lerlingua/resources/settings.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/sync.dart';
 import 'package:lerlingua/resources/sync_utils_extension.dart';
-import 'package:lerlingua/resources/vocab_entry.dart';
+import 'package:lerlingua/resources/vocab_card.dart';
 
 import 'mirror.dart';
 
@@ -31,8 +31,8 @@ extension MirrorSync on Mirror {
         return 'Unable to test credentials: ${Sync().stringFromResponse(response: credentialsStatus)}, see synchronization log in settings for more info.';
     }
     Sync().syncLog += ('Credentials tested successfully!\n');
-    List<VocabEntry> entriesFromMirror = Mirror().dbMirror;
-    // Download entries from GitHub
+    List<VocabCard> cardsFromMirror = Mirror().dbMirror;
+    // Download cards from GitHub
     Sync().syncLog += ('Trying to download cards from GitHub...\n');
     Map<int, String?> map = await Sync().downloadCsvFromGithub(fileType: FileType.cards);
     int downloadStatus = map.keys.first;
@@ -48,18 +48,18 @@ extension MirrorSync on Mirror {
       }
     }
     // Will continue here if success or file not found
-    List<VocabEntry>? entriesFromSync = Sync().vocabEntriesFromCsv(csvString);
-    if(entriesFromSync == null) return 'File on server corrupted, see synchronization log in settings for more info.';
-    List<VocabEntry> entriesMerged = Sync().mergeLists(listA: entriesFromMirror, listB: entriesFromSync);
+    List<VocabCard>? cardsFromSync = Sync().vocabCardsFromCsv(csvString);
+    if(cardsFromSync == null) return 'File on server corrupted, see synchronization log in settings for more info.';
+    List<VocabCard> cardsMerged = Sync().mergeLists(listA: cardsFromMirror, listB: cardsFromSync);
       // Override mirror
       Sync().syncLog += 'Overriding mirror...\n';
-      dbMirror = entriesMerged;
+      dbMirror = cardsMerged;
       // Override SQL database
       Sync().syncLog += 'Overriding SQL database...\n';
-      SqlDatabase().overrideAllEntries(entriesMerged);
-      // Upload entries to GitHub
+      SqlDatabase().overrideAllCards(cardsMerged);
+      // Upload cards to GitHub
       Sync().syncLog += 'Uploading merged cards to GitHub...\n';
-      final String csvStringForUpload = Sync().vocabEntriesToCsv(entriesMerged);
+      final String csvStringForUpload = Sync().vocabCardsToCsv(cardsMerged);
       int uploadStatus = await Sync().uploadCsvToGitHub(csvString: csvStringForUpload, fileType: FileType.cards);
       switch (uploadStatus) {
         case 2: // File updated

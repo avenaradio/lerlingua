@@ -1,4 +1,4 @@
-class VocabEntry {
+class VocabCard {
   int vocabKey;
   String languageA;
   String wordA;
@@ -10,10 +10,10 @@ class VocabEntry {
   int boxNumber;
   int timeModified;
 
-  /// The number of parameters in the VocabEntry
+  /// The number of parameters in the VocabCard
   static int get parametersCount => 10;
 
-  VocabEntry({
+  VocabCard({
     required this.vocabKey,
     required this.languageA,
     required this.wordA,
@@ -28,9 +28,9 @@ class VocabEntry {
        articleB = articleB ?? '',
        comment = comment ?? '';
 
-  /// Create a hard copy of the VocabEntry
-  VocabEntry clone() {
-    return VocabEntry(
+  /// Create a hard copy of the VocabCard
+  VocabCard clone() {
+    return VocabCard(
       vocabKey: vocabKey,
       languageA: languageA,
       wordA: wordA,
@@ -45,9 +45,9 @@ class VocabEntry {
   }
 
   @override
-  String toString() => 'VocabEntry: $vocabKey - $languageA - $wordA - $languageB - $wordB - $sentenceB - $articleB - $comment - $boxNumber - $timeModified';
+  String toString() => 'VocabCard: $vocabKey - $languageA - $wordA - $languageB - $wordB - $sentenceB - $articleB - $comment - $boxNumber - $timeModified';
 
-  /// Converts a VocabEntry to a Map for database insertion
+  /// Converts a VocabCard to a Map for database insertion
   Map<String, dynamic> toMap() {
     return {
       'vocab_key': vocabKey,
@@ -63,9 +63,9 @@ class VocabEntry {
     };
   }
 
-  /// Converts a Map to a VocabEntry instance
-  static VocabEntry fromMap(Map<String, dynamic> map) {
-    return VocabEntry(
+  /// Converts a Map to a VocabCard instance
+  static VocabCard fromMap(Map<String, dynamic> map) {
+    return VocabCard(
       vocabKey: map['vocab_key'] as int,
       languageA: map['language_a'] as String,
       wordA: map['word_a'] as String,
@@ -79,7 +79,7 @@ class VocabEntry {
     );
   }
 
-  /// Converts the VocabEntry instance to a CSV-formatted string.
+  /// Converts the VocabCard instance to a CSV-formatted string.
   String toCsv() {
     // Escape fields that may contain commas or quotes
     String escape(String? value) {
@@ -103,8 +103,8 @@ class VocabEntry {
     ].join(',');
   }
 
-  /// Converts a CSV-formatted string to a VocabEntry instance
-  static VocabEntry fromCsv(String csv) {
+  /// Converts a CSV-formatted string to a VocabCard instance
+  static VocabCard fromCsv(String csv) {
     List<String> fieldsCommaSeparated = csv.split(',');
     List<String> fields = [];
     // Join fields starting with " but not ending with " until ending with "
@@ -129,7 +129,7 @@ class VocabEntry {
       if (value == null) return 0;
       return int.tryParse(value) ?? 0;
     }
-    return VocabEntry(
+    return VocabCard(
       vocabKey: parseInt(fields[0]),
       languageA: fields[1],
       wordA: fields[2],
