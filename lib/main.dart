@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => Loading(),
         '/home': (context) => Home(),
       },
-      theme: theme,
+      //theme: theme,
     );
   }
 }

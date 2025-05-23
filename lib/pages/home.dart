@@ -3,9 +3,9 @@ import 'package:lerlingua/pages/settings/credentials_dialog.dart';
 import 'package:lerlingua/pages/settings/settings_widget.dart';
 import 'package:lerlingua/pages/learn/learn.dart';
 import 'package:lerlingua/pages/read/read.dart';
-import 'package:lerlingua/resources/mirror_sync_extension.dart';
+import 'package:lerlingua/resources/database/mirror_sync_extension.dart';
 import '../resources/event_bus.dart';
-import '../resources/mirror.dart';
+import '../resources/database/mirror.dart';
 import 'list/list.dart';
 
 class Home extends StatefulWidget {
@@ -87,63 +87,61 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: <Widget>[
-          Read(),
-          Learn(),
-          ListPage(),
-          SettingsWidget(),
-        ][currentPageIndex],
-        bottomNavigationBar: NavigationBar(
-          onDestinationSelected: (int index) {
-            setState(() {
-              currentPageIndex = index;
-            });
-          },
-          selectedIndex: currentPageIndex,
-          destinations: const <Widget>[
-            NavigationDestination(
-              icon: Icon(Icons.book),
-              label: 'Read',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.play_circle_outline_rounded),
-              label: 'Learn',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.list_alt),
-              label: 'List',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ),
-        floatingActionButton: Stack(
-          alignment: Alignment.center,
-          children: [
-            FloatingActionButton.small(
-              onPressed: _isSyncing ? null : _syncData,
-              tooltip: 'Sync',
-              shape: const CircleBorder(),
-              elevation: 0,
-              child: AnimatedBuilder(
-                animation: _controller,
-                child: Icon(Icons.sync_outlined),
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: - _controller.value * 2.0 * 3.14159, // Rotate in radians
-                    child: child,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+    return Scaffold(
+      body: <Widget>[
+        Read(),
+        Learn(),
+        ListPage(),
+        SettingsWidget(),
+      ][currentPageIndex],
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            icon: Icon(Icons.book),
+            label: 'Read',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.play_circle_outline_rounded),
+            label: 'Learn',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.list_alt),
+            label: 'List',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
       ),
+      floatingActionButton: Stack(
+        alignment: Alignment.center,
+        children: [
+          FloatingActionButton.small(
+            onPressed: _isSyncing ? null : _syncData,
+            tooltip: 'Sync',
+            shape: const CircleBorder(),
+            elevation: 0,
+            child: AnimatedBuilder(
+              animation: _controller,
+              child: Icon(Icons.sync_outlined),
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: - _controller.value * 2.0 * 3.14159, // Rotate in radians
+                  child: child,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
     );
   }
 }

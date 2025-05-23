@@ -1,8 +1,9 @@
 // Singleton
 import 'package:flutter/cupertino.dart';
-import 'package:lerlingua/resources/vocab_card.dart';
+import 'package:lerlingua/resources/database/vocab_card.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'file_handler.dart';
+
+import '../file_handler.dart';
 
 class SqlDatabase {
   @visibleForTesting

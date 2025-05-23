@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../resources/event_bus.dart';
-import '../../resources/mirror.dart';
-import '../../resources/vocab_card.dart';
+import '../../resources/database/mirror.dart';
+import '../../resources/database/vocab_card.dart';
 
 class WebView extends StatefulWidget {
   const WebView({super.key});

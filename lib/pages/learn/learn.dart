@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:lerlingua/resources/mirror_undo_extension.dart';
-import 'package:lerlingua/resources/mirror_utils_extension.dart';
+import 'package:lerlingua/resources/database/mirror_undo_extension.dart';
+import 'package:lerlingua/resources/database/mirror_utils_extension.dart';
 import 'package:lerlingua/resources/settings.dart';
-import 'package:lerlingua/resources/vocab_card.dart';
+import 'package:lerlingua/resources/database/vocab_card.dart';
 
 import '../../general/move_direction.dart';
 import '../../resources/event_bus.dart';
-import '../../resources/mirror.dart';
+import '../../resources/database/mirror.dart';
 import '../loading.dart';
 import 'cloze.dart';
 

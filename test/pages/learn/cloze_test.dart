@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/pages/learn/cloze.dart';
-import 'package:lerlingua/resources/vocab_card.dart';
+import 'package:lerlingua/resources/database/vocab_card.dart';
 
 void main() {
   group('Cloze creation', () {

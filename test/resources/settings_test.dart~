@@ -123,15 +123,6 @@ void main() {
         await settings.loadSettings();
         expect(settings.currentTranslationService?.key, 1);
         expect(settings.translationServices.first.key, 1);
-
-        // Act
-        settings.deleteTranslationService(translationService);
-        await Future.delayed(const Duration(milliseconds: 500));
-
-        // Assert
-        await settings.loadSettings();
-        expect(settings.currentTranslationService?.key, null);
-        expect(settings.translationServices.isEmpty, true);
       });
       test('add and delete translation services', () async {
         SharedPreferences.setMockInitialValues({}); // No value
