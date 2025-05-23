@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lerlingua/general/tuple.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/sync.dart';
 import 'package:lerlingua/resources/sync_utils_extension.dart';
@@ -26,20 +27,23 @@ void main() {
           wordB: 'n',
           boxNumber: 2,
           timeModified: 2);
-      String csvString = Sync().vocabCardsToCsv([card1, card2]);
+      String csvString = Sync().vocabCardsToCsv(cards: [card1, card2], deletedCards: '55/40/100');
       if (kDebugMode) {
         // print test name
         print('\nvocabCardsToCsv');
         print(Sync().syncLog);
       }
-      expect(csvString, '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}\n1,"a","b","c","d",,,,1,1\n2,"k","l","m","n",,,,2,2');
+      expect(csvString, '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}55/40/100\n1,"a","b","c","d",,,,1,1\n2,"k","l","m","n",,,,2,2');
     });
   });
   group('csvToVocabCards Tests', () {
     test('csvToVocabCards should convert csv to list of VocabCard', () {
       Sync().clearLog();
-      String csvString = '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}\n1,"a","b","c","d",,,,1,1';
-      List<VocabCard>? cards = Sync().vocabCardsFromCsv(csvString);
+      String csvString = '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}1/5/9\n1,"a","b","c","d",,,,1,1';
+      Tuple3<int, String, List<VocabCard>>? tupleFromCsv = Sync().vocabCardsFromCsv(csvString);
+      int csvDataVersion = tupleFromCsv?.first ?? 0;
+      String deletedCards = tupleFromCsv?.second ?? '';
+      List<VocabCard>? cards = tupleFromCsv?.third;
       if (kDebugMode) {
         // print test name
         print('\ncsvToVocabCards should convert csv to list of VocabCard');
@@ -56,13 +60,17 @@ void main() {
       expect(cards[0].comment, '');
       expect(cards[0].boxNumber, 1);
       expect(cards[0].timeModified, 1);
+      expect(csvDataVersion, SqlDatabase().version);
+      expect(deletedCards, '1/5/9');
     });
     test('csvToVocabCards should return empty list if csv is empty or null', () {
       Sync().clearLog();
       String? csvString1 = '';
       String? csvString2;
-      List<VocabCard>? cards1 = Sync().vocabCardsFromCsv(csvString1);
-      List<VocabCard>? cards2 = Sync().vocabCardsFromCsv(csvString2);
+      Tuple3<int, String, List<VocabCard>>? tupleFromCsv1 = Sync().vocabCardsFromCsv(csvString1);
+      Tuple3<int, String, List<VocabCard>>? tupleFromCsv2 = Sync().vocabCardsFromCsv(csvString2);
+      List<VocabCard>? cards1 = tupleFromCsv1?.third;
+      List<VocabCard>? cards2 = tupleFromCsv2?.third;
       if (kDebugMode) {
         // print test name
         print('\ncsvToVocabCards should return empty list if csv is empty or null');
@@ -74,7 +82,8 @@ void main() {
     test('csvToVocabCards valid csv but broken card should skip broken card', () {
       Sync().clearLog();
       String csvString = '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}\n1,"a","b","c","d",,,,1,1\n2,"k","l","m","n",,,,2,2\n3,,,,1,1\n4,"k","l","m","n",,,,2,2';
-      List<VocabCard>? cards = Sync().vocabCardsFromCsv(csvString);
+      Tuple3<int, String, List<VocabCard>>? tupleFromCsv = Sync().vocabCardsFromCsv(csvString);
+      List<VocabCard>? cards = tupleFromCsv?.third;
       if (kDebugMode) {
         // print test name
         print('\ncsvToVocabCards valid csv but broken card should skip broken card');

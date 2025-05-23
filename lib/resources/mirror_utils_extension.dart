@@ -3,7 +3,7 @@ import 'package:lerlingua/resources/mirror_undo_extension.dart';
 import 'package:lerlingua/resources/undo.dart';
 import 'package:lerlingua/resources/vocab_card.dart';
 
-import '../enums/move_direction.dart';
+import '../general/move_direction.dart';
 import 'cards_filter.dart';
 
 extension MirrorGetExtension on Mirror {

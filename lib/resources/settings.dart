@@ -49,6 +49,27 @@ class Settings {
     saveSettings();
   }
 
+  // Set of feleted cards for syncronization
+  final Set<int> _deletedCards = <int>{};
+  Set<int> get deletedCards => _deletedCards;
+  String get deletedCardsString => _deletedCards.join('/');
+  /// Adds keys of deleted cards to the set
+  /// Takes a string with keys separated by '/'
+  addDeletedCards(String value) {
+    if(value == '') return;
+    List<int> deletedCards = value.split('/').map((e) => int.parse(e)).toList();
+    _deletedCards.addAll(deletedCards);
+    saveSettings();
+  }
+  /// Removes keys of deleted cards from the set for undo
+  /// Takes a string with keys separated by '/'
+  removeDeletedCards(String value) {
+    if(value == '') return;
+    List<int> deletedCards = value.split('/').map((e) => int.parse(e)).toList();
+    _deletedCards.removeAll(deletedCards);
+    saveSettings();
+  }
+
   // Method to load settings
   Future<void> loadSettings() async{
     // Obtain shared preferences
@@ -59,6 +80,9 @@ class Settings {
     _token = _sharedPreferences.getString('token') ?? '';
     _repoOwner = _sharedPreferences.getString('repoOwner') ?? '';
     _repoName = _sharedPreferences.getString('repoName') ?? '';
+    // Load deleted cards
+    String? deletedCardsString = _sharedPreferences.getString('deletedCards');
+    if (deletedCardsString != null) addDeletedCards(deletedCardsString);
   }
 
   saveSettings() async{
@@ -67,5 +91,7 @@ class Settings {
     await _sharedPreferences.setString('token', _token);
     await _sharedPreferences.setString('repoOwner', _repoOwner);
     await _sharedPreferences.setString('repoName', _repoName);
+    // Save deleted cards
+    await _sharedPreferences.setString('deletedCards', _deletedCards.join('/'));
   }
 }

@@ -1,5 +1,7 @@
 // Singleton
 import 'package:lerlingua/global_variables.dart';
+import 'package:lerlingua/resources/mirror_undo_extension.dart';
+import 'package:lerlingua/resources/settings.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/undo.dart';
 import 'package:lerlingua/resources/vocab_card.dart';
@@ -21,14 +23,20 @@ class Mirror {
 
   List<VocabCard> get mirrorCards => dbMirror;
 
-  // Method to initialize the database
+  /// Clears the undo list
+  void clearUndo() {
+    undoList = [];
+  }
+
+  /// Initializes the database
   Future<void> initDatabase() async{
     if (dbMirror.isNotEmpty) return;
     await SqlDatabase().initSqlDatabase();
     dbMirror = await SqlDatabase().readAllCards();
   }
 
-  // Method to add or replace card in mirror
+  /// Adds or replaces card in mirror
+  /// - Tested
   VocabCard writeCard({required VocabCard card}) {
     if (card.vocabKey == -2) return card;
     card = card.clone(); // Hard Copy
@@ -51,7 +59,8 @@ class Mirror {
     return card;
   }
 
-  // Method to get card from mirror
+  /// Reads card from mirror
+  /// - Tested
   VocabCard? readCard({required int vocabKey}) {
     for (int i = 0; i < dbMirror.length; i++) {
       if (dbMirror[i].vocabKey == vocabKey) return dbMirror[i];
@@ -59,17 +68,25 @@ class Mirror {
     return null;
   }
 
-  // Method to delete card from mirror
-  bool deleteCard({required int vocabKey}) {
+  /// Deletes card from mirror
+  /// - Tested
+  bool deleteCard({required VocabCard card}) {
+    if(card.vocabKey == -2) return false;
+    Undo undo = Undo(description: 'Undo: Delete Card');
     bool deleted = false;
     for (int i = 0; i < dbMirror.length; i++) {
-      if (dbMirror[i].vocabKey == vocabKey) {
+      if (dbMirror[i].vocabKey == card.vocabKey) {
+        VocabCard cardCopy = card.clone();
+        undo.addFunction(() => writeCard(card: cardCopy));
+        undo.addFunction(() => Settings().removeDeletedCards(card.vocabKey.toString()));
+        addUndo(undo: undo);
         dbMirror.removeAt(i);
         deleted = true;
       }
     }
+    Settings().addDeletedCards(card.vocabKey.toString());
     if (isTesting == true) return deleted;
-    SqlDatabase().deleteCard(vocabKey: vocabKey);
+    SqlDatabase().deleteCard(vocabKey: card.vocabKey);
     return deleted;
   }
 }

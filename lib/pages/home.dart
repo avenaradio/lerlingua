@@ -134,7 +134,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: Icon(Icons.sync_outlined),
                 builder: (context, child) {
                   return Transform.rotate(
-                    angle: _controller.value * 2.0 * 3.14159, // Rotate in radians
+                    angle: - _controller.value * 2.0 * 3.14159, // Rotate in radians
                     child: child,
                   );
                 },

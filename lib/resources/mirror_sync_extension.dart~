@@ -64,8 +64,6 @@ extension MirrorSync on Mirror {
       // Override SQL database
       Sync().syncLog += 'Overriding SQL database...\n';
       SqlDatabase().overrideAllCards(cardsMerged);
-      // Clear undo list
-      Mirror().clearUndo();
       // Upload cards and deleted cards string to GitHub
       Sync().syncLog += 'Uploading merged cards to GitHub...\n';
       final String csvStringForUpload = Sync().vocabCardsToCsv(cards: cardsMerged, deletedCards: Settings().deletedCardsString);

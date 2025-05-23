@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/enums/move_direction.dart';
+import 'package:lerlingua/general/move_direction.dart';
 import 'package:lerlingua/resources/mirror.dart';
 import 'package:lerlingua/resources/mirror_utils_extension.dart';
 import 'package:lerlingua/resources/mirror_undo_extension.dart';
