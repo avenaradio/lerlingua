@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lerlingua/resources/mirror_utils_extension.dart';
+import 'package:lerlingua/resources/database/mirror_utils_extension.dart';
 
-import '../../resources/mirror.dart';
-import '../../resources/vocab_card.dart';
+import '../../resources/database/mirror.dart';
+import '../../resources/database/vocab_card.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});

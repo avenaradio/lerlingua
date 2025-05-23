@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../resources/mirror.dart';
+import '../resources/database/mirror.dart';
 import '../resources/settings.dart';
 
 class Loading extends StatefulWidget {

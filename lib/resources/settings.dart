@@ -1,4 +1,6 @@
+import 'package:lerlingua/resources/translation_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 // Steps to add a field:
 // 1. Getter and setter
@@ -70,7 +72,54 @@ class Settings {
     saveSettings();
   }
 
-  // Method to load settings
+  // Translation Services
+  int _currentTranslationServiceKey = 0;
+  final Set<TranslationService> _translationServices = <TranslationService>{};
+  /// Returns the set of translation services ordered by languageA
+  /// - Tested
+  List<TranslationService> get translationServices => _translationServices.toList()..sort((a, b) => a.languageB.compareTo(b.languageB));
+  /// Returns the current translation service
+  /// - Tested
+  TranslationService? get currentTranslationService {
+    // check if there is a translation services with current key
+    if(_translationServices.where((element) => element.key == _currentTranslationServiceKey).firstOrNull == null) _currentTranslationServiceKey = 0;
+    if(_currentTranslationServiceKey == 0 && _translationServices.isEmpty) return null;
+    if(_currentTranslationServiceKey == 0) {
+      currentTranslationService = _translationServices.first;
+      return _translationServices.first;
+    }
+    return _translationServices.firstWhere((element) => element.key == _currentTranslationServiceKey);
+  }
+  /// Sets the current translation service
+  /// - Tested
+  set currentTranslationService(TranslationService? translationService) {
+    if(translationService == null) {
+      _currentTranslationServiceKey = 0;
+      return;
+    }
+    _currentTranslationServiceKey = translationService.key;
+    addOrUpdateTranslationService(translationService);
+    saveSettings();
+  }
+  /// Adds a translation service
+  /// - Tested
+  void addOrUpdateTranslationService(TranslationService translationService) {
+    // If TranslationService with key already exists, delete it
+    if(_translationServices.any((element) => element.key == translationService.key)) {
+      _translationServices.removeWhere((element) => element.key == translationService.key);
+    }
+    _translationServices.add(translationService);
+    saveSettings();
+  }
+  /// Deletes a translation service
+  /// - Tested
+  void deleteTranslationService(TranslationService translationService) {
+    _translationServices.removeWhere((element) => element.key == translationService.key);
+    saveSettings();
+  }
+
+  /// Loads settings from SharedPreferences
+  /// - Tested
   Future<void> loadSettings() async{
     // Obtain shared preferences
     _sharedPreferences = await SharedPreferences.getInstance();
@@ -83,8 +132,21 @@ class Settings {
     // Load deleted cards
     String? deletedCardsString = _sharedPreferences.getString('deletedCards');
     if (deletedCardsString != null) addDeletedCards(deletedCardsString);
+    // Load current translation service key
+    _currentTranslationServiceKey = _sharedPreferences.getInt('currentTranslationServiceKey') ?? 0;
+    // Load translation services Set
+    String? translationServicesString = _sharedPreferences.getString('translationServices');
+    if (translationServicesString != null) {
+      List<dynamic> translationServicesMap = jsonDecode(translationServicesString);
+      // Convert each map and add to set
+      for (dynamic e in translationServicesMap) {
+        addOrUpdateTranslationService(TranslationService.fromMap(e));
+      }
+    }
   }
 
+  /// Saves settings to SharedPreferences
+  /// - Tested
   saveSettings() async{
     await _sharedPreferences.setInt('currentBox', _currentBox);
     await _sharedPreferences.setInt('stackSize', _stackSize);
@@ -93,5 +155,9 @@ class Settings {
     await _sharedPreferences.setString('repoName', _repoName);
     // Save deleted cards
     await _sharedPreferences.setString('deletedCards', _deletedCards.join('/'));
+    // Save current translation service key
+    await _sharedPreferences.setInt('currentTranslationServiceKey', _currentTranslationServiceKey);
+    // Save translation services Set
+    await _sharedPreferences.setString('translationServices', jsonEncode(_translationServices.map((e) => e.toMap()).toList()));
   }
 }

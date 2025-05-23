@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/general/tuple.dart';
-import 'package:lerlingua/resources/sql_database.dart';
-import 'package:lerlingua/resources/sync.dart';
-import 'package:lerlingua/resources/sync_utils_extension.dart';
-import 'package:lerlingua/resources/vocab_card.dart';
+import 'package:lerlingua/resources/database/sql_database.dart';
+import 'package:lerlingua/resources/database/sync.dart';
+import 'package:lerlingua/resources/database/sync_utils_extension.dart';
+import 'package:lerlingua/resources/database/vocab_card.dart';
 
 
 void main() {
