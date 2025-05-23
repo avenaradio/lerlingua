@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lerlingua/resources/mirror_utils_extension.dart';
 import 'package:lerlingua/resources/vocab_card.dart';
-import '../../enums/move_direction.dart';
+import '../../general/move_direction.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/mirror.dart';
 

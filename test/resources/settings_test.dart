@@ -62,5 +62,30 @@ void main() {
       // Assert
       expect(settings.currentBox, 1);
     });
+
+    test('addDeletedCards should save to SharedPreferences', () async {
+      // Arrange
+      SharedPreferences.setMockInitialValues({}); // No value
+
+      // Act
+      settings.addDeletedCards('24/24/524/5');
+      settings.addDeletedCards('');
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Assert
+      await settings.loadSettings();
+      expect(settings.deletedCards, {24, 524, 5}); // Expect set of int
+      expect(Settings().deletedCardsString, '24/524/5');
+
+      // Act
+      settings.removeDeletedCards('24/24/524');
+      settings.removeDeletedCards('');
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Assert
+      await settings.loadSettings();
+      expect(settings.deletedCards, {5});
+      expect(Settings().deletedCardsString, '5');
+    });
   });
 }

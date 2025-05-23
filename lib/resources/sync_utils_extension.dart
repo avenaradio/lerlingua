@@ -2,15 +2,17 @@ import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/sync.dart';
 import 'package:lerlingua/resources/vocab_card.dart';
 
+import '../general/tuple.dart';
+
 extension SyncUtils on Sync {
   /// Converts a List&lt;VocabCard&gt; to a csv string.
   /// Returns csv string
   /// - Tested
-  String vocabCardsToCsv(List<VocabCard> vocabCards) {
+  String vocabCardsToCsv({required List<VocabCard> cards, required String deletedCards}) {
     syncLog += ('Converting List of VocabCard to csv string...\n');
     // Convert each VocabCard to a csv string and join them with \n into a single string
-    String csvString = vocabCards.map((e) => e.toCsv()).join('\n');
-    csvString = '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}\n$csvString'; // Add database version as first line
+    String csvString = cards.map((e) => e.toCsv()).join('\n');
+    csvString = '${SqlDatabase().version}${List.filled(VocabCard.parametersCount - 1, ',').join()}$deletedCards\n$csvString'; // Add database version as first line
     return csvString;
   }
 
@@ -36,13 +38,18 @@ extension SyncUtils on Sync {
   }
 
   /// Converts a csv string back to a List&lt;VocabCard&gt. <br>
-  /// Returns List&lt;VocabCard&gt;, null if error
+  /// Returns Tuple3&lt;int, String, List&lt;VocabCard&gt;&gt;:
+  /// - csvDataVersion: [int]
+  /// - deletedCards: [String]
+  /// - cards: [List&lt;VocabCard&gt;]
+  /// - null if error
+  /// <br><br>
   /// - Tested
-  List<VocabCard>? vocabCardsFromCsv(String? csvString) {
+  Tuple3<int, String, List<VocabCard>>? vocabCardsFromCsv(String? csvString) {
     syncLog += ('Converting csv string to List of VocabCard...\n');
     if(csvString == '' || csvString == null) {
       syncLog += ('CSV string is empty, returning empty list\n');
-      return [];
+      return Tuple3(0, '', []);
     }
     // Decode the csv string to a List of dynamic
     late List<String> csvList;
@@ -54,6 +61,7 @@ extension SyncUtils on Sync {
     }
     int csvDataVersion = int.tryParse(csvList.first.split(',').first) ?? 0; // DATABASE VERSION CHECK IF MERGE IS NEEDED
     syncLog += ('Database version of csv: ${csvDataVersion == 0 ? 'error' : csvDataVersion}\n');
+    String deletedCards = csvList.first.split(',').last;
     csvList.removeAt(0);
     // Convert each String into VocabCard
     List<VocabCard> vocabCards = [];
@@ -64,8 +72,8 @@ extension SyncUtils on Sync {
         syncLog += ('Error while converting card from csv: $e\n');
       }
     }
-    syncLog += ('List of VocabCard created from JSON csv\n');
-    return vocabCards;
+    syncLog += ('List of VocabCard created from csv\n');
+    return Tuple3(csvDataVersion, deletedCards, vocabCards);
   }
 
   /// Merges two List&lt;VocabCard&gt;. <br>

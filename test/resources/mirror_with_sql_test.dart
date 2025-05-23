@@ -1,16 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/mirror.dart';
+import 'package:lerlingua/resources/settings.dart';
 import 'package:lerlingua/resources/sql_database.dart';
 import 'package:lerlingua/resources/vocab_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 //Must run with 'flutter test test/resources/mirror_with_sql_test.dart --dart-define=IS_TEST=false' otherwise mirror will skip using sql database
 Future main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late Settings settings;
   // Set directory to in-memory
   SqlDatabase().dbDirectory = inMemoryDatabasePath;
-
   // Setup sqflite_common_ffi for flutter test
-  setUpAll(() {
+  setUpAll(() async {
+    // Initialize the mock SharedPreferences
+    settings = Settings();
+    // Use the mock SharedPreferences in place of the real one
+    SharedPreferences.setMockInitialValues({});
+    await settings.loadSettings();
     // Initialize FFI
     sqfliteFfiInit();
     // Change the default factory
@@ -115,19 +123,19 @@ Future main() async {
         timeModified: 1,
       );
       Mirror().dbMirror.clear();
-      bool deleted = Mirror().deleteCard(vocabKey: 0);
+      bool deleted = Mirror().deleteCard(card: card);
       expect(deleted, false);
       Mirror().writeCard(card: card);
       card.vocabKey = 1;
       Mirror().writeCard(card: card);
       card.vocabKey = 3;
       Mirror().writeCard(card: card);
-      deleted = Mirror().deleteCard(vocabKey: 2);
+      deleted = Mirror().deleteCard(card: card);
       expect(Mirror().dbMirror.length, 2);
-      expect(Mirror().dbMirror[0].vocabKey, 1);
-      expect(Mirror().dbMirror[1].vocabKey, 3);
+      expect(Mirror().dbMirror[0].vocabKey, 2);
+      expect(Mirror().dbMirror[1].vocabKey, 1);
       expect(deleted, true);
-      deleted = Mirror().deleteCard(vocabKey: 99);
+      deleted = Mirror().deleteCard(card: card);
       expect(deleted, false);
     });
   });
