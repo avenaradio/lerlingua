@@ -90,7 +90,7 @@ flutter_launcher_icons:
 flutter:
   assets:
     - assets/appainter_theme_bright.json
-    #- assets/appainter_theme_dark.json
+    - assets/appainter_theme_dark.json
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

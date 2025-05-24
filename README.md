@@ -56,3 +56,5 @@ Configuration in pubspec.yaml
 ```shell
 dart run flutter_launcher_icons
 ```
+## Theme generator
+https://appainter.dev/
