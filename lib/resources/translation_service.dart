@@ -8,7 +8,15 @@ class TranslationService {
   String injectJs;
   IconData icon;
 
-  TranslationService({int? key, required this.icon, required this.languageA, required this.languageB, required this.url, String? injectJs}) : injectJs = injectJs ?? '', key = key ?? DateTime.now().millisecondsSinceEpoch;
+  TranslationService({
+    int? key,
+    required this.icon,
+    required this.languageA,
+    required this.languageB,
+    required this.url,
+    String? injectJs,
+  }) : injectJs = injectJs ?? '',
+       key = key ?? DateTime.now().millisecondsSinceEpoch;
 
   /// Returns the URL for the given word
   /// - Tested
@@ -41,39 +49,65 @@ class TranslationService {
     );
   }
 
+  /// Returns the default TranslationServices
   static List<TranslationService> get defaults {
     return [
       TranslationService(
+        key: null,
+        icon: Icons.g_translate_rounded,
+        languageA: 'EN',
+        languageB: 'XX',
+        url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%',
+        injectJs: '''
+  document.body.style.zoom = '75%';
+  // First element with class will be removed.
+  var classNames = ['pGxpHc', 'VjFXz', 'hgbeOc EjH7wc', 'VlPnLc', 'cJ1Ndf'];
+  // For each class name in classNames remove elemen
+  classNames.forEach(function(className) {
+    var elements = document.getElementsByClassName(className)[0];
+    elements.remove();
+  })
+  window.scrollTo(0, document.body.scrollHeight);
+  '''
+      ),
+      TranslationService(
           key: null,
           icon: Icons.g_translate_rounded,
-          languageA: 'en',
-          languageB: 'xx',
-          url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%',
-          injectJs: '''function myFunction() {}'''
+          languageA: 'EN',
+          languageB: 'DE',
+          url: 'https://translate.google.com/?sl=de&tl=en&text=%search%',
+          injectJs: '''
+  document.body.style.zoom = '75%';
+  // First element with class will be removed.
+  var classNames = ['pGxpHc', 'VjFXz', 'hgbeOc EjH7wc', 'VlPnLc', 'cJ1Ndf'];
+  // For each class name in classNames remove elemen
+  classNames.forEach(function(className) {
+    var elements = document.getElementsByClassName(className)[0];
+    elements.remove();
+  })
+  window.scrollTo(0, document.body.scrollHeight);
+  '''
       ),
       TranslationService(
-          key: null,
-          icon: Icons.favorite_border_rounded,
-          languageA: 'en',
-          languageB: 'de',
-          url: 'https://www.deepl.com/de/translator#de/en-us/%search%',
-          injectJs: '''function myFunction() {}'''
-      ),
-      TranslationService(
-          key: null,
-          icon: Icons.sync_rounded,
-          languageA: 'en',
-          languageB: 'de',
-          url: 'https://context.reverso.net/translation/german-english/%search%',
-          injectJs: '''function myFunction() {}'''
+        key: null,
+        icon: Icons.sync_rounded,
+        languageA: 'EN',
+        languageB: 'DE',
+        url: 'https://context.reverso.net/translation/german-english/%search%',
+        injectJs: '''document.body.style.zoom = '75%';''',
       ),
     ];
   }
 
   /// Checks if propertys of two TranslationServices are the same
   /// - Tested
-  bool equals(TranslationService other) => (languageA == other.languageA) && (languageB == other.languageB) && (url == other.url) && (injectJs == other.injectJs);
+  bool equals(TranslationService other) =>
+      (languageA == other.languageA) &&
+      (languageB == other.languageB) &&
+      (url == other.url) &&
+      (injectJs == other.injectJs);
 
   @override
-  String toString() => 'TranslationService(key: $key, icon: $icon, languageA: $languageA, languageB: $languageB, url: $url, injectJs: $injectJs)';
+  String toString() =>
+      'TranslationService(key: $key, icon: $icon, languageA: $languageA, languageB: $languageB, url: $url, injectJs: $injectJs)';
 }
