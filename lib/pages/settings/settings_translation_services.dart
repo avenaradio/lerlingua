@@ -17,6 +17,13 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
         title: Text('Translation Services'),
         actions: [
           IconButton(
+            icon: Icon(Icons.rotate_left_rounded),
+            onPressed: () {
+              Settings().addDefaultTranslationServices();
+              setState(() {});
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
               _showEditOrAddTranslationServiceDialog(null);
@@ -30,14 +37,57 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
           TranslationService translationService = Settings().translationServices[index];
           return ListTile(
             leading: Icon(translationService.icon),
-            title: Text('${translationService.languageB} - ${translationService.languageA}'),
+            title: Text('${translationService.languageB} -> ${translationService.languageA}'),
             subtitle: Text(Uri.parse(translationService.url).authority),
             onTap: () {
               _showEditOrAddTranslationServiceDialog(translationService);
             },
+            onLongPress: () {
+              _showServiceOptionsDialog(translationService);
+            },
           );
         },
       ),
+    );
+  }
+
+  void _showServiceOptionsDialog(TranslationService translationService) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Options'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('Delete'),
+                onTap: () {
+                  Settings().deleteTranslationService(translationService);
+                  Navigator.pop(context);
+                  setState(() {});
+                },
+              ),
+              ListTile(
+                title: Text('Duplicate'),
+                onTap: () {
+                  TranslationService newService = TranslationService(
+                    key: null,
+                    icon: translationService.icon,
+                    languageA: translationService.languageA,
+                    languageB: translationService.languageB,
+                    url: translationService.url,
+                    injectJs: translationService.injectJs,
+                  );
+                  Settings().addOrUpdateTranslationService(newService);
+                  Navigator.pop(context);
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -136,6 +186,8 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
       Icons.language_rounded,
       Icons.translate_rounded,
       Icons.g_translate_rounded,
+      Icons.favorite_border_rounded,
+      Icons.sync_rounded,
       Icons.web_rounded,
       Icons.public_rounded,
       Icons.font_download_rounded,

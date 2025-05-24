@@ -17,15 +17,11 @@ void main() {
     setUp(() async {
       // Initialize the mock SharedPreferences
       settings = Settings();
-
-      // Use the mock SharedPreferences in place of the real one
-      SharedPreferences.setMockInitialValues({});
-      await settings.loadSettings();
     });
 
     test('loadSettings should load currentBox from SharedPreferences', () async {
       // Arrange
-      SharedPreferences.setMockInitialValues({'currentBox': 2});
+      SharedPreferences.setMockInitialValues({'currentBox': 2, 'firstRun': false});
 
       // Act
       await settings.loadSettings();
@@ -35,6 +31,7 @@ void main() {
     });
 
     test('currentBox getter and setter should work correctly', () async {
+      SharedPreferences.setMockInitialValues({ 'firstRun': false });
       // Act
       settings.currentBox = 5;
 
@@ -44,7 +41,8 @@ void main() {
 
     test('currentBox setter should save to SharedPreferences', () async {
       // Act
-      SharedPreferences.setMockInitialValues({'currentBox': 2});
+      SharedPreferences.setMockInitialValues({'currentBox': 2, 'firstRun': false});
+      await settings.loadSettings();
       settings.currentBox = 5;
 
       // Assert
@@ -56,7 +54,7 @@ void main() {
 
     test('loadSettings should set currentBox to empty string if not found', () async {
       // Arrange
-      SharedPreferences.setMockInitialValues({}); // No value
+       SharedPreferences.setMockInitialValues({ 'firstRun': false });
 
       // Act
       await settings.loadSettings();
@@ -67,7 +65,7 @@ void main() {
 
     test('addDeletedCards should save to SharedPreferences', () async {
       // Arrange
-      SharedPreferences.setMockInitialValues({}); // No value
+       SharedPreferences.setMockInitialValues({ 'firstRun': false });
 
       // Act
       settings.addDeletedCards('24/24/524/5');
@@ -88,10 +86,11 @@ void main() {
       await settings.loadSettings();
       expect(settings.deletedCards, {5});
       expect(Settings().deletedCardsString, '5');
+
     });
     group('translationServices', () {
       test('currentTranslationService getter and setter should work correctly', () async {
-        SharedPreferences.setMockInitialValues({}); // No value
+         SharedPreferences.setMockInitialValues({ 'firstRun': false });
         // Assert
         await settings.loadSettings();
         expect(settings.currentTranslationService?.key, null);
@@ -108,9 +107,12 @@ void main() {
         await settings.loadSettings();
         expect(settings.currentTranslationService?.key, 1);
         expect(settings.translationServices.first.key, 1);
+
+        // Clear
+        settings.deleteTranslationService(translationService);
       });
       test('currentTranslationService getter should return first if none set', () async {
-        SharedPreferences.setMockInitialValues({}); // No value
+         SharedPreferences.setMockInitialValues({ 'firstRun': false });
 
         // Arrange
         TranslationService translationService = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
@@ -134,7 +136,7 @@ void main() {
         expect(settings.translationServices.isEmpty, true);
       });
       test('add and delete translation services', () async {
-        SharedPreferences.setMockInitialValues({}); // No value
+         SharedPreferences.setMockInitialValues({ 'firstRun': false });
 
         // Arrange
         TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
@@ -152,24 +154,81 @@ void main() {
         expect(settings.translationServices.last.languageB, 'fr');
 
         // Act
-        translationService2.languageB = 'de';
-        settings.addOrUpdateTranslationService(translationService2);
-        await Future.delayed(const Duration(milliseconds: 500));
-
-        // Assert
-        await settings.loadSettings();
-        expect(settings.translationServices.length, 2);
-        expect(settings.translationServices.first.languageB, 'de');
-        expect(settings.translationServices.last.languageB, 'es');
-
-        // Act
         settings.deleteTranslationService(translationService1);
         await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert
         await settings.loadSettings();
         expect(settings.translationServices.length, 1);
-        expect(settings.translationServices.first.languageB, 'de');
+        expect(settings.translationServices.first.languageB, 'fr');
+
+        // Clear
+        settings.deleteTranslationService(translationService2);
+      });
+      test('get translation services should order correctly', () async {
+         SharedPreferences.setMockInitialValues({ 'firstRun': false });
+
+        // Arrange
+        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'fr', languageB: 'en', url: '', injectJs: '');
+        TranslationService translationService2 = TranslationService(key: 2, icon: Icons.translate, languageA: 'es', languageB: 'en', url: '', injectJs: '');
+        TranslationService translationService3 = TranslationService(key: 3, icon: Icons.translate, languageA: 'fr', languageB: 'en', url: '', injectJs: '');
+        TranslationService translationService4 = TranslationService(key: 4, icon: Icons.translate, languageA: 'es', languageB: 'en', url: '', injectJs: '');
+        TranslationService translationService5 = TranslationService(key: 5, icon: Icons.translate, languageA: 'es', languageB: 'de', url: '', injectJs: '');
+
+        // Act
+        settings.addOrUpdateTranslationService(translationService1);
+        settings.addOrUpdateTranslationService(translationService2);
+        settings.addOrUpdateTranslationService(translationService3);
+        settings.addOrUpdateTranslationService(translationService4);
+        settings.addOrUpdateTranslationService(translationService5);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.translationServices.length, 5);
+        expect(settings.translationServices[0].key, 5);
+        expect(settings.translationServices[1].key, 2);
+        expect(settings.translationServices[2].key, 4);
+        expect(settings.translationServices[3].key, 1);
+        expect(settings.translationServices[4].key, 3);
+
+        // Act
+        translationService3.languageB = 'de';
+        settings.addOrUpdateTranslationService(translationService3);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.translationServices.length, 5);
+        expect(settings.translationServices[0].key, 5);
+        expect(settings.translationServices[1].key, 3);
+        expect(settings.translationServices[2].key, 2);
+        expect(settings.translationServices[3].key, 4);
+        expect(settings.translationServices[4].key, 1);
+
+        // Clear
+        settings.deleteTranslationService(translationService1);
+        settings.deleteTranslationService(translationService2);
+        settings.deleteTranslationService(translationService3);
+        settings.deleteTranslationService(translationService4);
+        settings.deleteTranslationService(translationService5);
+      });
+      test('load default translation services on first run', () async {
+        SharedPreferences.setMockInitialValues({});
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.translationServices.length, TranslationService.defaults.length);
+        expect(Settings().firstRun, false);
+
+        TranslationService? translationService = Settings().currentTranslationService;
+        translationService?.languageA = 'test';
+        settings.addOrUpdateTranslationService(translationService!); // Change value of one of the default translation services
+        Settings().firstRun = true;
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        await settings.loadSettings();
+        expect(settings.translationServices.length, TranslationService.defaults.length + 1);
       });
     });
   });

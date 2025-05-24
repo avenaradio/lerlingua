@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/settings/credentials_dialog.dart';
-import 'package:lerlingua/pages/settings/translation_services_list.dart';
 import '../../resources/database/mirror.dart';
 import '../../resources/database/sql_database.dart';
 import '../../resources/database/sync.dart';
@@ -86,10 +85,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 title: const Text('Translation Services'),
                 subtitle: const Text('Edit your translation services'),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => TranslationServicesList()),
-                  );
+                  Navigator.pushNamed(context, '/settings/translation_services');
                 },
               ),
               ListTile(

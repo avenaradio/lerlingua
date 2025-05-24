@@ -4,6 +4,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/database/mirror.dart';
 import '../../resources/database/vocab_card.dart';
+import '../../resources/settings.dart';
+import '../../resources/translation_service.dart';
 
 class WebView extends StatefulWidget {
   const WebView({super.key});
@@ -25,10 +27,26 @@ class _WebViewState extends State<WebView> {
   final urlController = TextEditingController();
   String url = "";
   String wordB = "lerlingua";
+  TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', injectJs: '');
 
-  _search({required String wordB, required String url}) {
-    WebUri webUri = WebUri(url + wordB);
-    webViewController?.loadUrl(urlRequest: URLRequest(url: webUri));
+  _search() {
+    _translationService = Settings().currentTranslationService ?? _translationService;
+    String url = _translationService.getUrl(wordB);
+    if (url.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('This translation service has not placeholder %search%.')),
+      );
+      return;
+    }
+    WebUri webUri = WebUri(url);
+    if(webUri.isValidUri && webUri.hasAuthority) {
+      webViewController?.loadUrl(urlRequest: URLRequest(url: webUri));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('This translation service has no valid url.')),
+      );
+    }
+    setState(() {});
   }
 
   _saveVocabCard(String? selectedText) async {
@@ -37,7 +55,7 @@ class _WebViewState extends State<WebView> {
         vocabKey: -1,
         languageA: 'bookLanguage',
         wordB: wordB,
-        languageB: 'translationLanguage',
+        languageB: _translationService.languageB,
         wordA: selectedText,
         boxNumber: 0,
         timeModified: DateTime.now().millisecondsSinceEpoch,
@@ -50,11 +68,6 @@ class _WebViewState extends State<WebView> {
     // Subscribe to the event bus
     eventBus.on<WordBSelectedEvent>().listen((event) {
       wordB = event.wordB;
-      _search(
-        wordB: wordB,
-        url: 'https://translate.google.de/?sl=auto&tl=en&text=',
-      );
-      /// TODO make this dynamic
     });
     // Set up context menu see https://inappwebview.dev/docs/webview/context-menu
     contextMenu = ContextMenu(
@@ -69,6 +82,9 @@ class _WebViewState extends State<WebView> {
       ],
     );
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _search();
+    });
   }
 
   @override
@@ -128,6 +144,45 @@ class _WebViewState extends State<WebView> {
                     },
                     icon: Icon(Icons.more_vert), // Menu button icon
                   ),
+                  PopupMenuButton<String>(
+                    itemBuilder: (BuildContext context) {
+                      return Settings().translationServices.map((service) {
+                        return PopupMenuItem<String>(
+                          value: service.key.toString(),
+                          child: Row(
+                            children: [
+                              Icon(service.icon),
+                              SizedBox(width: 10),
+                              Text('${service.languageB} -> ${service.languageA}'),
+                            ],
+                          ),
+                        );
+                      }).toList()
+                        ..add(
+                          PopupMenuItem<String>(
+                            value: '0',
+                            child: Row(
+                              children: [
+                                Icon(Icons.settings_rounded),
+                                SizedBox(width: 10),
+                                Text('Edit Services'),
+                              ],
+                            ),
+                          ),
+                        );
+                    },
+                    onSelected: (String? value) {
+                      final key = int.parse(value!);
+                      if (key == 0) {
+                        // Push translation service settings page
+                        Navigator.pushNamed(context, '/settings/translation_services');
+                        return;
+                      }
+                      Settings().currentTranslationService = Settings().translationServices.firstWhere((service) => service.key == key);
+                      _search();
+                    },
+                    icon: Icon(_translationService.icon), // Current translation service icon
+                  ),
                   SizedBox(
                     width: 300,
                     child: TextField(
@@ -136,9 +191,9 @@ class _WebViewState extends State<WebView> {
                       onSubmitted: (value) {
                         var url = WebUri(value);
                         if (url.scheme.isEmpty) {
-                          url = WebUri("https://www.linguee.de/deutsch-portugiesisch/search?query=$value",);
                           wordB = value;
-                          ///TODO make this dynamic
+                          _search();
+                          return;
                         }
                         webViewController?.loadUrl(
                           urlRequest: URLRequest(url: url),
@@ -169,8 +224,6 @@ class _WebViewState extends State<WebView> {
                         "https://www.deepl.com/de/translator#pt/en-us/ler%20lingua",
                       ),
                     ),
-
-                    ///TODO make this dynamic
                     contextMenu: contextMenu,
                     initialSettings: settings,
                     onWebViewCreated: (controller) {

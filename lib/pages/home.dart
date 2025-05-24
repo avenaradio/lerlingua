@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/settings/credentials_dialog.dart';
-import 'package:lerlingua/pages/settings/settings_widget.dart';
+import 'package:lerlingua/pages/settings/settings_page.dart';
 import 'package:lerlingua/pages/learn/learn.dart';
 import 'package:lerlingua/pages/read/read.dart';
 import 'package:lerlingua/resources/database/mirror_sync_extension.dart';
@@ -16,7 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  int currentPageIndex = 1;
+  int currentPageIndex = 0;
   bool _isSyncing = false;
   late AnimationController _controller;
 
@@ -103,7 +103,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.book),
+            icon: Icon(Icons.book_rounded),
             label: 'Read',
           ),
           NavigationDestination(
@@ -111,11 +111,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             label: 'Learn',
           ),
           NavigationDestination(
-            icon: Icon(Icons.list_alt),
+            icon: Icon(Icons.list_alt_rounded),
             label: 'List',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_rounded),
             label: 'Settings',
           ),
         ],
@@ -130,7 +130,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             elevation: 0,
             child: AnimatedBuilder(
               animation: _controller,
-              child: Icon(Icons.sync_outlined),
+              child: Icon(Icons.sync_rounded),
               builder: (context, child) {
                 return Transform.rotate(
                   angle: - _controller.value * 2.0 * 3.14159, // Rotate in radians

@@ -129,9 +129,8 @@ class Settings {
     _translationServices.removeWhere((element) => element.key == translationService.key);
     saveSettings();
   }
-  /// Adds default translation services if not services with same values already exist
-  /// - Tested
-  void addDefaultTranslationServices() {
+  /// Load / restore default translation services
+  void loadDefaultTranslationServices() {
     List<TranslationService> defaultTranslationServices = TranslationService.defaults;
     // Add default translation services if not already exist services with same values
     for (TranslationService translationService in defaultTranslationServices) {
@@ -170,7 +169,7 @@ class Settings {
     }
     // If this is the first run
     if(_firstRun) {
-      addDefaultTranslationServices();
+      loadDefaultTranslationServices();
       _firstRun = false;
       saveSettings();
     }

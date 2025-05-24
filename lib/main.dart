@@ -5,7 +5,8 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'package:lerlingua/pages/home.dart';
 import 'dart:convert';
 
-import 'package:lerlingua/pages/loading.dart'; // For jsonDecode
+import 'package:lerlingua/pages/loading.dart';
+import 'package:lerlingua/pages/settings/settings_translation_services.dart'; // For jsonDecode
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => Loading(),
         '/home': (context) => Home(),
+        '/settings/translation_services': (context) => TranslationServicesList(),
       },
       //theme: theme,
     );

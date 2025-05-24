@@ -12,7 +12,8 @@ class TranslationService {
 
   /// Returns the URL for the given word
   /// - Tested
-  getUrl(String wordB) {
+  String getUrl(String wordB) {
+    if (!url.contains('%search%')) return '';
     return url.replaceAll('%search%', wordB).replaceAll(' ', '%20');
   }
 
@@ -39,4 +40,40 @@ class TranslationService {
       injectJs: map['injectJs'] as String,
     );
   }
+
+  static List<TranslationService> get defaults {
+    return [
+      TranslationService(
+          key: null,
+          icon: Icons.g_translate_rounded,
+          languageA: 'en',
+          languageB: 'xx',
+          url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%',
+          injectJs: '''function myFunction() {}'''
+      ),
+      TranslationService(
+          key: null,
+          icon: Icons.favorite_border_rounded,
+          languageA: 'en',
+          languageB: 'de',
+          url: 'https://www.deepl.com/de/translator#de/en-us/%search%',
+          injectJs: '''function myFunction() {}'''
+      ),
+      TranslationService(
+          key: null,
+          icon: Icons.sync_rounded,
+          languageA: 'en',
+          languageB: 'de',
+          url: 'https://context.reverso.net/translation/german-english/%search%',
+          injectJs: '''function myFunction() {}'''
+      ),
+    ];
+  }
+
+  /// Checks if propertys of two TranslationServices are the same
+  /// - Tested
+  bool equals(TranslationService other) => (languageA == other.languageA) && (languageB == other.languageB) && (url == other.url) && (injectJs == other.injectJs);
+
+  @override
+  String toString() => 'TranslationService(key: $key, icon: $icon, languageA: $languageA, languageB: $languageB, url: $url, injectJs: $injectJs)';
 }
