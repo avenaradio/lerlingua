@@ -15,6 +15,7 @@ class WebView extends StatefulWidget {
 }
 
 class _WebViewState extends State<WebView> {
+
   final GlobalKey webViewKey = GlobalKey();
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
@@ -53,9 +54,9 @@ class _WebViewState extends State<WebView> {
     if (selectedText != null) {
       Mirror().writeCard(card: VocabCard(
         vocabKey: -1,
-        languageA: 'bookLanguage',
+        languageA: _translationService.languageA,
         wordB: wordB,
-        languageB: _translationService.languageB,
+        languageB: 'bookLanguage',
         wordA: selectedText,
         boxNumber: 0,
         timeModified: DateTime.now().millisecondsSinceEpoch,
@@ -68,6 +69,7 @@ class _WebViewState extends State<WebView> {
     // Subscribe to the event bus
     eventBus.on<WordBSelectedEvent>().listen((event) {
       wordB = event.wordB;
+      _search();
     });
     // Set up context menu see https://inappwebview.dev/docs/webview/context-menu
     contextMenu = ContextMenu(
@@ -221,7 +223,7 @@ class _WebViewState extends State<WebView> {
                     key: webViewKey,
                     initialUrlRequest: URLRequest(
                       url: WebUri(
-                        "https://www.deepl.com/de/translator#pt/en-us/ler%20lingua",
+                        "https://translate.google.com/?sl=auto&tl=en&text=ler%20lingua",
                       ),
                     ),
                     contextMenu: contextMenu,
@@ -243,6 +245,7 @@ class _WebViewState extends State<WebView> {
                     },
 
                     onLoadStop: (controller, url) async {
+                      await controller.evaluateJavascript(source: _translationService.injectJs);
                       setState(() {
                         this.url = url.toString();
                         urlController.text = wordB;

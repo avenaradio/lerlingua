@@ -105,50 +105,55 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
           builder: (BuildContext context, StateSetter setDialogState) {
             return AlertDialog(
               title: Text('Edit Translation Service'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: languageBController,
-                    decoration: InputDecoration(
-                      labelText: 'Book Language',
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Text('Icon:'),
+                        IconButton(
+                          icon: Icon(selectedIcon),
+                          onPressed: () async {
+                            final newIcon = await _showIconPickerDialog(context, selectedIcon);
+                            if (newIcon != null) {
+                              setDialogState(() {
+                                selectedIcon = newIcon;
+                              });
+                            }
+                          },
+                        ),
+                      ],
                     ),
-                  ),
-                  TextField(
-                    controller: languageAController,
-                    decoration: InputDecoration(
-                      labelText: 'Known Language',
-                    ),
-                  ),
-                  TextField(
-                    controller: urlController,
-                    decoration: InputDecoration(
-                      labelText: 'URL',
-                    ),
-                  ),
-                  TextField(
-                    controller: injectJsController,
-                    decoration: InputDecoration(
-                      labelText: 'Inject JS',
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Text('Icon:'),
-                      IconButton(
-                        icon: Icon(selectedIcon),
-                        onPressed: () async {
-                          final newIcon = await _showIconPickerDialog(context, selectedIcon);
-                          if (newIcon != null) {
-                            setDialogState(() {
-                              selectedIcon = newIcon;
-                            });
-                          }
-                        },
+                    TextField(
+                      controller: languageBController,
+                      decoration: InputDecoration(
+                        labelText: 'Book Language',
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    TextField(
+                      controller: languageAController,
+                      decoration: InputDecoration(
+                        labelText: 'Known Language',
+                      ),
+                    ),
+                    TextField(
+                      controller: urlController,
+                      decoration: InputDecoration(
+                        labelText: 'URL',
+                      ),
+                    ),
+                    TextField(
+                      controller: injectJsController,
+                      minLines: 6,
+                      maxLines: 10,
+                      decoration: InputDecoration(
+                        labelText: 'Inject JS',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
