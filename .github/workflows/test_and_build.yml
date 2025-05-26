@@ -64,7 +64,7 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter clean
-      - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --no-tree-shake-icons
+      - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --dart-define=FEEDBACK_TOKEN=${{ secrets.FEEDBACK_TOKEN }} --no-tree-shake-icons
       - name: Rename APK
         run: |
           APK_PATH="build/app/outputs/apk/release/app-release.apk"
