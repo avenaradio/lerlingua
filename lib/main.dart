@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'package:lerlingua/pages/loading.dart';
 import 'package:lerlingua/pages/settings/settings_translation_services.dart';
 
-import 'global_variables.dart'; // For jsonDecode
+import 'feedback_button.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,47 +26,25 @@ class MyApp extends StatelessWidget {
 
   const MyApp({super.key, required this.theme});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: Draggable(
-        feedback: FloatingActionButton.small(
-          onPressed: () {},
-          tooltip: 'Send Feedback',
-          child: const Icon(Icons.feedback_rounded),
-        ),
-        childWhenDragging: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.grey.shade200,
-          ),
-          child: const Icon(Icons.feedback_rounded),
-        ),
-        child: FloatingActionButton.small(
-          onPressed: () {
-            BetterFeedback.of(context).showAndUploadToGitLab(
-              projectId: '5990',
-              gitlabUrl: 'gitlab.iue.fh-kiel.de',
-              apiToken: feedbackToken,
-            );
-          },
-          tooltip: 'Send Feedback',
-          child: const Icon(Icons.feedback_rounded),
-        ),
-      ),
-      body: MaterialApp(
-        title: 'Named Routes',
-        initialRoute: '/',
-        routes: {
-          '/': (context) => Loading(),
-          '/home': (context) => Home(),
-          '/settings/translation_services': (context) => TranslationServicesList(),
-        },
-        //theme: theme,
-      ),
+    return MaterialApp(
+      title: 'Named Routes',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Loading(),
+        '/home': (context) => Home(),
+        '/settings/translation_services': (context) => TranslationServicesList(),
+      },
+      //theme: theme,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child ?? Container(), // Main content of the app
+            FeedbackButton(), // Global Feedback button
+          ],
+        );
+      },
     );
   }
 }
