@@ -99,7 +99,7 @@ class TranslationService {
     ];
   }
 
-  /// Checks if propertys of two TranslationServices are the same
+  /// Checks if properties of two TranslationServices are the same
   /// - Tested
   bool equals(TranslationService other) =>
       (languageA == other.languageA) &&

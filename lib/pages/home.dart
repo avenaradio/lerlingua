@@ -103,16 +103,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.book_rounded),
+            icon: Icon(Icons.local_library_rounded),
             label: 'Read',
           ),
           NavigationDestination(
-            icon: Icon(Icons.play_circle_outline_rounded),
+            icon: Icon(Icons.play_circle_rounded),
             label: 'Learn',
           ),
           NavigationDestination(
-            icon: Icon(Icons.list_alt_rounded),
-            label: 'List',
+            icon: Icon(Icons.ballot_rounded),
+            label: 'Cards',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_rounded),

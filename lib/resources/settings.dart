@@ -2,6 +2,8 @@ import 'package:lerlingua/resources/translation_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'book.dart';
+
 // Steps to add a field:
 // 1. Getter and setter
 // 2. loadSettings()
@@ -57,7 +59,9 @@ class Settings {
     saveSettings();
   }
 
-  // Set of feleted cards for syncronization
+  /* --------------------------------------------
+  ----- DELETED CARDS FOR SYNCHRONIZATION -------
+  ---------------------------------------------*/
   final Set<int> _deletedCards = <int>{};
   Set<int> get deletedCards => _deletedCards;
   String get deletedCardsString => _deletedCards.join('/');
@@ -78,10 +82,12 @@ class Settings {
     saveSettings();
   }
 
-  // Translation Services
+  /* --------------------------------------------
+  ------------ TRANSLATION SERVICES -------------
+  ---------------------------------------------*/
   int _currentTranslationServiceKey = 0;
   final Set<TranslationService> _translationServices = <TranslationService>{};
-  /// Returns the set of translation services ordered by languageB, then languageA, then key
+  /// Returns List&lt;TranslationService&gt; ordered by languageB, then languageA, then key
   /// - Tested
   List<TranslationService> get translationServices => _translationServices.toList()..sort((a, b) {
     int compareLanguageB = a.languageB.compareTo(b.languageB);
@@ -142,6 +148,54 @@ class Settings {
     }
   }
 
+  /* --------------------------------------------
+  ----------------- BOOKS -----------------------
+  ---------------------------------------------*/
+  int? _currentBookKey;
+  final Set<Book> _books = <Book>{};
+  /// Returns List&lt;Book&gt; ordered by lastReadTime
+  /// - Tested
+  List<Book> get books => _books.toList()..sort((a, b) => b.lastReadTime.compareTo(a.lastReadTime));
+  /// Returns the current book
+  /// -
+  Book? get currentBook {
+    if(_currentBookKey == null) return null;
+    Book? currentBook = _books.where((element) => element.key == _currentBookKey).firstOrNull;
+    currentBook ??= books.firstOrNull;
+    return currentBook;
+  }
+  /// Sets the current book
+  /// - Tested
+  set currentBook(Book? book) {
+    if(book == null) {
+      _currentBookKey = null;
+      return;
+    }
+    _currentBookKey = book.key;
+    addOrUpdateBook(book);
+    saveSettings();
+  }
+  /// Adds a book
+  /// - Tested
+  void addOrUpdateBook(Book book) {
+    // If Book with key already exists, delete it
+    if(_books.any((element) => element.key == book.key)) {
+      _books.removeWhere((element) => element.key == book.key);
+    }
+    _books.add(book);
+    saveSettings();
+  }
+  /// Deletes a book
+  /// - Tested
+  void deleteBook(Book book) {
+    _books.removeWhere((element) => element.key == book.key);
+    saveSettings();
+  }
+
+
+  /* --------------------------------------------
+  ------------- SHARED PREFERENCES --------------
+  ---------------------------------------------*/
   /// Loads settings from SharedPreferences
   /// - Tested
   Future<void> loadSettings() async{
@@ -168,9 +222,22 @@ class Settings {
         addOrUpdateTranslationService(TranslationService.fromMap(e));
       }
     }
+    // Load current book key
+    _currentBookKey = _sharedPreferences.getInt('currentBookKey');
+    if(_currentBookKey == -1) _currentBookKey = null;
+    // Load books Set
+    String? booksString = _sharedPreferences.getString('books');
+    if (booksString != null) {
+      List<dynamic> booksMap = jsonDecode(booksString);
+      // Convert each map and add to set
+      for (dynamic e in booksMap) {
+        addOrUpdateBook(Book.fromMap(e));
+      }
+    }
     // If this is the first run
     if(_firstRun) {
       addDefaultTranslationServices();
+      _currentBookKey = null;
       _firstRun = false;
       saveSettings();
     }
@@ -191,5 +258,9 @@ class Settings {
     await _sharedPreferences.setInt('currentTranslationServiceKey', _currentTranslationServiceKey);
     // Save translation services Set
     await _sharedPreferences.setString('translationServices', jsonEncode(_translationServices.map((e) => e.toMap()).toList()));
+    // Save current book key
+    await _sharedPreferences.setInt('currentBookKey', _currentBookKey ?? -1);
+    // Save books Set
+    await _sharedPreferences.setString('books', jsonEncode(_books.map((e) => e.toMap()).toList()));
   }
 }
