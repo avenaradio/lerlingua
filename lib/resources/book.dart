@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:epub_pro/epub_pro.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart';
@@ -44,8 +43,6 @@ class Book {
 
   /// Converts a Map to a VocabCard instance
   factory Book.fromMap(Map<String, dynamic> map) {
-    print(map);
-    print(map['cover'].runtimeType);
     return Book(
       key: map['key'] as int,
       path: map['path'] as String,
@@ -89,7 +86,7 @@ class Book {
 
   /// Deletes a book from the app's document directory
   Future<void> deleteBook() async {
-    int deleted = await FileHandler.deleteFile(filePath: path);
+    await FileHandler.deleteFile(filePath: path);
     Settings().deleteBook(this);
   }
 
