@@ -1,5 +1,7 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lerlingua/resources/book.dart';
 import 'package:lerlingua/resources/settings.dart';
 import 'package:lerlingua/resources/translation_service.dart';
 import 'package:mockito/mockito.dart';
@@ -229,6 +231,165 @@ void main() {
 
         await settings.loadSettings();
         expect(settings.translationServices.length, TranslationService.defaults.length + 1);
+      });
+    });
+    group('books', () {
+      test('currentBook getter and setter should work correctly', () async {
+        SharedPreferences.setMockInitialValues({ 'firstRun': false });
+        // Assert
+        await settings.loadSettings();
+        expect(settings.currentBook?.key, null);
+        expect(settings.books.isEmpty, true);
+
+        // Arrange
+        Book book = Book(key: 1, path: 'test.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+
+        // Act
+        settings.currentBook = book;
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.currentBook?.key, 1);
+        expect(settings.books.first.key, 1);
+
+        // Clear
+        settings.deleteBook(book);
+      });
+      test('currentBook setter should save book if not existing yet', () async {
+        SharedPreferences.setMockInitialValues({ 'firstRun': false });
+
+        // Arrange
+        Book book = Book(key: 3, path: 'test.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+
+        // Act
+        settings.currentBook = book;
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.currentBook?.key, 3);
+        expect(settings.books.first.key, 3);
+
+        // Clear
+        settings.deleteBook(book);
+      });
+      test('currentBook getter should return last read or null if book is deleted', () async {
+        SharedPreferences.setMockInitialValues({ 'firstRun': false });
+
+        // Arrange
+        Book book2 = Book(key: 2, path: 'test2.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+        Book book3 = Book(key: 3, path: 'test3.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+        // Act
+        settings.addOrUpdateBook(book2);
+        settings.addOrUpdateBook(book3);
+        settings.currentBook = book2;
+        settings.deleteBook(book2);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.currentBook?.key, 3);
+        expect(settings.books.length, 1);
+
+        // Act
+        settings.deleteBook(book3);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.currentBook, null);
+        expect(settings.books.isEmpty, true);
+      });
+      test('currentBook getter should return null on first run', () async {
+        Book book2 = Book(key: 2, path: 'test2.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+        Book book3 = Book(key: 3, path: 'test3.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+        SharedPreferences.setMockInitialValues({ 'firstRun': true });
+        await settings.loadSettings();
+
+        // Act
+        settings.addOrUpdateBook(book2);
+        settings.addOrUpdateBook(book3);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.currentBook, null);
+        expect(settings.books.length, 2);
+
+        // Clear
+        settings.deleteBook(book2);
+        settings.deleteBook(book3);
+      });
+      test('add and delete book', () async {
+        SharedPreferences.setMockInitialValues({ 'firstRun': false });
+
+        // Arrange
+        Book book1 = Book(key: 1, path: 'test.epub', languageB: 'es', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+        Book book2 = Book(key: 2, path: 'test.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+
+        // Act
+        settings.addOrUpdateBook(book1);
+        settings.addOrUpdateBook(book2);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.books.length, 2);
+        expect(settings.books.first.languageB, 'es');
+        expect(settings.books.last.languageB, 'fr');
+
+        // Act
+        settings.deleteBook(book1);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.books.length, 1);
+        expect(settings.books.first.languageB, 'fr');
+
+        // Clear
+        settings.deleteBook(book2);
+      });
+      test('get book should order correctly', () async {
+        SharedPreferences.setMockInitialValues({ 'firstRun': false });
+
+        // Arrange
+        Book book1 = Book(key: 1, path: 'test.epub', languageB: 'es', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch, cover: Uint8List(1));
+        Book book2 = Book(key: 2, path: 'test.epub', languageB: 'fr', readingLocation: 'test_location', title: 'test_title', author: 'test_author', lastReadTime: DateTime.now().millisecondsSinceEpoch + 1000, cover: Uint8List(1));
+
+        // Act
+        settings.addOrUpdateBook(book1);
+        settings.addOrUpdateBook(book2);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.books.length, 2);
+        expect(settings.books[0].key, 2);
+        expect(settings.books[1].key, 1);
+
+        // Act
+        book1.lastReadTime = DateTime.now().millisecondsSinceEpoch + 2000;
+        settings.addOrUpdateBook(book1);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.books.length, 2);
+        expect(settings.books[0].key, 1);
+        expect(settings.books[1].key, 2);
+
+        // Clear
+        settings.deleteBook(book1);
+        settings.deleteBook(book2);
+      });
+      test('set current book to null on first run', () async {
+        SharedPreferences.setMockInitialValues({});
+
+        // Assert
+        await settings.loadSettings();
+        expect(settings.currentBook?.key, null);
       });
     });
   });

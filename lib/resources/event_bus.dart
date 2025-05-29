@@ -17,3 +17,8 @@ class WordASelectedEvent {
 class LearningPageSetStateEvent {}
 
 class LearningPageNewDataEvent {}
+
+class CurrentBookChangedEvent {
+  bool showLibrary = false;
+  CurrentBookChangedEvent(this.showLibrary);
+}

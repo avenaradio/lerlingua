@@ -161,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
+  epub_pro:
+    dependency: "direct main"
+    description:
+      name: epub_pro
+      sha256: "2d98471b0fd8415ef875329d7bf58926528f82954ed6d1783a20050b94bf3dd0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.5"
   event_bus:
     dependency: "direct main"
     description:
@@ -376,7 +384,7 @@ packages:
     source: hosted
     version: "4.1.2"
   image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image
       sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
