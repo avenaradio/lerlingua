@@ -1,10 +1,22 @@
 # Lerlingua
 Learn languages reading.
-
-With Lerlingua you can read books in other languages and synchronize your vocabulary across devices.
-# Download
-[Releases](https://github.com/avenaradio/lerlingua/releases)
-# Connect with GitHub for synchronization
+## How to use
+This app contains two main features:
+- Reading books
+- Learning words
+### Reading books
+- Go to the library page by clicking the book icon
+- There you can import a new book
+- Select a word to translate it
+- Then select the translation and "Add" it to your vocabulary
+### Learning words
+- Your vocabulary is displayed in a vocabulary learning box
+- The new cards are stored in the inbox
+- To learn them, you can move cards to the first box by clicking the arrow
+- Type the answer in the cloze
+- If you don't know the word, long press the check button to show the translation
+- If you press the "X" button the word will be moved to the first box
+### Connect with GitHub for synchronization
 1. Create a GitHub repository
 2. Create a personal access token
    - Click on your GitHub profile 
@@ -22,3 +34,5 @@ With Lerlingua you can read books in other languages and synchronize your vocabu
       - *Copy the token* you can't see it again
 3. Add the token, repo owner and repo name to the app
 During upload the file size is 1.34 times the file size on GitHub due base64 to the encoding.
+# Download
+[Releases](https://github.com/avenaradio/lerlingua/releases)
