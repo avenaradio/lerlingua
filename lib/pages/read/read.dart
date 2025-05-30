@@ -3,6 +3,8 @@ import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:lerlingua/pages/read/epub_view.dart';
 import 'package:lerlingua/pages/read/web_view.dart';
 import '../../resources/event_bus.dart';
+import '../../resources/settings.dart';
+import 'edit_language_page.dart';
 import 'library.dart';
 
 class Read extends StatefulWidget {
@@ -38,12 +40,12 @@ class _ReadState extends State<Read> {
               children: [
                 IconButton(
                   tooltip: 'Previous page',
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.navigate_before_rounded),
                   onPressed: () => epubController.prev(),
                 ),
                 IconButton(
                   tooltip: 'Next page',
-                  icon: const Icon(Icons.arrow_forward),
+                  icon: const Icon(Icons.navigate_next_rounded),
                   onPressed: () => epubController.next(),
                 ),
                 IconButton(
@@ -53,6 +55,24 @@ class _ReadState extends State<Read> {
                     _showLibrary = !_showLibrary;
                     setState(() {});
                   },
+                ),
+                _showLibrary ? Container() : IconButton(
+                  tooltip: 'Book language: ${Settings().currentBook?.languageB}',
+                  icon: const Icon(Icons.language_rounded),
+                  onPressed: () async {
+                    await editLanguageDialog(context);
+                  },
+                ),
+                Spacer(),
+                IconButton(
+                  tooltip: 'Previous page',
+                  icon: const Icon(Icons.navigate_before_rounded),
+                  onPressed: () => epubController.prev(),
+                ),
+                IconButton(
+                  tooltip: 'Next page',
+                  icon: const Icon(Icons.navigate_next_rounded),
+                  onPressed: () => epubController.next(),
                 ),
               ],
             ),

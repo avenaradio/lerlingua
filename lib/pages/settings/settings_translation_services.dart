@@ -143,13 +143,16 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
                         labelText: 'URL',
                       ),
                     ),
-                    TextField(
-                      controller: injectJsController,
-                      minLines: 6,
-                      maxLines: 10,
-                      decoration: InputDecoration(
-                        labelText: 'Inject JS',
-                        border: OutlineInputBorder(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: injectJsController,
+                        minLines: 6,
+                        maxLines: 10,
+                        decoration: InputDecoration(
+                          labelText: 'Inject JS',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
                   ],

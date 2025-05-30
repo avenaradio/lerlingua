@@ -16,7 +16,7 @@ class Cloze {
   List<TextEditingController> controllersForRestore = [];
   @visibleForTesting
   final List<TextEditingController> controllers = [];
-  final List<FocusNode> _focusNodes = [];
+  final List<FocusNode> focusNodes = [];
   @visibleForTesting
   final List<String> hiddenTexts = [];
   final TextStyle _commonTextStyle = const TextStyle(fontSize: 15.0);
@@ -54,7 +54,7 @@ class Cloze {
     final FocusNode focusNode = FocusNode();
     hiddenTexts.add(hiddenText);
     controllers.add(controller);
-    _focusNodes.add(focusNode);
+    focusNodes.add(focusNode);
     final double textWidth = _calculateTextWidth(hiddenText, _commonTextStyle);
     widgets.add(
       SizedBox(
@@ -135,11 +135,11 @@ class Cloze {
   /// - No unit test because it needs a context, but it works
   void _moveFocusIfCorrect({required String hiddenText, required TextEditingController controller, required FocusNode focusNode}) {
     if (controller.text == hiddenText) {
-      if (_focusNodes.indexOf(focusNode) < _focusNodes.length - 1) {
+      if (focusNodes.indexOf(focusNode) < focusNodes.length - 1) {
         // Mounted check
         if (!(_context?.mounted ?? false)) return;
         FocusScope.of(_context!).requestFocus(
-            _focusNodes[_focusNodes.indexOf(focusNode) + 1]);
+            focusNodes[focusNodes.indexOf(focusNode) + 1]);
       }
       // Check if all fields are correct
       if (controllers.every((controller) => controller.text == hiddenTexts[controllers.indexOf(controller)])) {

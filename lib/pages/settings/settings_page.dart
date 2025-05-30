@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/settings/credentials_dialog.dart';
-import '../../resources/database/mirror.dart';
-import '../../resources/database/sql_database.dart';
-import '../../resources/database/sync.dart';
-import '../../resources/database/vocab_card.dart';
-import '../loading.dart';
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({super.key});
@@ -24,7 +19,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           child: ListView(
             children: [
               const ListTile(
-                title: Text('Account', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text('Synchronization', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
               ListTile(
                 title: const Text('GitHub Credentials'),
@@ -33,53 +28,16 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   CredentialsDialog().show(context);
                 },
               ),
-              const Divider(),
-              const ListTile(
-                title: Text('Database Management', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
               ListTile(
-                title: const Text('Database'),
-                subtitle: const Text('Manage your database'),
+                title: const Text('Log'),
+                subtitle: const Text('View the synchronization log'),
                 onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Wrap(
-                        children: [
-                          ListTile(
-                            title: const Text('Delete Database'),
-                            onTap: () {
-                              SqlDatabase().deleteSqlDatabase();
-                              Mirror().initDatabase();
-                              Navigator.pop(context);
-                            },
-                          ),
-                          ListTile(
-                            title: const Text('Move all to first box'),
-                            onTap: () {
-                              for (VocabCard card in Mirror().dbMirror) {
-                                card.boxNumber = 0;
-                                Mirror().writeCard(card: card);
-                              }
-                              Navigator.pop(context);
-                            },
-                          ),
-                          ListTile(
-                            title: const Text('Reload app'),
-                            onTap: () {
-                              Mirror().dbMirror.clear();
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Loading()));
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                  Navigator.pushNamed(context, 'settings/sync_log');
                 },
               ),
               const Divider(),
               const ListTile(
-                title: Text('Translation and Sync', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text('Translation', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
               ListTile(
                 title: const Text('Translation Services'),
@@ -87,10 +45,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 onTap: () {
                   Navigator.pushNamed(context, '/settings/translation_services');
                 },
-              ),
-              ListTile(
-                title: const Text('Sync Log'),
-                subtitle: Text(Sync().syncLog),
               ),
             ],
           ),

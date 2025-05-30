@@ -8,6 +8,7 @@ import 'dart:convert';
 
 import 'package:lerlingua/pages/loading.dart';
 import 'package:lerlingua/pages/read/library.dart';
+import 'package:lerlingua/pages/settings/settings_sync_log.dart';
 import 'package:lerlingua/pages/settings/settings_translation_services.dart';
 
 import 'feedback_button.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => Loading(),
         '/home': (context) => Home(),
         '/settings/translation_services': (context) => TranslationServicesList(),
+        'settings/sync_log': (context) => SettingsSyncLog(),
         '/library': (context) => Library(),
       },
       //theme: theme,

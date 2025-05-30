@@ -35,14 +35,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _syncData() async {
+  Future<void> syncData() async {
     setState(() {
       _isSyncing = true;
     });
     _controller.repeat(); // Start rotation animation
-
     String syncResult = await Mirror().sync();
-
+    setState(() {
+      _isSyncing = false;
+    });
+    _controller.stop(); // Stop animation
+    _controller.reset();
     // Show the Snackbar after synchronization
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -78,70 +81,69 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     // Fire LearningPage event
     LearningPageNewDataEvent event = LearningPageNewDataEvent();
     eventBus.fire(event);
-
-    setState(() {
-      _isSyncing = false;
-    });
-    _controller.stop(); // Stop animation
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: <Widget>[
-        Read(),
-        Learn(),
-        ListPage(),
-        SettingsWidget(),
-      ][currentPageIndex],
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget>[
-          NavigationDestination(
-            icon: Icon(Icons.local_library_rounded),
-            label: 'Read',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.play_circle_rounded),
-            label: 'Learn',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.ballot_rounded),
-            label: 'Cards',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_rounded),
-            label: 'Settings',
-          ),
-        ],
-      ),
-      floatingActionButton: Stack(
-        alignment: Alignment.center,
-        children: [
-          FloatingActionButton.small(
-            onPressed: _isSyncing ? null : _syncData,
-            tooltip: 'Sync',
-            shape: const CircleBorder(),
-            elevation: 0,
-            child: AnimatedBuilder(
-              animation: _controller,
-              child: Icon(Icons.sync_rounded),
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: - _controller.value * 2.0 * 3.14159, // Rotate in radians
-                  child: child,
-                );
-              },
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: <Widget>[
+          Read(),
+          Learn(),
+          ListPage(),
+          SettingsWidget(),
+        ][currentPageIndex],
+        bottomNavigationBar: NavigationBar(
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentPageIndex = index;
+            });
+          },
+          selectedIndex: currentPageIndex,
+          destinations: const <Widget>[
+            NavigationDestination(
+              icon: Icon(Icons.local_library_rounded),
+              label: 'Read',
             ),
-          ),
-        ],
+            NavigationDestination(
+              icon: Icon(Icons.play_circle_rounded),
+              label: 'Learn',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.ballot_rounded),
+              label: 'Cards',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.settings_rounded),
+              label: 'Settings',
+            ),
+          ],
+        ),
+        floatingActionButton: Stack(
+          alignment: Alignment.center,
+          children: [
+            FloatingActionButton.small(
+              onPressed: _isSyncing ? null : syncData,
+              tooltip: 'Sync',
+              shape: const CircleBorder(),
+              elevation: 0,
+              //backgroundColor: Mirror().undoList.isEmpty ? null : Theme.of(context).colorScheme.error,
+              child: AnimatedBuilder(
+                animation: _controller,
+                child: Icon(Icons.sync_rounded),
+                builder: (context, child) {
+                  return Transform.rotate(
+                    angle: - _controller.value * 2.0 * 3.14159, // Rotate in radians
+                    child: child,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
     );
   }
 }

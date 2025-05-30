@@ -246,10 +246,11 @@ packages:
   flutter_epub_viewer:
     dependency: "direct main"
     description:
-      name: flutter_epub_viewer
-      sha256: "2e98e25a075bf512520bb28033c054b0dd2c97bfa3980314e0aab8a54941fb49"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: d6f3a18c68ce0fe3207b794efbe0eac6b8bf818a
+      url: "https://github.com/avenaradio/epub_viewer"
+    source: git
     version: "1.2.1"
   flutter_inappwebview:
     dependency: "direct main"

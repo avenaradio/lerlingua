@@ -133,5 +133,10 @@ void main() {
       expect(filteredCards.length, 2);
       expect(cards.hashCode, isNot(filteredCards.hashCode));
     });
+
+    test('cards should return a different list', () {
+      final cardsFilter2 = cardsFilter.filterByLanguageA('English');
+      expect(cardsFilter2.cards.hashCode, isNot(cardsFilter.cardsList.hashCode));
+    });
   });
 }

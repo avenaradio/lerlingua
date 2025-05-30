@@ -3,6 +3,7 @@ import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:flutter/material.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/settings.dart';
+import 'edit_language_page.dart';
 
 class EpubView extends StatefulWidget {
   const EpubView({super.key, required this.epubController});
@@ -25,7 +26,9 @@ class _EpubViewState extends State<EpubView> {
                 epubController: widget.epubController,
                 displaySettings: EpubDisplaySettings(
                   flow: EpubFlow.paginated,
+                  spread: EpubSpread.none,
                   snap: true,
+                  useSnapAnimationAndroid: false,
                   //theme: EpubTheme.dark(),
                 ),
                 initialCfi: Settings().currentBook?.readingLocation, // Start location
@@ -47,30 +50,7 @@ class _EpubViewState extends State<EpubView> {
                 ),
                 onTextSelected: (epubTextSelection) async {
                   if (Settings().currentBook?.languageB == '') {
-                    await showDialog<String>(
-                      context: context,
-                      // Text field to set book language
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Set language'),
-                        content: TextField(
-                          controller: TextEditingController(text: Settings().currentBook?.languageB ?? ''),
-                          onChanged: (value) {
-                            Settings().currentBook?.languageB = value;
-                            Settings().addOrUpdateBook(Settings().currentBook!);
-                          },
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('Cancel'),
-                            onPressed: () => Navigator.pop(context, 'Cancel'),
-                          ),
-                          TextButton(
-                            child: const Text('Save'),
-                            onPressed: () => Navigator.pop(context, 'Save'),
-                          ),
-                        ],
-                      ),
-                    );
+                    await editLanguageDialog(context);
                   }
                   // Create and fire the event
                   final event = WordBSelectedEvent(
