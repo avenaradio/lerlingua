@@ -64,18 +64,15 @@ jobs:
       - run: flutter pub get
       - run: flutter clean
       - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --dart-define=FEEDBACK_TOKEN=${{ secrets.FEEDBACK_TOKEN }} --no-tree-shake-icons
-      - uses: Tlaster/android-sign@v1.2.2
+      - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         with:
-          releaseDirectory: |
-            build/app/outputs/apk/release
-            # app/build/outputs/bundle/release
+          releaseDirectory: build/app/outputs/apk/release
           signingKeyBase64: ${{ secrets.KEYSTORE }}
-          output: build/release/signed
           alias: ${{ secrets.KEYSTORE_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
         env:
-          BUILD_TOOLS_VERSION: "30.0.2"
+          BUILD_TOOLS_VERSION: "30.0.0"
       - name: Rename Signed APK
         run: |
           APK_PATH="build/app/outputs/apk/release/app-release.apk"
