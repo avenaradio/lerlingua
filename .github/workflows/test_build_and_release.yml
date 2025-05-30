@@ -68,10 +68,14 @@ jobs:
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
       - name: Create key.properties
         run: |
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-          # echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> android/key.properties
-          echo "storeFile=keystore.jks" >> android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/app/key.properties
+          # echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/app/key.properties
+          echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> android/app/key.properties
+          echo "storeFile=keystore.jks" >> android/app/key.properties
+      - name: List files in android/app
+        run: |
+          ls -la android/app
+          ls -la android
       - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --dart-define=FEEDBACK_TOKEN=${{ secrets.FEEDBACK_TOKEN }} --no-tree-shake-icons
       - name: Rename Signed APK
         run: |
