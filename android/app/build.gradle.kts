@@ -44,7 +44,7 @@ android {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"]?.toString() ?: "debug_key"
             keyPassword = keystoreProperties["keyPassword"]?.toString() ?: "Debug123#"
-            storeFile = file(keystoreProperties["storeFile"]?.let { it } ?: "android/app/debug_keystore.jks")
+            storeFile = file(keystoreProperties["storeFile"]?.let { it } ?: "debug_keystore.jks")
             storePassword = keystoreProperties["storePassword"]?.toString() ?: "Debug123#"
         }
     }
