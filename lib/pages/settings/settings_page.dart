@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/settings/credentials_dialog.dart';
+import '../../resources/settings.dart';
+import '../updater.dart';
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({super.key});
@@ -45,6 +47,42 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 onTap: () {
                   Navigator.pushNamed(context, '/settings/translation_services');
                 },
+              ),
+              const Divider(),
+              const ListTile(
+                title: Text('App Updates', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('Auto Update'),
+                subtitle: const Text('Get app updates automatically'),
+                trailing: Switch(
+                    value: Settings().autoUpdate,
+                    onChanged: (value) {
+                      setState(() {
+                        Settings().autoUpdate = value;
+                      });
+                    }),
+                // add switch
+              ),
+              ListTile(
+                title: Settings().updateAvailable ? const Text('Update Available') : const Text('No Update Available'),
+                subtitle: Settings().updateAvailable ? const Text('Download and install the latest update') : const Text('You are up to date'),
+                onTap: () {
+                  Updater.update(forceUpdate: true);
+                }
+              ),
+              const Divider(),
+              const ListTile(
+                title: Text('Tutorial', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('Load Tutorial Book'),
+                subtitle: const Text('Tap to load the manual'),
+                onTap: () {
+                  Settings().currentBook = null;
+                  Navigator.pushNamed(context, '/home');
+                },
+                // add switch
               ),
             ],
           ),

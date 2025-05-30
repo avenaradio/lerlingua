@@ -45,6 +45,20 @@ class Settings {
     saveSettings();
   }
 
+  bool _autoUpdate = true;
+  bool get autoUpdate => _autoUpdate;
+  set autoUpdate(bool value) {
+    _autoUpdate = value;
+    saveSettings();
+  }
+
+  bool _updateAvailable = false;
+  bool get updateAvailable => _updateAvailable;
+  set updateAvailable(bool value) {
+    _updateAvailable = value;
+    saveSettings();
+  }
+
   // GitHub credentials
   String _token = '';
   String get token => _token;
@@ -208,6 +222,8 @@ class Settings {
     _token = _sharedPreferences.getString('token') ?? '';
     _repoOwner = _sharedPreferences.getString('repoOwner') ?? '';
     _repoName = _sharedPreferences.getString('repoName') ?? '';
+    _autoUpdate = _sharedPreferences.getBool('autoUpdate') ?? true;
+    _updateAvailable = _sharedPreferences.getBool('updateAvailable') ?? false;
     // Load deleted cards
     String? deletedCardsString = _sharedPreferences.getString('deletedCards');
     if (deletedCardsString != null) addDeletedCards(deletedCardsString);
@@ -252,6 +268,8 @@ class Settings {
     await _sharedPreferences.setString('token', _token);
     await _sharedPreferences.setString('repoOwner', _repoOwner);
     await _sharedPreferences.setString('repoName', _repoName);
+    await _sharedPreferences.setBool('autoUpdate', _autoUpdate);
+    await _sharedPreferences.setBool('updateAvailable', _updateAvailable);
     // Save deleted cards
     await _sharedPreferences.setString('deletedCards', _deletedCards.join('/'));
     // Save current translation service key

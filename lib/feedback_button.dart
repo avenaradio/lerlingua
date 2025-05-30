@@ -11,7 +11,7 @@ class FeedbackButton extends StatefulWidget {
 }
 
 class FeedbackButtonState extends State<FeedbackButton> {
-  late Offset position;
+  Offset position = Offset(8, 8);
   final buttonSize = 50;
 
   @override
