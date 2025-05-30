@@ -63,16 +63,16 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter clean
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          # echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> android/key.properties
+          echo "storeFile=keystore.jks" >> android/key.properties
       - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --dart-define=FEEDBACK_TOKEN=${{ secrets.FEEDBACK_TOKEN }} --no-tree-shake-icons
-      - uses: r0adkll/sign-android-release@v1
-        name: Sign app APK
-        with:
-          releaseDirectory: build/app/outputs/apk/release
-          signingKeyBase64: ${{ secrets.KEYSTORE }}
-          alias: ${{ secrets.KEYSTORE_ALIAS }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "30.0.0"
       - name: Rename Signed APK
         run: |
           APK_PATH="build/app/outputs/apk/release/app-release.apk"
@@ -87,3 +87,4 @@ jobs:
           artifacts: "${{ github.workspace }}/${{ env.new_apk_name }}"
           tag: v${{ env.version_name }}
           token: ${{ secrets.TOKEN }}
+          # https://medium.com/@colonal/automating-flutter-builds-and-releases-with-github-actions-77ccf4a1ccdd
