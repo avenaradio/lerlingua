@@ -17,7 +17,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ListView(
             children: [
               const ListTile(
@@ -84,6 +84,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 },
                 // add switch
               ),
+              SizedBox(height: 16.0),
             ],
           ),
         ),
