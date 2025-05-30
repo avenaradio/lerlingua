@@ -1,5 +1,6 @@
+import 'package:app_autoupdate/app_autoupdate.dart';
 import 'package:flutter/material.dart';
-import '../resources/mirror.dart';
+import '../resources/database/mirror.dart';
 import '../resources/settings.dart';
 
 class Loading extends StatefulWidget {
@@ -10,7 +11,6 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-
   _initializeApp() async {
     // Load persistent data
     await Settings().loadSettings();
@@ -31,8 +31,19 @@ class _LoadingState extends State<Loading> {
     // Circular progress indicator
     return SafeArea(
       child: Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
+        body: Column(
+          children: [
+            Center(child: CircularProgressIndicator()),
+            AppUpdateWidget(
+              owner: 'avenaradio',
+              repo: 'lerlingua',
+              onUpdateComplete: () {
+                setState(() {
+                  Navigator.pushReplacementNamed(context, '/');
+                });
+              },
+            ),
+          ],
         ),
       ),
     );

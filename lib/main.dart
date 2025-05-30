@@ -1,3 +1,4 @@
+import 'package:feedback_gitlab/feedback_gitlab.dart';
 import 'package:flutter/material.dart';
 import 'package:json_theme/json_theme.dart';
 
@@ -5,7 +6,12 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'package:lerlingua/pages/home.dart';
 import 'dart:convert';
 
-import 'package:lerlingua/pages/loading.dart'; // For jsonDecode
+import 'package:lerlingua/pages/loading.dart';
+import 'package:lerlingua/pages/read/library.dart';
+import 'package:lerlingua/pages/settings/settings_sync_log.dart';
+import 'package:lerlingua/pages/settings/settings_translation_services.dart';
+
+import 'feedback_button.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +20,7 @@ void main() async {
   final themeJson = jsonDecode(themeStr);
   final theme = ThemeDecoder.decodeThemeData(themeJson)!;
 
-  runApp(MyApp(theme: theme));
+  runApp(BetterFeedback(child: MyApp(theme: theme)));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +28,6 @@ class MyApp extends StatelessWidget {
 
   const MyApp({super.key, required this.theme});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,8 +36,19 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => Loading(),
         '/home': (context) => Home(),
+        '/settings/translation_services': (context) => TranslationServicesList(),
+        'settings/sync_log': (context) => SettingsSyncLog(),
+        '/library': (context) => Library(),
       },
-      theme: theme,
+      //theme: theme,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child ?? Container(), // Main content of the app
+            FeedbackButton(), // Global Feedback button
+          ],
+        );
+      },
     );
   }
 }

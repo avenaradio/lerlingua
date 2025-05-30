@@ -30,16 +30,22 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  json_theme: ^8.0.0+2
+  json_theme: ^7.0.0+3
   path_provider: ^2.1.5
   file_picker: ^10.1.0
   flutter_inappwebview: ^6.1.5
-  flutter_epub_viewer: ^1.2.1
+  flutter_epub_viewer:
+    git: https://github.com/avenaradio/epub_viewer
+  epub_pro: ^5.0.5
+  image: ^4.5.4
   event_bus: ^2.0.1
   shared_preferences: ^2.5.3
   sqflite: ^2.4.2
   sqflite_common_ffi: ^2.3.5
   sqlite3_flutter_libs: ^0.5.32
+  http: ^1.4.0
+  feedback_gitlab: ^3.0.0
+  app_autoupdate: ^0.0.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -50,7 +56,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.11.0
+  flutter_launcher_icons: ^0.14.3
   mockito: ^5.4.5
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -89,7 +95,8 @@ flutter_launcher_icons:
 flutter:
   assets:
     - assets/appainter_theme_bright.json
-    - assets/appainter_theme_dark.json
+    - assets/books/lerlingua_en.epub
+    #- assets/appainter_theme_dark.json
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

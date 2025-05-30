@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'package:lerlingua/pages/settings/credentials_dialog.dart';
+import 'package:lerlingua/pages/settings/translation_services_list.dart';
+import '../../resources/database/mirror.dart';
+import '../../resources/database/sql_database.dart';
+import '../../resources/database/sync.dart';
+import '../../resources/database/vocab_card.dart';
+import '../loading.dart';
+
+class SettingsWidget extends StatefulWidget {
+  const SettingsWidget({super.key});
+
+  @override
+  State<SettingsWidget> createState() => _SettingsWidgetState();
+}
+
+class _SettingsWidgetState extends State<SettingsWidget> {
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Settings')),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              const ListTile(
+                title: Text('Account', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('GitHub Credentials'),
+                subtitle: const Text('Edit your GitHub credentials'),
+                onTap: () {
+                  CredentialsDialog().show(context);
+                },
+              ),
+              const Divider(),
+              const ListTile(
+                title: Text('Database Management', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('Database'),
+                subtitle: const Text('Manage your database'),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Wrap(
+                        children: [
+                          ListTile(
+                            title: const Text('Delete Database'),
+                            onTap: () {
+                              SqlDatabase().deleteSqlDatabase();
+                              Mirror().initDatabase();
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ListTile(
+                            title: const Text('Move all to first box'),
+                            onTap: () {
+                              for (VocabCard card in Mirror().dbMirror) {
+                                card.boxNumber = 0;
+                                Mirror().writeCard(card: card);
+                              }
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ListTile(
+                            title: const Text('Reload app'),
+                            onTap: () {
+                              Mirror().dbMirror.clear();
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Loading()));
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+              const Divider(),
+              const ListTile(
+                title: Text('Translation and Sync', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('Translation Services'),
+                subtitle: const Text('Edit your translation services'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TranslationServicesList()),
+                  );
+                },
+              ),
+              ListTile(
+                title: const Text('Sync Log'),
+                subtitle: Text(Sync().syncLog),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

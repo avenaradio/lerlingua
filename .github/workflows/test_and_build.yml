@@ -20,12 +20,13 @@ jobs:
           java-version: '17'
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.29.2' # FLUTTER VERSION
           channel: 'stable'
       - run: flutter pub get
       - run: flutter --version
       - run: flutter analyze
-      - run: flutter test --dart-define=IS_TEST=true
-      - run: flutter test test/resources/mirror_with_sql_test.dart --dart-define=IS_TEST=false
+      - run: flutter test --dart-define=IS_TEST=true --dart-define=SYNC_TEST_TOKEN=${{ secrets.SYNC_TEST_TOKEN}}
+      - run: flutter test test/resources/database/mirror_with_sql_test.dart --dart-define=IS_TEST=false
 
   build_androidApk:
     name: Build Flutter App (Android)
@@ -59,10 +60,11 @@ jobs:
           java-version: '17'
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.29.2' # FLUTTER VERSION
           channel: 'stable'
       - run: flutter pub get
       - run: flutter clean
-      - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --no-tree-shake-icons
+      - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --dart-define=FEEDBACK_TOKEN=${{ secrets.FEEDBACK_TOKEN }} --no-tree-shake-icons
       - name: Rename APK
         run: |
           APK_PATH="build/app/outputs/apk/release/app-release.apk"
