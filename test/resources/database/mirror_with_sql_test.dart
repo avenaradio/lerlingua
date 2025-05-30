@@ -41,14 +41,14 @@ Future main() async {
       );
       Mirror().dbMirror.clear();
       // Write card to DatabaseMirror
-      VocabCard cardClone = Mirror().writeCard(card: card);
+      VocabCard cardClone = Mirror().writeCard(card: card, addNewUndo: false);
       expect(card.hashCode, isNot(cardClone.hashCode));
       expect(Mirror().dbMirror.length, 1);
       expect(Mirror().dbMirror[0].hashCode, cardClone.hashCode);
       expect(Mirror().dbMirror[0].vocabKey, 1);
       // Add second card
       card.vocabKey = 2;
-      VocabCard cardClone2 = Mirror().writeCard(card: card);
+      VocabCard cardClone2 = Mirror().writeCard(card: card, addNewUndo: false);
       expect(card.hashCode, isNot(cardClone2.hashCode));
       expect(
         cardClone.hashCode,
@@ -58,17 +58,17 @@ Future main() async {
       expect(Mirror().dbMirror[1].vocabKey, 2);
       // override first card
       card.vocabKey = 1;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       expect(Mirror().dbMirror.length, 2);
       expect(Mirror().dbMirror[0].vocabKey, 1);
       // Add card without key (key = -1)
       card.vocabKey = -1;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       expect(Mirror().dbMirror.length, 3);
       expect(Mirror().dbMirror[2].vocabKey, greaterThan(1747913373956));
       // Add card with key not in DatabaseMirror (key = 21)
       card.vocabKey = 21;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       expect(Mirror().dbMirror.length, 4);
       expect(Mirror().dbMirror[3].vocabKey, 21);
     });
@@ -83,7 +83,7 @@ Future main() async {
         timeModified: 1,
       );
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       expect(Mirror().dbMirror.length, 0);
     });
     test('get card from DatabaseMirror', () {
@@ -101,11 +101,11 @@ Future main() async {
       );
       Mirror().dbMirror.clear();
       expect(Mirror().readCard(vocabKey: 0), null);
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 1;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 3;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       expect(Mirror().readCard(vocabKey: 2)!.vocabKey, 2);
       expect(Mirror().readCard(vocabKey: 99), null);
     });
@@ -125,11 +125,11 @@ Future main() async {
       Mirror().dbMirror.clear();
       bool deleted = Mirror().deleteCard(card: card);
       expect(deleted, false);
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 1;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 3;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       deleted = Mirror().deleteCard(card: card);
       expect(Mirror().dbMirror.length, 2);
       expect(Mirror().dbMirror[0].vocabKey, 2);

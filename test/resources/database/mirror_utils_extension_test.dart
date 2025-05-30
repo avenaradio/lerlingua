@@ -28,12 +28,12 @@ void main () {
           boxNumber: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 1;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 3;
       card.boxNumber = 2;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       // Assert
       expect(Mirror().filterCards.filterByBoxNumber(1).sortByTimeModified.cards.length, 2);
     });
@@ -47,17 +47,17 @@ void main () {
           boxNumber: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 1;
       card.timeModified = 50;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 3;
       card.timeModified = 100;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 4;
       card.boxNumber = 0;
       card.timeModified = 0;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       // Assert
       expect(Mirror().oldestLearnedBoxCard(boxNumber: 1).timeModified, 1);
     });
@@ -71,12 +71,12 @@ void main () {
           boxNumber: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 1;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 3;
       card.boxNumber = 2;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       // Assert
       expect(Mirror().boxSize(boxNumber: 1), 2);
       expect(Mirror().boxSize(boxNumber: 2), 1);
@@ -91,14 +91,14 @@ void main () {
           boxNumber: 0,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 2;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 3;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 4;
       card.boxNumber = 2;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       // Act
       Mirror().addStack(stackSize: 2);
       // Assert
@@ -123,11 +123,11 @@ void main () {
           boxNumber: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 2;
       card.timeModified = 2;
       card.boxNumber = 5;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       // Act
       card = Mirror().oldestLearnedBoxCard(boxNumber: 1);
       Mirror().move(card: card, direction: Direction.next, addNewUndo: true);
@@ -157,11 +157,11 @@ void main () {
           boxNumber: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 2;
       card.timeModified = 2;
       card.boxNumber = 5;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       // Act
       card = Mirror().oldestLearnedBoxCard(boxNumber: 1);
       Mirror().move(card: card, direction: Direction.previous, addNewUndo: true);
@@ -182,11 +182,11 @@ void main () {
           boxNumber: 1,
           timeModified: 1);
       Mirror().dbMirror.clear();
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       card.vocabKey = 2;
       card.timeModified = 2;
       card.boxNumber = 5;
-      Mirror().writeCard(card: card);
+      Mirror().writeCard(card: card, addNewUndo: false);
       // Act
       card = Mirror().oldestLearnedBoxCard(boxNumber: 1);
       Mirror().move(card: card, direction: Direction.first, addNewUndo: true);

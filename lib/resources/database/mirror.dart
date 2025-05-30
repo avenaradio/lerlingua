@@ -37,12 +37,18 @@ class Mirror {
 
   /// Adds or replaces card in mirror
   /// - Tested
-  VocabCard writeCard({required VocabCard card}) {
+  VocabCard writeCard({required VocabCard card, required bool addNewUndo}) {
     if (card.vocabKey == -2) return card;
+    Undo undo = Undo(description: 'Undo: Edit card');
     card = card.clone(); // Hard Copy
     bool replaced = false;
     for (int i = 0; i < dbMirror.length; i++) {
       if (dbMirror[i].vocabKey == card.vocabKey) {
+        if (addNewUndo == true) {
+          VocabCard oldCardCopy = dbMirror[i].clone();
+          undo.addFunction(() => writeCard(card: oldCardCopy, addNewUndo: false));
+          addUndo(undo: undo);
+        }
         dbMirror[i] = card; // Replace
         replaced = true;
         break;
@@ -72,12 +78,12 @@ class Mirror {
   /// - Tested
   bool deleteCard({required VocabCard card}) {
     if(card.vocabKey == -2) return false;
-    Undo undo = Undo(description: 'Undo: Delete Card');
+    Undo undo = Undo(description: 'Undo: Delete card');
     bool deleted = false;
     for (int i = 0; i < dbMirror.length; i++) {
       if (dbMirror[i].vocabKey == card.vocabKey) {
         VocabCard cardCopy = card.clone();
-        undo.addFunction(() => writeCard(card: cardCopy));
+        undo.addFunction(() => writeCard(card: cardCopy, addNewUndo: false));
         undo.addFunction(() => Settings().removeDeletedCards(card.vocabKey.toString()));
         addUndo(undo: undo);
         dbMirror.removeAt(i);

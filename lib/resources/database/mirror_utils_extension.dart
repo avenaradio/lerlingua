@@ -23,7 +23,7 @@ extension MirrorGetExtension on Mirror {
     List<VocabCard> stack = filterCards.filterByBoxNumber(0).sortByTimeModified.invertedOrder.cards.take(stackSize).toList();
     for(VocabCard card in stack) {
       VocabCard cardCopy = card.clone();
-      undo.addFunction(() => writeCard(card: cardCopy));
+      undo.addFunction(() => writeCard(card: cardCopy, addNewUndo: false));
       move(card: card, direction: Direction.next, addNewUndo: false);
     }
     addUndo(undo: undo);
@@ -35,7 +35,7 @@ extension MirrorGetExtension on Mirror {
     Undo undo = Undo(description: 'Undo: ${card.wordA} - ${card.wordB}');
     if(addNewUndo == true) {
       VocabCard cardCopy = card.clone();
-      undo.addFunction(() => writeCard(card: cardCopy));
+      undo.addFunction(() => writeCard(card: cardCopy, addNewUndo: false));
       addUndo(undo: undo);
     }
     int timeNow = DateTime.now().millisecondsSinceEpoch;
@@ -44,16 +44,16 @@ extension MirrorGetExtension on Mirror {
       case Direction.next:
         card.boxNumber++; // Move to next box
         if(card.boxNumber > 5) card.boxNumber = 5;
-        writeCard(card: card);
+        writeCard(card: card, addNewUndo: false);
         break;
       case Direction.previous:
         card.boxNumber--; // Move to previous box
         if(card.boxNumber < 1) card.boxNumber = 1;
-        writeCard(card: card);
+        writeCard(card: card, addNewUndo: false);
         break;
       case Direction.first:
         card.boxNumber = 1; // Move to first box
-        writeCard(card: card);
+        writeCard(card: card, addNewUndo: false);
         break;
     }
   }

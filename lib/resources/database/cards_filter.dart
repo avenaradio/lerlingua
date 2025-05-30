@@ -81,5 +81,10 @@ class CardsFilter {
     return CardsFilter(cardsList: filteredCards);
   }
 
-  List<VocabCard> get cards => cardsList.toList();
+  List<VocabCard> get cards {
+    // Return a copy of cardsList to avoid modifying the original list
+    List<VocabCard> filteredCards = [];
+    filteredCards.addAll(cardsList);
+    return filteredCards;
+  }
 }

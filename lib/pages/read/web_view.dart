@@ -6,6 +6,7 @@ import '../../resources/database/mirror.dart';
 import '../../resources/database/vocab_card.dart';
 import '../../resources/settings.dart';
 import '../../resources/translation_service.dart';
+import '../list/edit_card_page.dart';
 
 class WebView extends StatefulWidget {
   const WebView({super.key});
@@ -28,6 +29,7 @@ class _WebViewState extends State<WebView> {
   final urlController = TextEditingController();
   String url = "";
   String wordB = "lerlingua";
+  bool _wordBChanged = false;
   TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', injectJs: '');
 
   _search() {
@@ -51,8 +53,8 @@ class _WebViewState extends State<WebView> {
   }
 
   _saveVocabCard(String? selectedText) async {
-    if (selectedText != null) {
-      Mirror().writeCard(card: VocabCard(
+    if (selectedText != null && selectedText.isNotEmpty && wordB.isNotEmpty) {
+      VocabCard card = VocabCard(
         vocabKey: -1,
         languageA: _translationService.languageA,
         wordB: wordB,
@@ -60,7 +62,21 @@ class _WebViewState extends State<WebView> {
         wordA: selectedText,
         boxNumber: 0,
         timeModified: DateTime.now().millisecondsSinceEpoch,
-      ));
+      );
+      card = Mirror().writeCard(card: card, addNewUndo: false);
+      if (_wordBChanged) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Learning language is ${card.languageB}.'),
+            action: SnackBarAction(
+              label: 'Edit Card',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditCardPage(card: card,)));
+              },
+            ),
+          ));
+      }
     }
   }
 
@@ -68,6 +84,7 @@ class _WebViewState extends State<WebView> {
   void initState() {
     // Subscribe to the event bus
     eventBus.on<WordBSelectedEvent>().listen((event) {
+      _wordBChanged = false;
       wordB = event.wordB;
       _search();
     });
@@ -85,6 +102,7 @@ class _WebViewState extends State<WebView> {
     );
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _wordBChanged = false;
       _search();
     });
   }
@@ -190,18 +208,13 @@ class _WebViewState extends State<WebView> {
                   onSubmitted: (value) {
                     var url = WebUri(value);
                     if (url.scheme.isEmpty) {
+                      if(wordB != value) _wordBChanged = true;
                       wordB = value;
                       _search();
                       return;
                     }
                     webViewController?.loadUrl(
                       urlRequest: URLRequest(url: url),
-                    );
-                  },
-                  onTap: () {
-                    urlController.selection = TextSelection(
-                      baseOffset: 0,
-                      extentOffset: urlController.text.length,
                     );
                   },
                 ),
@@ -227,7 +240,7 @@ class _WebViewState extends State<WebView> {
                 onLoadStart: (controller, url) {
                   setState(() {
                     this.url = url.toString();
-                    urlController.text = this.url;
+                    //urlController.text = this.url;
                   });
                 },
                 onPermissionRequest: (controller, request) async {
@@ -249,13 +262,13 @@ class _WebViewState extends State<WebView> {
                   if (progress == 100) {}
                   setState(() {
                     this.progress = progress / 100;
-                    urlController.text = url;
+                    //urlController.text = url;
                   });
                 },
                 onUpdateVisitedHistory: (controller, url, androidIsReload) {
                   setState(() {
                     this.url = url.toString();
-                    urlController.text = this.url;
+                    //urlController.text = this.url;
                   });
                 },
                 onConsoleMessage: (controller, consoleMessage) {

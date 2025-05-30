@@ -7,7 +7,7 @@ import 'package:lerlingua/resources/database/vocab_card.dart';
 import '../../general/move_direction.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/database/mirror.dart';
-import '../loading.dart';
+import '../list/edit_card_page.dart';
 import 'cloze.dart';
 
 class Learn extends StatefulWidget {
@@ -40,7 +40,7 @@ class _LearnState extends State<Learn> {
             wordA: 'This is the leaning page.',
             languageB: 'Lerlingua',
             wordB: 'Learn languages reading.',
-            sentenceB: '%This% is a %cloze% with percent %signs%.',
+            sentenceB: '',
             boxNumber: 1,
             timeModified: 0,
           );
@@ -48,6 +48,7 @@ class _LearnState extends State<Learn> {
         _currentCard = card;
         _cloze = Cloze(context: context, card: _currentCard);
       });
+      _cloze.focusNodes[0].requestFocus();
     }
   }
 
@@ -88,7 +89,7 @@ class _LearnState extends State<Learn> {
               child: Column(
                 children: [
                   // LanguageA
-                  Center(
+                  _currentCard.vocabKey == -2 ? Container() : Center(
                     child: Text(
                       '${_currentCard.languageA}: ${_currentCard.wordA}',
                       style: const TextStyle(fontSize: 19),
@@ -96,7 +97,7 @@ class _LearnState extends State<Learn> {
                   ),
                   SizedBox(height: 10),
                   // Cloze
-                  Wrap(
+                  _currentCard.vocabKey == -2 ? Text('This box is empty', style: const TextStyle(fontSize: 19)) : Wrap(
                     spacing: 8.0, // Space between items
                     runSpacing: 8.0, // Space between lines
                     children: [
@@ -106,6 +107,15 @@ class _LearnState extends State<Learn> {
                       ),
                       ..._cloze.widgets,
                     ],
+                  ),
+                  SizedBox(height: 30),
+                  // Comment
+                  Center(
+                    child: Text(
+                      _currentCard.comment,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ),
                   SizedBox(height: 30),
                   // Buttons
@@ -204,6 +214,21 @@ class _LearnState extends State<Learn> {
                                     case 'Delete card':
                                       Mirror().deleteCard(card: _currentCard);
                                       _getCurrentCard();
+                                      break;
+                                    case 'Edit card':
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditCardPage(
+                                            card: _currentCard,
+                                          ),
+                                        ),
+                                      ).then((value) {
+                                        _getCurrentCard();
+                                      });
+                                      break;
+                                    default:
+                                      break;
                                   }
                                 },
                                 itemBuilder: (BuildContext context) {
@@ -214,12 +239,12 @@ class _LearnState extends State<Learn> {
                                       value: 'Delete card',
                                       child: Text('Delete card'),
                                     ),
-                                    /*
                                     PopupMenuItem<String>(
                                       height: height,
-                                      value: 'Option 2',
-                                      child: Text('Option 2'),
+                                      value: 'Edit card',
+                                      child: Text('Edit card'),
                                     ),
+                                    /*
                                     PopupMenuItem<String>(
                                       height: height,
                                       value: 'Option 3',
@@ -263,7 +288,7 @@ class _LearnState extends State<Learn> {
                       ),
                     ),
                   ),
-                  //* Undo
+                  // Undo
                   Row(
                     // flex
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -275,15 +300,15 @@ class _LearnState extends State<Learn> {
                               Mirror().undo();
                               _getCurrentCard();
                             },
-                            color: Theme.of(context).highlightColor,
+                            color: Colors.grey,
                           )
                           : const SizedBox.shrink(),
                       Mirror().undoList.isNotEmpty
                           ? Flexible(
                             child: Text(
-                              Mirror().undoList.last.description,
+                              Mirror().undoList.last.description.replaceAll('\n', ' '),
                               style: TextStyle(
-                                color: Theme.of(context).highlightColor,
+                                color: Colors.grey,
                               ),
                             ),
                           )
@@ -291,18 +316,6 @@ class _LearnState extends State<Learn> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      Mirror().dbMirror.clear();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Loading(),
-                        ),
-                      );
-                    },
-                    child: const Text('Reload app'),
-                  ),
                 ],
               ),
             ),
