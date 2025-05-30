@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/settings/credentials_dialog.dart';
 import 'package:lerlingua/pages/settings/settings_page.dart';
@@ -47,7 +48,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _controller.stop(); // Stop animation
     _controller.reset();
     // Show the Snackbar after synchronization
-    if (!mounted) return;
+    if (!mounted) {
+      if (kDebugMode) {
+        print('Not mounted, cannot show snackbar.');
+      }
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(syncResult),
