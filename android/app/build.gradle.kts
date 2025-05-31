@@ -10,9 +10,11 @@ plugins {
 }
 
 val keystoreProperties = Properties()
-val keystorePropertiesFile: File = rootProject.file("key.properties")
+val keystorePropertiesFile: File = rootProject.file("/app/key.properties") // android is the root from here
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    throw Exception("key.properties not found in ${keystorePropertiesFile.absolutePath}")
 }
 
 android {
@@ -42,10 +44,10 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: "debug_key"
-            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: "Debug123#"
-            storeFile = file(keystoreProperties["storeFile"]?.let { it } ?: "debug_keystore.jks")
-            storePassword = keystoreProperties["storePassword"]?.toString() ?: "Debug123#"
+            keyAlias = keystoreProperties["keyAlias"]?.toString()
+            keyPassword = keystoreProperties["keyPassword"]?.toString()
+            storeFile = file(keystoreProperties["storeFile"]?.let { it })
+            storePassword = keystoreProperties["storePassword"]?.toString()
         }
     }
 
