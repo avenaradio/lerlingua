@@ -14,8 +14,12 @@ val keystorePropertiesFile: File = rootProject.file("/app/key.properties") // an
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 } else {
-    throw Exception("key.properties not found in ${keystorePropertiesFile.absolutePath}")
+    keystorePropertiesFile = file("/android/key.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
 }
+// throw Exception("key.properties not found in ${keystorePropertiesFile.absolutePath}")
 
 android {
     namespace = "org.malao.lerlingua"
