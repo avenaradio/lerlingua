@@ -11,6 +11,8 @@ jobs:
   flutter_test:
     name: nothing
     runs-on: ubuntu-latest
+    steps:
+      - run: echo "nothing"
 
   build_androidApk:
     name: Build and release Flutter App (Android)
