@@ -10,16 +10,12 @@ plugins {
 }
 
 val keystoreProperties = Properties()
-val keystorePropertiesFile: File = rootProject.file("/app/key.properties") // android is the root from here
+val keystorePropertiesFile: File = file("key.properties") // android is the root from here
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 } else {
-    keystorePropertiesFile = file("/android/key.properties")
-    if (keystorePropertiesFile.exists()) {
-        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-    }
+    throw Exception("key.properties not found in ${keystorePropertiesFile.absolutePath}")
 }
-// throw Exception("key.properties not found in ${keystorePropertiesFile.absolutePath}")
 
 android {
     namespace = "org.malao.lerlingua"
