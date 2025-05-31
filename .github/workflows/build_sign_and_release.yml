@@ -1,4 +1,4 @@
-name: Sign test
+name: Build, Sign and Release
 
 on:
   push:
