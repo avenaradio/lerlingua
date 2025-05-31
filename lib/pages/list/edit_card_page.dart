@@ -31,9 +31,9 @@ class _EditCardPageState extends State<EditCardPage> {
     } else {
       _card = VocabCard(
         vocabKey: -1,
-        languageA: Mirror().filterCards.sortByTimeModified.invertedOrder.cards.first.languageA,
+        languageA: Mirror().filterCards.sortByTimeModified.invertedOrder.cards.firstOrNull?.languageA ?? '',
         wordA: '',
-        languageB: Mirror().filterCards.sortByTimeModified.invertedOrder.cards.first.languageB,
+        languageB: Mirror().filterCards.sortByTimeModified.invertedOrder.cards.firstOrNull?.languageB ?? '',
         wordB: '',
         boxNumber: 0,
         timeModified: DateTime.now().millisecondsSinceEpoch,
