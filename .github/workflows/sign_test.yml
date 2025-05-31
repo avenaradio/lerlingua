@@ -56,7 +56,7 @@ jobs:
       - name: Create key.properties
         run: |
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/app/key.properties
-          # echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/app/key.properties
+          echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/app/key.properties
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> android/app/key.properties
           echo "storeFile=keystore.jks" >> android/app/key.properties
       - name: List files in android/app
