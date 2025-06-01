@@ -1,3 +1,4 @@
+import 'package:feedback_gitlab/feedback_gitlab.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lerlingua/pages/settings/credentials_dialog.dart';
@@ -5,8 +6,10 @@ import 'package:lerlingua/pages/settings/settings_page.dart';
 import 'package:lerlingua/pages/learn/learn.dart';
 import 'package:lerlingua/pages/read/read.dart';
 import 'package:lerlingua/resources/database/mirror_sync_extension.dart';
+import '../global_variables.dart';
 import '../resources/event_bus.dart';
 import '../resources/database/mirror.dart';
+import '../resources/settings.dart';
 import 'list/list.dart';
 
 class Home extends StatefulWidget {
@@ -94,12 +97,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        body: <Widget>[
-          Read(),
-          Learn(),
-          ListPage(),
-          SettingsWidget(),
-        ][currentPageIndex],
+        body:
+            <Widget>[
+              Read(),
+              Learn(),
+              ListPage(),
+              SettingsWidget(),
+            ][currentPageIndex],
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
             setState(() {
@@ -126,29 +130,61 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-        floatingActionButton: Stack(
-          alignment: Alignment.center,
-          children: [
-            FloatingActionButton.small(
-              onPressed: _isSyncing ? null : syncData,
-              tooltip: 'Sync',
-              shape: const CircleBorder(),
-              elevation: 0,
-              //backgroundColor: Mirror().undoList.isEmpty ? null : Theme.of(context).colorScheme.error,
-              child: AnimatedBuilder(
-                animation: _controller,
-                child: Icon(Icons.sync_rounded),
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: - _controller.value * 2.0 * 3.14159, // Rotate in radians
-                    child: child,
-                  );
-                },
+        floatingActionButton: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              !Settings().showFeedbackButton ? SizedBox.shrink() : Positioned(
+                left: 0,
+                bottom: 11,
+                child: IconButton(
+                  icon: const Icon(Icons.feedback),
+                  color: Colors.deepOrange[400],
+                  tooltip: 'Give Feedback',
+                  onPressed: () {
+                    try {
+                      BetterFeedback.of(context).showAndUploadToGitLab(
+                        projectId: gitlabProjectId,
+                        apiToken: feedbackToken,
+                        gitlabUrl: gitlabUrl,
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error: $e'),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
-          ],
+              FloatingActionButton.small(
+                onPressed: _isSyncing ? null : syncData,
+                tooltip: 'Sync',
+                shape: const CircleBorder(),
+                elevation: 0,
+                //backgroundColor: Mirror().undoList.isEmpty ? null : Theme.of(context).colorScheme.error,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  child: Icon(Icons.sync_rounded),
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle:
+                          -_controller.value *
+                          2.0 *
+                          3.14159, // Rotate in radians
+                      child: child,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterDocked,
       ),
     );
   }

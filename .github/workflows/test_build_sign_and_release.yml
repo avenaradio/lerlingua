@@ -1,4 +1,4 @@
-name: Test, Build, Sign and Release
+name: Test, Build, Sign and Release # DONT RENAME THIS OR FILE WILL RESET github.run_number
 
 on:
   # Allows you to run this workflow manually from the Actions tab
