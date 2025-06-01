@@ -60,7 +60,7 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter clean
-      - name: Decode Keystore
+      - name: Decode Keystore # https://medium.com/@colonal/automating-flutter-builds-and-releases-with-github-actions-77ccf4a1ccdd
         run: |
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
       - name: Create key.properties
@@ -88,4 +88,3 @@ jobs:
           artifacts: "${{ github.workspace }}/${{ env.new_apk_name }}"
           tag: v${{ env.version_name }}
           token: ${{ secrets.TOKEN }}
-          # https://medium.com/@colonal/automating-flutter-builds-and-releases-with-github-actions-77ccf4a1ccdd
