@@ -1,4 +1,4 @@
-name: Build only
+name: Build only # DONT RENAME THIS OR FILE WILL RESET github.run_number
 
 on:
   #push:

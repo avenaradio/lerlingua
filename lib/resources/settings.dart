@@ -52,6 +52,13 @@ class Settings {
     saveSettings();
   }
 
+  bool _showFeedbackButton = true;
+  bool get showFeedbackButton => _showFeedbackButton;
+  set showFeedbackButton(bool value) {
+    _showFeedbackButton = value;
+    saveSettings();
+  }
+
   bool _updateAvailable = false;
   bool get updateAvailable => _updateAvailable;
   set updateAvailable(bool value) {
@@ -224,6 +231,7 @@ class Settings {
     _repoName = _sharedPreferences.getString('repoName') ?? '';
     _autoUpdate = _sharedPreferences.getBool('autoUpdate') ?? true;
     _updateAvailable = _sharedPreferences.getBool('updateAvailable') ?? false;
+    _showFeedbackButton = _sharedPreferences.getBool('showFeedbackButton') ?? true;
     // Load deleted cards
     String? deletedCardsString = _sharedPreferences.getString('deletedCards');
     if (deletedCardsString != null) addDeletedCards(deletedCardsString);
@@ -270,6 +278,7 @@ class Settings {
     await _sharedPreferences.setString('repoName', _repoName);
     await _sharedPreferences.setBool('autoUpdate', _autoUpdate);
     await _sharedPreferences.setBool('updateAvailable', _updateAvailable);
+    await _sharedPreferences.setBool('showFeedbackButton', _showFeedbackButton);
     // Save deleted cards
     await _sharedPreferences.setString('deletedCards', _deletedCards.join('/'));
     // Save current translation service key

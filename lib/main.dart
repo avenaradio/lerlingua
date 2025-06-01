@@ -11,8 +11,6 @@ import 'package:lerlingua/pages/read/library.dart';
 import 'package:lerlingua/pages/settings/settings_sync_log.dart';
 import 'package:lerlingua/pages/settings/settings_translation_services.dart';
 
-import 'feedback_button.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -41,14 +39,6 @@ class MyApp extends StatelessWidget {
         '/library': (context) => Library(),
       },
       //theme: theme,
-      builder: (context, child) {
-        return Stack(
-          children: [
-            child ?? Container(), // Main content of the app
-            FeedbackButton(), // Global Feedback button
-          ],
-        );
-      },
     );
   }
 }
