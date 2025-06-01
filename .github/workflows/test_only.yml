@@ -1,9 +1,14 @@
-name: Test and Release
+name: Test only # DONT RENAME THIS OR FILE WILL RESET github.run_number
 
 on:
   push:
     branches:
+      - main
+  pull_request:
+    branches:
       - release
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   flutter_test:
@@ -26,7 +31,7 @@ jobs:
       - run: flutter test test/resources/database/mirror_with_sql_test.dart --dart-define=IS_TEST=false
 
   build_androidApk:
-    name: Build and release Flutter App (Android)
+    name: Build Flutter App (Android)
     needs: [flutter_test]
     runs-on: ubuntu-latest
     steps:
@@ -71,8 +76,3 @@ jobs:
           
           # Give variables to github environment
           echo "new_apk_name=$NEW_APK_NAME" >> $GITHUB_ENV
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "${{ github.workspace }}/${{ env.new_apk_name }}"
-          tag: v${{ env.version_name }}
-          token: ${{ secrets.TOKEN}}

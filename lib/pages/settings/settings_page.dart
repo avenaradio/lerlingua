@@ -17,7 +17,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ListView(
             children: [
               const ListTile(
@@ -84,6 +84,28 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 },
                 // add switch
               ),
+              const Divider(),
+              const ListTile(
+                title: Text('Feedback Button', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('Show Feedback Button'),
+                subtitle: const Text('Feedback button to submit screenshots'),
+                trailing: Switch(
+                    value: Settings().showFeedbackButton,
+                    onChanged: (value) {
+                      setState(() {
+                        Settings().showFeedbackButton = value;
+                        setState(() {});
+                      });
+                    }),
+                onTap: () {
+                  Settings().currentBook = null;
+                  Navigator.pushNamed(context, '/home');
+                },
+                // add switch
+              ),
+              SizedBox(height: 16.0),
             ],
           ),
         ),
