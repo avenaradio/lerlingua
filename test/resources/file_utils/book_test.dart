@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/resources/book.dart';
+import 'package:lerlingua/resources/file_utils/book.dart';
 
 void main() {
   test('book creation', () {
