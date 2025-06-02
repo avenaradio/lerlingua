@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:epub_pro/epub_pro.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart';
-import 'package:lerlingua/resources/file_handler.dart';
+import 'package:lerlingua/resources/file_utils/file_handler.dart';
 import 'package:lerlingua/resources/settings.dart';
 
 class Book {

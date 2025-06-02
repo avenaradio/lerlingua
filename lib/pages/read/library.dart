@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../resources/book.dart';
+import '../../resources/file_utils/book.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/settings.dart';
 

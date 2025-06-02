@@ -8,6 +8,8 @@ import 'dart:convert';
 
 import 'package:lerlingua/pages/loading.dart';
 import 'package:lerlingua/pages/read/library.dart';
+import 'package:lerlingua/pages/read/reader/test_page.dart';
+import 'package:lerlingua/pages/read/reader/test_page2.dart';
 import 'package:lerlingua/pages/settings/settings_sync_log.dart';
 import 'package:lerlingua/pages/settings/settings_translation_services.dart';
 
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => Loading(),
-        '/home': (context) => Home(),
+        '/home': (context) => TestPage2(),
         '/settings/translation_services': (context) => TranslationServicesList(),
         'settings/sync_log': (context) => SettingsSyncLog(),
         '/library': (context) => Library(),
