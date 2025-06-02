@@ -2,7 +2,7 @@ import 'package:lerlingua/resources/translation_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import 'book.dart';
+import 'file_utils/book.dart';
 
 // Steps to add a field:
 // 1. Getter and setter
