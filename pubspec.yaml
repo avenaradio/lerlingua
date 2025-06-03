@@ -98,7 +98,7 @@ flutter:
   assets:
     - assets/appainter_theme_bright.json
     - assets/books/lerlingua_en.epub
-    - assets/books/prince.epub
+    - assets/books/the_little_prince_public_domain.epub
     #- assets/appainter_theme_dark.json
 
   # The following line ensures that the Material Icons font is

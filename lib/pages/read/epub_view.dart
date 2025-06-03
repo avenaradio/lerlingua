@@ -52,11 +52,7 @@ class _EpubViewState extends State<EpubView> {
                   if (Settings().currentBook?.languageB == '') {
                     await editLanguageDialog(context);
                   }
-                  // Create and fire the event
-                  final event = WordBSelectedEvent(
-                    epubTextSelection.selectedText,
-                  );
-                  eventBus.fire(event);
+
                 },
               ),
             ),
