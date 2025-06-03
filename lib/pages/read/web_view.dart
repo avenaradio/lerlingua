@@ -29,6 +29,7 @@ class _WebViewState extends State<WebView> {
   final urlController = TextEditingController();
   String url = "";
   String wordB = "lerlingua";
+  String sentenceB = "";
   bool _wordBChanged = false;
   TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', injectJs: '');
 
@@ -58,6 +59,7 @@ class _WebViewState extends State<WebView> {
         vocabKey: -1,
         languageA: _translationService.languageA,
         wordB: wordB,
+        sentenceB: sentenceB,
         languageB: Settings().currentBook?.languageB ?? '',
         wordA: selectedText,
         boxNumber: 0,
@@ -86,6 +88,7 @@ class _WebViewState extends State<WebView> {
     eventBus.on<WordBSelectedEvent>().listen((event) {
       _wordBChanged = false;
       wordB = event.wordB;
+      sentenceB = event.sentenceB;
       _search();
     });
     // Set up context menu see https://inappwebview.dev/docs/webview/context-menu

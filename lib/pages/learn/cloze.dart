@@ -24,8 +24,8 @@ class Cloze {
   bool showAnswers = false;
 
   Cloze({required VocabCard card, BuildContext? context}) : _context = context, _card = card {
-    // Split sentenceB in %
-    parts = card.sentenceB == '' ? ['', card.wordB] : card.sentenceB.split('%');
+    // Split sentenceB in %%
+    parts = card.sentenceB == '' ? ['', card.wordB] : card.sentenceB.split('%%');
     _createWidgets();
   }
 

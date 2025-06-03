@@ -1,15 +1,11 @@
 import 'package:feedback_gitlab/feedback_gitlab.dart';
 import 'package:flutter/material.dart';
 import 'package:json_theme/json_theme.dart';
-
-import 'package:flutter/services.dart'; // For rootBundle
+import 'package:flutter/services.dart';
 import 'package:lerlingua/pages/home.dart';
 import 'dart:convert';
-
 import 'package:lerlingua/pages/loading.dart';
 import 'package:lerlingua/pages/read/library.dart';
-import 'package:lerlingua/pages/read/reader/test_page.dart';
-import 'package:lerlingua/pages/read/reader/test_page2.dart';
 import 'package:lerlingua/pages/settings/settings_sync_log.dart';
 import 'package:lerlingua/pages/settings/settings_translation_services.dart';
 
@@ -35,7 +31,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => Loading(),
-        '/home': (context) => TestPage2(),
+        '/home': (context) => Home(),
         '/settings/translation_services': (context) => TranslationServicesList(),
         'settings/sync_log': (context) => SettingsSyncLog(),
         '/library': (context) => Library(),

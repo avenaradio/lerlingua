@@ -2,13 +2,27 @@ import 'package:event_bus/event_bus.dart';
 
 EventBus eventBus = EventBus();
 
-// Word to learn
+/// Word in learning language selected
 class WordBSelectedEvent {
-  String wordB;
-  WordBSelectedEvent(this.wordB);
+  List<String> wordsB;
+  List<String> sentenceListB;
+  String wordB = '';
+  String sentenceB = '';
+  WordBSelectedEvent({required this.wordsB, required this.sentenceListB}) {
+    for (String sentenceWord in sentenceListB) {
+      if (wordsB.contains(sentenceWord)) {
+        sentenceB += '%%$sentenceWord%% ';
+        wordB += '$sentenceWord ';
+      } else {
+        sentenceB += '$sentenceWord ';
+      }
+    }
+    sentenceB = sentenceB.trim();
+    wordB = wordB.trim();
+  }
 }
 
-// Known word
+/// Word in known language selected
 class WordASelectedEvent {
   String wordA;
   WordASelectedEvent(this.wordA);
