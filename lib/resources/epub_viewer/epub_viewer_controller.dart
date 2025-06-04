@@ -90,11 +90,6 @@ class EpubViewerController {
     }
     _chapterWidgetsWithSize = [];
     for (int i = 0; i < bodyElements.length; i++) {
-      if (bodyElements[i].text.trim() == '') {
-        if (i > 0 && bodyElements[i - 1].text.trim() == '') {
-          continue; // Don't add two empty widgets in a row
-        }
-      }
       _chapterWidgetsWithSize.addAll(_domElementToWidgets(bodyElements[i]));
     }
   }
@@ -209,6 +204,17 @@ class EpubViewerController {
       _addToSelection(word, sentence);
   }
 
+  String _cutOffStartOfImgSource(String input) {
+    // Use a regular expression to find the first letter or number
+    final RegExp regex = RegExp(r'[a-zA-Z0-9]');
+    final Match? match = regex.firstMatch(input);
+    // If a match is found, return the substring from the match to the end
+    if (match != null) {
+      return input.substring(match.start);
+    }
+    return input;
+  }
+
   /// Returns Widgets from dom element
   List<WidgetWithSize> _domElementToWidgets(dom.Element? element) {
     if (element == null) {
@@ -216,11 +222,19 @@ class EpubViewerController {
       return [];
     }
     if (element.localName == 'img') {
-      String? imageSource = element.attributes['src'] ?? '';
-      print(imageSource);
-      List<int>? image = _epubBook.content!.images[imageSource]?.content;
-      if (image == null) return [];
-      return [WidgetWithSize(widget: Image.memory(Uint8List.fromList(image)), text: '', size: _parentWidgetSize)];
+      for (int i = 0; i < _epubBook.content!.images.length; i++) {
+        print('---------------------------------------------------- ${_epubBook.content!.images.keys.toList()[i]}');
+      }
+      print('---------------------------------------------------- ${element.attributes['src']}');
+      String src = _cutOffStartOfImgSource(element.attributes['src'] ?? '');
+      print('---------------------------------------------------- $src');
+      List<int>? image = _epubBook.content!.images[src]?.content;
+      if (image == null) {
+        print('---------------------------------------------------Image not found for src: ${element.attributes['src']}');
+        return [];
+      }
+      Uint8List? imageUint8List = Uint8List.fromList(image);
+      return [WidgetWithSize(widget: Flexible(child: Center(child: Image.memory(imageUint8List))), text: '', size: Size(_parentWidgetSize.width, _parentWidgetSize.height - 20))];
     }
     List<String> sentences = splitParagraphIntoSentences(_cleanText(element.text));
     List<WidgetWithSize> wordWidgetsWithSize = [];
@@ -304,22 +318,32 @@ class EpubViewerController {
     int countHeight = 0;
     List<Row> page = [];
     List<Widget> line = [];
+    bool hasSizedBox = false;
     for (int i = 0; i < _chapterWidgetsWithSize.length; i++) {
       if (i >= _chapterWidgetsWithSize.length) {
         break;
       }
       countWidth += _chapterWidgetsWithSize[i].size.width.toInt();
       line.add(_chapterWidgetsWithSize[i].widget);
+      hasSizedBox = _chapterWidgetsWithSize[i].widget.runtimeType == SizedBox;
       line.add(Spacer());
-      print('chapterWidgetsWithSize[i].widget: ${_chapterWidgetsWithSize[i].widget}');
       if (countWidth > _parentWidgetSize.width) {
+        if (hasSizedBox) {
+          for (int j = 0; j < line.length; j++) {
+            if (line[j].runtimeType == Spacer) {
+              line.removeAt(j);
+              line.insert(j, SizedBox(width: 3));
+            }
+          }
+        }
         line.removeLast();
         line.removeLast();
         line.removeLast();
-        Row row = Row(children: [...line]);
+        Row row = Row(mainAxisAlignment: MainAxisAlignment.start, children: [...line]);
         countHeight += _chapterWidgetsWithSize[i].size.height.toInt();
         page.add(row);
         line.clear();
+        hasSizedBox = false;
         if (countHeight > _parentWidgetSize.height) {
           page.removeLast();
           pages.add([...page]);
