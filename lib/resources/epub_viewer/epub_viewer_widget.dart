@@ -49,8 +49,8 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-        child: Wrap(
-          children: widget.epubViewerController.pageWidgets,
+        child: Column(
+          children: widget.epubViewerController.pages.isEmpty ? [] : widget.epubViewerController.currentPage,
         ),
       ),
     );
