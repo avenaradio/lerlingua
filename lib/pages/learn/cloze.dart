@@ -119,10 +119,6 @@ class Cloze {
             controller.text = hiddenText;
           }
         }
-        /* //if last letter is a space cut it off
-        if (controller.text[controller.text.length - 1] == ' ' && controller.text.length > i) {
-          controller.text = controller.text.substring(0, controller.text.length - 1);
-        } */
         // Move the cursor to the end
         controller.selection = TextSelection.fromPosition(
           TextPosition(offset: controller.text.length),

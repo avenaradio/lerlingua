@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
-import 'package:lerlingua/pages/read/reader/test_page.dart';
+import 'package:lerlingua/resources/epub_viewer/epub_viewer_widget.dart';
 import 'package:lerlingua/pages/read/web_view.dart';
+import '../../resources/epub_viewer/epub_viewer_controller.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/settings.dart';
 import 'edit_language_page.dart';
@@ -15,7 +15,7 @@ class Read extends StatefulWidget {
 }
 
 class _ReadState extends State<Read> {
-  EpubController epubController = EpubController();
+  EpubViewerController epubViewerController = EpubViewerController();
   bool _showLibrary = false;
   double _libraryFlex = 65; // Initial flex for Library/TestPage
   double _webViewFlex = 40;  // Initial flex for WebView
@@ -27,7 +27,14 @@ class _ReadState extends State<Read> {
       _showLibrary = event.showLibrary;
       setState(() {});
     });
+    epubViewerController.onRendered(() {setState(() {});});
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    epubViewerController.dispose();
+    super.dispose();
   }
 
   @override
@@ -37,25 +44,30 @@ class _ReadState extends State<Read> {
           children: [
             Expanded(
               flex: _libraryFlex.toInt(),
-              child: _showLibrary ? Library() : TestPage(),
+              child: _showLibrary ? Library() : EpubViewerWidget(epubViewerController: epubViewerController, book: Settings().currentBook,),
             ),
             Row(
               children: [
                 IconButton(
                   tooltip: 'Previous page',
                   icon: const Icon(Icons.navigate_before_rounded),
-                  onPressed: () => epubController.prev(),
+                  onPressed: () {
+                    epubViewerController.previousPage();
+                  },
                 ),
                 IconButton(
                   tooltip: 'Next page',
                   icon: const Icon(Icons.navigate_next_rounded),
-                  onPressed: () => epubController.next(),
+                  onPressed: () {
+                    epubViewerController.nextPage();
+                  },
                 ),
                 IconButton(
                   tooltip: _showLibrary ? 'Book' : 'Library',
                   icon: const Icon(Icons.book_rounded),
                   onPressed: () {
                     _showLibrary = !_showLibrary;
+                    epubViewerController.cancelPagination();
                     setState(() {});
                   },
                 ),
@@ -66,16 +78,21 @@ class _ReadState extends State<Read> {
                     await editLanguageDialog(context);
                   },
                 ),
+                epubViewerController.isPaginationInProgress ? SizedBox(height: 16, width: 16, child: const CircularProgressIndicator()) : Container(),
                 Spacer(),
                 IconButton(
                   tooltip: 'Previous page',
                   icon: const Icon(Icons.navigate_before_rounded),
-                  onPressed: () => epubController.prev(),
+                  onPressed: () {
+                    epubViewerController.previousPage();
+                  },
                 ),
                 IconButton(
                   tooltip: 'Next page',
                   icon: const Icon(Icons.navigate_next_rounded),
-                  onPressed: () => epubController.next(),
+                  onPressed: () {
+                    epubViewerController.nextPage();
+                  },
                 ),
               ],
             ),
@@ -114,7 +131,7 @@ class _ReadState extends State<Read> {
               ),
             ),
             Expanded(
-              flex: _webViewFlex.toInt(), // TODO make this dynamic
+              flex: _webViewFlex.toInt(),
               child: WebView(),
             ),
 
