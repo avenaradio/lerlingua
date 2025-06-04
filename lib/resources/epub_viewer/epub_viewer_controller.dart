@@ -5,44 +5,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
-import 'package:lerlingua/resources/epub_viewer/epub_viewer_utils_extension.dart';
-
 import '../event_bus.dart';
 import '../file_utils/book.dart';
 import '../settings.dart';
 
 class EpubViewerController {
+  final double _fontSize = 16;
+  final double _charactersPerArea = 0.0039; // To calculate number of characters for the page TODO use font size
+  final double _charactersPerDistance = 0.0625; // To calculate number of characters for the page TODO use font size
+  late Size _parentWidgetSize;
+  int _charactersPerPage = 0;
+  int _charactersPerLine = 0;
+
   late VoidCallback _onRendered;
   String log = 'PARSER LOG:\n';
   Book? _book;
   late epub_pro.EpubBook _epubBook;
-  late double _parentWidgetHeight;
-  final double _parentWidgetHeightCorrection = 50;
   // Read location
   late int _chapterIndex;
   late int _subChapterIndex;
   late int _currentPositionIndex;
+  List<WidgetWithSize> _chapterWidgetsWithSize = [];
   /// from 0 to _chapterWidgets.length
   final List<int> _pagePositionIndices = [];
-  late BuildContext _context;
-  List<Widget> _chapterWidgets = [];
   List<Widget> pageWidgets = [];
-  static EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 16.0);
-  bool isPaginationInProgress = false;
-  bool _paginationCancleRequested = false;
-  Completer<void>? _paginationCancelRequestdCompleter;
 
   onRendered(VoidCallback onRendered) {
     _onRendered = onRendered;
   }
 
-  dispose() {
-    cancelPagination();
-  }
-
-  Future<void> loadBook({required BuildContext context, required double parentWidgetHeight, Book? book, required VoidCallback onRendered}) async {
-    _parentWidgetHeight = parentWidgetHeight;
-    _context = context;
+  Future<void> loadBook({required BuildContext context, required Size parentWidgetSize, Book? book, required VoidCallback onRendered}) async {
+    _parentWidgetSize = parentWidgetSize;
+    _charactersPerPage = (_charactersPerArea * _parentWidgetSize.width * _parentWidgetSize.height).toInt();
+    _charactersPerLine = (_charactersPerDistance * _parentWidgetSize.width).toInt();
     if (book == null) {
       _book = null;
       // Load book from asset
@@ -68,6 +63,7 @@ class EpubViewerController {
       }
     }
     _loadChapter();
+    _renderCurrentPage();
   }
 
   void _updateBookPosition() {
@@ -90,16 +86,15 @@ class EpubViewerController {
     for (dom.Element element in bodyElements) {
       log += '${element.outerHtml}\n';
     }
-    List<Widget> widgets = [];
+    _chapterWidgetsWithSize = [];
     for (int i = 0; i < bodyElements.length; i++) {
       if (bodyElements[i].text.trim() == '') {
         if (i > 0 && bodyElements[i - 1].text.trim() == '') {
           continue; // Don't add two empty widgets in a row
         }
       }
-      widgets.addAll(_domElementToWidget(bodyElements[i]));
+      _chapterWidgetsWithSize.addAll(_domElementToWidgets(bodyElements[i]));
     }
-    _chapterWidgets = widgets;
   }
 
   /// Converts html into dom elements
@@ -213,7 +208,7 @@ class EpubViewerController {
   }
 
   /// Returns Widgets from dom element
-  List<Widget> _domElementToWidget(dom.Element? element) {
+  List<WidgetWithSize> _domElementToWidgets(dom.Element? element) {
     if (element == null) {
       log += 'domElementToWidget: element is null\n';
       return [];
@@ -221,13 +216,14 @@ class EpubViewerController {
     if (element.localName == 'img') {
       List<int>? image = _epubBook.content!.images[element.attributes['src'] ?? '']?.content;
       if (image == null) return [];
-      return [Image.memory(Uint8List.fromList(image))];
+      return [WidgetWithSize(widget: Image.memory(Uint8List.fromList(image)), charactersCount: _charactersPerPage)];
     }
     List<String> sentences = splitParagraphIntoSentences(_cleanText(element.text));
-    List<Widget> wordWidgets = [];
+    List<WidgetWithSize> wordWidgetsWithSize = [];
     for (String sentence in sentences) {
       List<String> splitSentence = sentence.split(' ');
       for (String word in splitSentence) {
+        int charactersCount = word.characters.length + 1;
         Widget wordWidget = Padding(
           padding: const EdgeInsets.fromLTRB(0, 2, 4, 2),
           child: GestureDetector(
@@ -246,21 +242,11 @@ class EpubViewerController {
             child: Text(word, style: selectedWords.contains(word) ? TextStyle(backgroundColor: Colors.yellow[200]) : null),
           ),
         );
-        wordWidgets.add(wordWidget);
+        wordWidgetsWithSize.add(WidgetWithSize(widget: wordWidget, charactersCount: charactersCount));
       }
     }
-    Widget elementWidget = Container(
-      color: Colors.grey[200],
-      width: double.infinity,
-      child: Wrap(
-        //spacing: 0, // Horizontal space between children
-        //runSpacing: 4.0, // Vertical space between lines
-        alignment: WrapAlignment.start,
-        children: wordWidgets,
-      ),
-    );
-    wordWidgets.add(SizedBox(height: 0, width: double.infinity));
-    return wordWidgets;
+    wordWidgetsWithSize.add(WidgetWithSize(widget: SizedBox(height: 0, width: double.infinity), charactersCount: _charactersPerLine));
+    return wordWidgetsWithSize;
   }
 
   /// Cleans text
@@ -300,27 +286,52 @@ class EpubViewerController {
     return finalSentences;
   }
 
+  Size _getTextSize(String text, TextStyle style, double maxWidth) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(maxWidth: maxWidth);
+    return textPainter.size;
+  }
+
+  void _paginate() {
+    int count = 0;
+    for (int i = 0; true; i++) {
+      if (i >= _chapterWidgetsWithSize.length) {
+        _pagePositionIndices.add(i); // Add end of chapter index
+        break;
+      }
+      count += _chapterWidgetsWithSize[i].charactersCount;
+      if (count > _charactersPerPage) {
+        _pagePositionIndices.add(i); // Add next page index
+        i--;
+        count = 0;
+      }
+    }
+  }
+
+  int _nextPositionIndex(int currentPositionIndex) {
+    int nextPositionIndex = _currentPositionIndex;
+    for (int i = 0; i < _pagePositionIndices.length; i++) {
+      if (_pagePositionIndices[i] > currentPositionIndex) {
+        nextPositionIndex = _pagePositionIndices[i];
+        break;
+      }
+    }
+    return nextPositionIndex;
+  }
+
   /// Returns widgets for next page
   Future<void> nextPage() async {
-    int nextPositionIndex = _currentPositionIndex;
-    if (isPaginationInProgress) {
-      _currentPositionIndex = await _nextFromCurrentIndex(startIndex: _currentPositionIndex);
-    } else {
-      for (int i = 0; i < _pagePositionIndices.length; i++) {
-        if (_pagePositionIndices[i] > _currentPositionIndex) {
-          nextPositionIndex = _pagePositionIndices[i];
-          break;
-        }
-      }
-      _currentPositionIndex = nextPositionIndex;
-    }
-    // If _currentPositionIndex out of rage load next chapter
-    if (_currentPositionIndex >= _chapterWidgets.length) {
-      await _nextChapter();
-    } else {
-      await _renderCurrentPage();
+    _currentPositionIndex = _nextPositionIndex(_currentPositionIndex);
+    // If this next _currentPositionIndex is out of rage load next chapter
+    if (_currentPositionIndex >= _chapterWidgetsWithSize.length) {
+      _nextChapter();
     }
     _updateBookPosition();
+    _renderCurrentPage();
   }
 
   /// Returns widgets for previous page
@@ -328,32 +339,28 @@ class EpubViewerController {
     int previousPositionIndex = _currentPositionIndex;
     // If _currentPositionIndex <= 0 load previous chapter
     if (_currentPositionIndex <= 0) {
-      await _previousChapter();
+      _previousChapter();
     } else {
-      if (isPaginationInProgress) {
-        _currentPositionIndex = await _previousFromCurrentIndex(startIndex: _currentPositionIndex);
-      } else {
-        for (int i = 0; i < _pagePositionIndices.length; i++) {
-          if (_pagePositionIndices[i] >= _currentPositionIndex) {
-            previousPositionIndex = _pagePositionIndices[i - 1];
-            break;
-          }
+      for (int i = 0; i < _pagePositionIndices.length; i++) {
+        if (_pagePositionIndices[i] >= _currentPositionIndex) {
+          previousPositionIndex = _pagePositionIndices[i - 1];
+          break;
         }
-        _currentPositionIndex = previousPositionIndex;
       }
-      await _renderCurrentPage();
+      _currentPositionIndex = previousPositionIndex;
     }
     _updateBookPosition();
+    _renderCurrentPage();
   }
 
   /// Renders the current page
-  Future<void> _renderCurrentPage() async {
+  void _renderCurrentPage() {
     int startIndex = _currentPositionIndex;
-    int nextPageStartIndex = await _nextFromCurrentIndex(startIndex: startIndex);
+    int nextPageIndex = _nextPositionIndex(startIndex);
     List<Widget> currentPageItems = []; // Generate current page
-    for (int i = startIndex; i < nextPageStartIndex; i++) {
-      if (i < _chapterWidgets.length) {
-        currentPageItems.add(_chapterWidgets[i]);
+    for (int i = startIndex; i < nextPageIndex; i++) {
+      if (i < _chapterWidgetsWithSize.length) {
+        currentPageItems.add(_chapterWidgetsWithSize[i].widget);
       }
     }
     pageWidgets = currentPageItems; // Write new current page
@@ -361,112 +368,18 @@ class EpubViewerController {
     _updateBookPosition();
   }
 
-  /// Writes _pagePositionIndices from 0 to _chapterWidgets.length
-  Future<void> _paginateChapter() async {
-    isPaginationInProgress = true;
-    // Paginate the whole chapter
-    int i = 0;
-    while (i < _chapterWidgets.length) {
-      if (_paginationCancleRequested) { // Check if pagination process should be canceled
-        _paginationCancleRequested = false;
-        isPaginationInProgress = false;
-        _paginationCancelRequestdCompleter?.complete();
-        return;
-      }
-      print('_paginateChapter _chapterWidgets.length:-------------------------------------------------------------------------------------------- ${_chapterWidgets.length}');
-      print('_paginateChapter i:-------------------------------------------------------------------------------------------- $i');
-      _pagePositionIndices.add(i);
-      i = await _nextFromCurrentIndex(startIndex: i);
-      if (i >= _chapterWidgets.length) {
-        _pagePositionIndices.add(i);
-        break;
-      }
-    }
-    print('pagePositionIndices: $_pagePositionIndices');
-    isPaginationInProgress = false;
-    _onRendered();
-    return;
-  }
-
-  /// Returns height of part of chapter widgets
-  Future<double> _measurePartOfChapterWidgetsHeight({required int startIndex, required int widgetsCount, required double parentWidgetHeight}) async {
-    double widgetsHeightSum = 0;
-    List<Widget> partOfChapterWidgets = [];
-    for (int i = startIndex; i < startIndex + widgetsCount; i++) {
-      partOfChapterWidgets.add(_chapterWidgets[i]);
-    }
-    widgetsHeightSum = await measureWidgetHeight(_context, Padding(padding: padding, child: Wrap(children: partOfChapterWidgets)));
-    return widgetsHeightSum;
-  }
-
-  /// Returns next page position index from current page position index
-  Future<int> _nextFromCurrentIndex({required int startIndex}) async {
-    int index = startIndex;
-    List<Widget> currentPageItems = [];
-    double parentWidgetHeight = _parentWidgetHeight - _parentWidgetHeightCorrection;
-    double widgetsHeightSum = 0;
-    // Get a number of next widgets to overflow the page
-    int widgetsCount = 528; // 2^x starting number
-    while (widgetsHeightSum < parentWidgetHeight) {
-      widgetsHeightSum = await _measurePartOfChapterWidgetsHeight(startIndex: startIndex, widgetsCount: widgetsCount, parentWidgetHeight: parentWidgetHeight);
-      widgetsCount *= 2;
-    }
-    // widgetsCount is now bigger than window height
-    // Approximate the number of widgets that fit the window
-    int portion = widgetsCount;
-    while (true) {
-      widgetsHeightSum = await _measurePartOfChapterWidgetsHeight(startIndex: startIndex, widgetsCount: widgetsCount, parentWidgetHeight: parentWidgetHeight);
-      if (portion > 1) {
-        portion = portion ~/ 2;
-        if (widgetsHeightSum < parentWidgetHeight) {
-          widgetsCount += portion;
-        } else {
-          widgetsCount -= portion;
-        }
-      } else { // portion == 1
-        if (widgetsHeightSum < parentWidgetHeight) {
-          break;
-        } else {
-          widgetsCount -= 1;
-        }
-      }
-    }
-    int output = startIndex + widgetsCount;
-    if (output > _chapterWidgets.length) {
-      output = _chapterWidgets.length;
-    }
-    return output;
-  }
-
-  /// Returns previous page position index from current page position index
-  Future<int> _previousFromCurrentIndex({required int startIndex}) async {
-    int index = startIndex - 1;
-    while (true) {
-      if (index >= 0) {
-        int nextFromThisIndex = await _nextFromCurrentIndex(startIndex: index);
-        if (nextFromThisIndex <= startIndex) {
-          return index;
-        } else {
-          index--;
-        }
-      } else {
-        return 0;
-      }
-    }
-  }
-
-  Future<void> _nextChapter() async {
+  void _nextChapter() {
     bool hasSubChaptersLeft = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty && _subChapterIndex < _epubBook.chapters[_chapterIndex].subChapters.length - 1);
     if (hasSubChaptersLeft) {
       _subChapterIndex++;
     } else if (_chapterIndex < _epubBook.chapters.length - 1) {
       _chapterIndex++;
     }
-    await _loadChapter();
     _currentPositionIndex = 0;
+    _loadChapter();
   }
 
-  Future<void> _previousChapter() async {
+  void _previousChapter() {
     int oldChapterIndex = _chapterIndex;
     int oldSubChapterIndex = _subChapterIndex;
     bool hasPreviousSubChapters = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty && _subChapterIndex > 0);
@@ -483,26 +396,21 @@ class EpubViewerController {
       _chapterIndex = 0;
       _subChapterIndex = 0;
     }
-    await _loadChapter();
+    _loadChapter();
     if (oldChapterIndex != _chapterIndex || oldSubChapterIndex != _subChapterIndex) {
-      _currentPositionIndex = await _previousFromCurrentIndex(startIndex: _chapterWidgets.length - 1);
+      _currentPositionIndex = _pagePositionIndices[_pagePositionIndices.length - 2];
     }
   }
 
-  Future<void> cancelPagination() async {
-    if (isPaginationInProgress) { // Cancel pagination if running
-      _paginationCancleRequested = true;
-      _paginationCancelRequestdCompleter = Completer();
-      await _paginationCancelRequestdCompleter?.future;
-    }
-    _onRendered();
-  }
-
-  Future<void> _loadChapter() async {
-    await cancelPagination();
+  void _loadChapter() {
     _createWidgets();
-    _renderCurrentPage();
-    _paginateChapter();
+    _paginate();
   }
 
+}
+
+class WidgetWithSize {
+  final Widget widget;
+  final int charactersCount;
+  WidgetWithSize({required this.widget, required this.charactersCount});
 }
