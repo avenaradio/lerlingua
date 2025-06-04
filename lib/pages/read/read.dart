@@ -32,19 +32,16 @@ class _ReadState extends State<Read> {
   }
 
   @override
-  void dispose() {
-    epubViewerController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
           children: [
             Expanded(
               flex: _libraryFlex.toInt(),
-              child: _showLibrary ? Library() : EpubViewerWidget(epubViewerController: epubViewerController, book: Settings().currentBook,),
+              child: _showLibrary ? Library() : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: EpubViewerWidget(epubViewerController: epubViewerController, book: Settings().currentBook,),
+              ),
             ),
             Row(
               children: [
@@ -67,7 +64,6 @@ class _ReadState extends State<Read> {
                   icon: const Icon(Icons.book_rounded),
                   onPressed: () {
                     _showLibrary = !_showLibrary;
-                    epubViewerController.cancelPagination();
                     setState(() {});
                   },
                 ),
@@ -78,7 +74,7 @@ class _ReadState extends State<Read> {
                     await editLanguageDialog(context);
                   },
                 ),
-                epubViewerController.isPaginationInProgress ? SizedBox(height: 16, width: 16, child: const CircularProgressIndicator()) : Container(),
+                //epubViewerController.isLoading ? SizedBox(height: 16, width: 16, child: const CircularProgressIndicator()) : Container(),
                 Spacer(),
                 IconButton(
                   tooltip: 'Previous page',

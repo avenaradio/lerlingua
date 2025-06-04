@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lerlingua/resources/epub_viewer/epub_viewer_controller.dart';
-
 import '../file_utils/book.dart';
 
 class EpubViewerWidget extends StatefulWidget {
@@ -15,16 +14,15 @@ class EpubViewerWidget extends StatefulWidget {
 }
 
 class _EpubViewerWidgetState extends State<EpubViewerWidget> {
-  double parentWidgetHeight = 0;
+  Size parentWidgetSize = Size.zero;
   bool isLoading = true;
 
-  Future<double> getWidgetHeightAfterBuild(BuildContext context) {
-    final completer = Completer<double>();
+  Future<Size> getWidgetSizeAfterBuild(BuildContext context) {
+    final completer = Completer<Size>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final size = context.size;
-      final height = size?.height;
-      parentWidgetHeight = height ?? parentWidgetHeight;
-      completer.complete(height);
+      parentWidgetSize = size ?? parentWidgetSize;
+      completer.complete(size);
     });
     return completer.future;
   }
@@ -32,9 +30,9 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
   _loadBook() async {
     // Render page
     if (mounted) {
-      await getWidgetHeightAfterBuild(context);
+      await getWidgetSizeAfterBuild(context);
       if (mounted) {
-        widget.epubViewerController.loadBook(context: context, parentWidgetHeight: parentWidgetHeight, book: widget.book, onRendered: () {setState(() {});});
+        widget.epubViewerController.loadBook(context: context, parentWidgetSize: parentWidgetSize, book: widget.book, onRendered: () {setState(() {});});
         isLoading = false;
         setState(() {});
       }
@@ -44,7 +42,6 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
   @override
   void initState() {
     super.initState();
-    getWidgetHeightAfterBuild(context);
     _loadBook();
   }
 
@@ -52,11 +49,8 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-        child: Padding(
-          padding: EpubViewerController.padding,
-          child: Wrap(
-            children: widget.epubViewerController.pageWidgets,
-          ),
+        child: Wrap(
+          children: widget.epubViewerController.pageWidgets,
         ),
       ),
     );
