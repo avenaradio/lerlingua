@@ -234,7 +234,7 @@ class EpubViewerController {
         return [];
       }
       Uint8List? imageUint8List = Uint8List.fromList(image);
-      return [WidgetWithSize(widget: Flexible(child: Center(child: Image.memory(imageUint8List))), text: '', size: Size(_parentWidgetSize.width, _parentWidgetSize.height - 20))];
+      return [WidgetWithSize(widget: Flexible(child: Center(child: Image.memory(imageUint8List))), text: '', size: Size(_parentWidgetSize.width, _parentWidgetSize.height))];
     }
     List<String> sentences = splitParagraphIntoSentences(_cleanText(element.text));
     List<WidgetWithSize> wordWidgetsWithSize = [];
@@ -319,6 +319,7 @@ class EpubViewerController {
     List<Row> page = [];
     List<Widget> line = [];
     bool hasSizedBox = false;
+    bool bigWidget = false;
     for (int i = 0; i < _chapterWidgetsWithSize.length; i++) {
       if (i >= _chapterWidgetsWithSize.length) {
         break;
@@ -345,14 +346,26 @@ class EpubViewerController {
         line.clear();
         hasSizedBox = false;
         if (countHeight > _parentWidgetSize.height) {
-          page.removeLast();
+          if (page.isNotEmpty && page.length == 1) bigWidget = true;
+          if (!bigWidget) {
+            page.removeLast();
+          }
           pages.add([...page]);
           page.clear();
-          i--;
+          if (!bigWidget) {
+            i--;
+          }
+          bigWidget = false;
           countHeight = 0;
         }
         i--;
         countWidth = 0;
+      }
+    }
+    for (int i = 0; i < pages.length; i++) {
+      print('------------------------------------------------------------------------page $i');
+      for (int j = 0; j < pages[i].length; j++) {
+        print(pages[i][j]);
       }
     }
   }
