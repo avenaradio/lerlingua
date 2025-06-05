@@ -60,16 +60,30 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
               ),
               child: IntrinsicHeight(
                 // IntrinsicHeight lets the Column size itself properly
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start, // vertical center when content fits
-                  crossAxisAlignment: CrossAxisAlignment.start, // horizontal center
-                  children: widget.epubViewerController.pages.isEmpty ? [] : widget.epubViewerController.currentPage,
-                ),
+                child: ChildColumn(children: widget.epubViewerController.currentPage),
               ),
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class ChildColumn extends StatefulWidget {
+  const ChildColumn({super.key, required this.children});
+  final List<Widget> children;
+  @override
+  State<ChildColumn> createState() => _ChildColumnState();
+}
+
+class _ChildColumnState extends State<ChildColumn> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start, // vertical center when content fits
+      crossAxisAlignment: CrossAxisAlignment.start, // horizontal center
+      children: widget.children.isEmpty ? [] : widget.children,
     );
   }
 }

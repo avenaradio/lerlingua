@@ -86,6 +86,8 @@ class _WebViewState extends State<WebView> {
   void initState() {
     // Subscribe to the event bus
     eventBus.on<WordBSelectedEvent>().listen((event) {
+      print('WordBSelectedEvent: ${event.wordB}');
+      print('WordBSelectedEvent: ${event.sentenceB}');
       _wordBChanged = false;
       wordB = event.wordB;
       sentenceB = event.sentenceB;

@@ -9,6 +9,7 @@ import '../event_bus.dart';
 import '../file_utils/book.dart';
 import '../settings.dart';
 
+// TODO NEEDS TESTING!
 class EpubViewerController {
   final double _fontSize = 16;
   late Size _parentWidgetSize;
@@ -21,23 +22,24 @@ class EpubViewerController {
   late int _subChapterIndex;
   late int _currentPageIndex;
   List<WidgetWithSize> _chapterWidgetsWithSize = [];
-  List<List<Widget>> pages = [];
+  final List<List<Widget>> _pages = [];
 
   List<Widget> get currentPage {
-    if (pages.isEmpty) return [];
-    if (_currentPageIndex >= pages.length) {
-      _currentPageIndex = pages.length - 1;
+    if (_pages.isEmpty) return [];
+    if (_currentPageIndex >= _pages.length) {
+      _currentPageIndex = _pages.length - 1;
     }
     if (_currentPageIndex < 0) {
       _currentPageIndex = 0;
     }
-    return pages[_currentPageIndex];
+    return _pages[_currentPageIndex];
   }
 
   /// Returns page of chapter (1|44)
   onRendered(ValueChanged<String> onRendered) {
     _onRendered = onRendered;
   }
+  void _fireOnRendered() => _onRendered('${_currentPageIndex + 1}|${_pages.length}');
 
   Future<void> loadBook({required BuildContext context, required Size parentWidgetSize, Book? book, required VoidCallback onRendered}) async {
     _parentWidgetSize = Size(parentWidgetSize.width, parentWidgetSize.height - 100);
@@ -296,7 +298,7 @@ class EpubViewerController {
           i++; // Skip the next sentence as it has been merged
         }
       }
-      finalSentences.add('$currentSentence '); // TODO test added space at end
+      finalSentences.add(currentSentence);
     }
     return finalSentences;
   }
@@ -313,7 +315,7 @@ class EpubViewerController {
   }
 
   void _paginate() {
-    pages.clear();
+    _pages.clear();
     int countWidth = 0;
     int countHeight = 0;
     List<Widget> page = [];
@@ -344,7 +346,7 @@ class EpubViewerController {
             page = [Expanded(child: Center(child: _chapterWidgetsWithSize[i].widget))];
           }
           if (page.isNotEmpty) {
-            pages.add([...page]);
+            _pages.add([...page]);
           }
           page.clear();
           countHeight = 0;
@@ -357,11 +359,11 @@ class EpubViewerController {
   void nextPage() {
     _currentPageIndex++;
     // If this next _currentPositionIndex is out of rage load next chapter
-    if (_currentPageIndex >= pages.length) {
+    if (_currentPageIndex >= _pages.length) {
       _nextChapter();
     }
     _updateBookPosition();
-    _onRendered('${_currentPageIndex + 1}|${pages.length}');
+    _fireOnRendered();
   }
 
   /// Returns widgets for previous page
@@ -372,7 +374,7 @@ class EpubViewerController {
       _previousChapter();
     }
     _updateBookPosition();
-    _onRendered('${_currentPageIndex + 1}|${pages.length}');
+    _fireOnRendered();
   }
 
   void _nextChapter() {
@@ -406,8 +408,8 @@ class EpubViewerController {
     }
     _loadChapter();
     if (oldChapterIndex != _chapterIndex || oldSubChapterIndex != _subChapterIndex) {
-      if (pages.isNotEmpty) {
-        _currentPageIndex = pages.length - 1;
+      if (_pages.isNotEmpty) {
+        _currentPageIndex = _pages.length - 1;
       }
     }
   }
@@ -415,16 +417,16 @@ class EpubViewerController {
   void _loadChapter() {
     _createWidgets();
     _paginate();
-    if (_currentPageIndex >= pages.length) {
-      _currentPageIndex = pages.length - 1;
+    if (_currentPageIndex >= _pages.length) {
+      _currentPageIndex = _pages.length - 1;
     } else if (_currentPageIndex < 0) {
       _currentPageIndex = 0;
     }
-    if (pages.isEmpty) {
+    if (_pages.isEmpty) {
       _currentPageIndex = 0;
     }
     _updateBookPosition();
-    _onRendered('${_currentPageIndex + 1}|${pages.length}');
+    _fireOnRendered();
   }
 
 }

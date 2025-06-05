@@ -13,7 +13,7 @@ Future<void> writeFile(String filePath, String data) async {
 }
 
 void main() async {
-  final byteData = File('test/assets/test.epub').readAsBytesSync();
+  final byteData = File('test/assets/the_little_prince_public_domain.epub').readAsBytesSync();
   EpubBook book = await EpubReader.readBook(byteData.buffer.asUint8List()); // from assets
   EpubViewerController epubViewer = EpubViewerController();
 
