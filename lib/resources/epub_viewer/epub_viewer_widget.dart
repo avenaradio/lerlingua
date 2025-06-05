@@ -48,10 +48,27 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-        child: Column(
-          children: widget.epubViewerController.pages.isEmpty ? [] : widget.epubViewerController.currentPage,
-        ),
+      child: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            // SingleChildScrollView allows scroll if content is bigger
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: IntrinsicHeight(
+                // IntrinsicHeight lets the Column size itself properly
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start, // vertical center when content fits
+                  crossAxisAlignment: CrossAxisAlignment.start, // horizontal center
+                  children: widget.epubViewerController.pages.isEmpty ? [] : widget.epubViewerController.currentPage,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

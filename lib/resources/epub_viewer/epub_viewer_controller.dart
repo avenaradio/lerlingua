@@ -12,7 +12,7 @@ import '../settings.dart';
 class EpubViewerController {
   final double _fontSize = 16;
   late Size _parentWidgetSize;
-  late VoidCallback _onRendered;
+  late ValueChanged<String> _onRendered;
   String log = 'PARSER LOG:\n';
   Book? _book;
   late epub_pro.EpubBook _epubBook;
@@ -34,7 +34,8 @@ class EpubViewerController {
     return pages[_currentPageIndex];
   }
 
-  onRendered(VoidCallback onRendered) {
+  /// Returns page of chapter (1|44)
+  onRendered(ValueChanged<String> onRendered) {
     _onRendered = onRendered;
   }
 
@@ -65,7 +66,6 @@ class EpubViewerController {
       }
     }
     _loadChapter();
-    _onRendered();
   }
 
   void _updateBookPosition() {
@@ -230,7 +230,7 @@ class EpubViewerController {
         return [];
       }
       Uint8List? imageUint8List = Uint8List.fromList(image);
-      return [WidgetWithSize(widget: Flexible(child: Center(child: Image.memory(imageUint8List))), text: '', size: Size(_parentWidgetSize.width, _parentWidgetSize.height))];
+      return [WidgetWithSize(widget: Image.memory(imageUint8List), text: '', size: Size(_parentWidgetSize.width, _parentWidgetSize.height))];
     }
     List<String> sentences = splitParagraphIntoSentences(_cleanText(element.text));
     List<WidgetWithSize> wordWidgetsWithSize = [];
@@ -239,25 +239,29 @@ class EpubViewerController {
       List<String> splitSentence = sentence.split(' ');
       for (int j = 0; j < splitSentence.length; j++) {
         String word = '${splitSentence[j]} '; // TODO check if correct adding space to each word
-        Widget wordWidget = GestureDetector(
-          onTap: () {
-            _addToSelection(word, splitSentence);
-            // Create and fire the event
-            final event = WordBSelectedEvent(wordsB: selectedWords, sentenceListB: splitSentence);
-            eventBus.fire(event);
-          },
-          onLongPress: () {
-            _toggleMultiSelection(word, splitSentence);
-            // Create and fire the event
-            final event = WordBSelectedEvent(wordsB: selectedWords, sentenceListB: splitSentence);
-            eventBus.fire(event);
-          },
-          child: Text(word, style: selectedWords.contains(word) ? TextStyle(backgroundColor: Colors.yellow[200]) : null),
-        );
-        wordWidgetsWithSize.add(WidgetWithSize(widget: wordWidget, text: word, size: _getTextSize(word)));
+        if (word.trim() != '') {
+          Widget wordWidget = GestureDetector(
+            onTap: () {
+              _addToSelection(word, splitSentence);
+              // Create and fire the event
+              final event = WordBSelectedEvent(wordsB: selectedWords, sentenceListB: splitSentence);
+              eventBus.fire(event);
+            },
+            onLongPress: () {
+              _toggleMultiSelection(word, splitSentence);
+              // Create and fire the event
+              final event = WordBSelectedEvent(wordsB: selectedWords, sentenceListB: splitSentence);
+              eventBus.fire(event);
+            },
+            child: Text(word, style: selectedWords.contains(word) ? TextStyle(backgroundColor: Colors.yellow[200]) : null),
+          );
+          wordWidgetsWithSize.add(WidgetWithSize(widget: wordWidget, text: word, size: _getTextSize(word)));
+        }
       }
     }
-    wordWidgetsWithSize.add(WidgetWithSize(widget: SizedBox(height: 0, width: _parentWidgetSize.width), text: '', size: Size(_parentWidgetSize.width, 0)));
+    if (wordWidgetsWithSize.isNotEmpty) {
+      wordWidgetsWithSize.add(WidgetWithSize(widget: SizedBox(height: 0, width: _parentWidgetSize.width), text: '', size: Size(_parentWidgetSize.width, 0)));
+    }
     return wordWidgetsWithSize;
   }
 
@@ -292,7 +296,6 @@ class EpubViewerController {
           i++; // Skip the next sentence as it has been merged
         }
       }
-      // Add the processed sentence to the final list
       finalSentences.add('$currentSentence '); // TODO test added space at end
     }
     return finalSentences;
@@ -305,6 +308,7 @@ class EpubViewerController {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout(maxWidth: _parentWidgetSize.width);
+    //print('------------------------------------------- "$text" ${textPainter.size.width}');
     return textPainter.size;
   }
 
@@ -312,16 +316,16 @@ class EpubViewerController {
     pages.clear();
     int countWidth = 0;
     int countHeight = 0;
-    List<Row> page = [];
+    List<Widget> page = [];
     List<Widget> line = [];
-    bool hasSizedBox = false;
+    bool lastI = false;
     for (int i = 0; i < _chapterWidgetsWithSize.length; i++) {
+      if (i == _chapterWidgetsWithSize.length - 1) lastI = true;
       countWidth += _chapterWidgetsWithSize[i].size.width.toInt();
       line.add(_chapterWidgetsWithSize[i].widget);
-      hasSizedBox = _chapterWidgetsWithSize[i].widget.runtimeType == SizedBox;
       line.add(Spacer());
-      if (countWidth > _parentWidgetSize.width) {
-        if (hasSizedBox) {
+      if (lastI || (countWidth + _chapterWidgetsWithSize[i + 1].size.width > _parentWidgetSize.width)) { // If line + next would overflow or last
+        if (_chapterWidgetsWithSize[lastI ? i : i + 1].widget.runtimeType == SizedBox) { // If next is SizedBox remove Spacers (or if last i and it is a SizedBox)
           for (int j = 0; j < line.length; j++) {
             if (line[j].runtimeType == Spacer) {
               line.removeAt(j);
@@ -329,21 +333,20 @@ class EpubViewerController {
             }
           }
         }
-        line.removeLast();
-        line.removeLast();
-        line.removeLast();
+        line.removeLast(); // Remove last Spacer
         Row row = Row(mainAxisAlignment: MainAxisAlignment.start, children: [...line]);
         countHeight += _chapterWidgetsWithSize[i].size.height.toInt();
         page.add(row);
         line.clear();
-        hasSizedBox = false;
-        i--;
         countWidth = 0;
-        if (countHeight > _parentWidgetSize.height) {
-          page.removeLast();
-          pages.add([...page]);
+        if (lastI || (countHeight + _chapterWidgetsWithSize[i + 1].size.height > _parentWidgetSize.height)) { // If page + next would overflow
+          if (_chapterWidgetsWithSize[i].widget.runtimeType == Image) { // If this is Image remove add Spacers
+            page = [Expanded(child: Center(child: _chapterWidgetsWithSize[i].widget))];
+          }
+          if (page.isNotEmpty) {
+            pages.add([...page]);
+          }
           page.clear();
-          i--;
           countHeight = 0;
         }
       }
@@ -358,18 +361,18 @@ class EpubViewerController {
       _nextChapter();
     }
     _updateBookPosition();
-    _onRendered();
+    _onRendered('${_currentPageIndex + 1}|${pages.length}');
   }
 
   /// Returns widgets for previous page
   void previousPage() {
     _currentPageIndex--;
     // If _currentPositionIndex <= 0 load previous chapter
-    if (_currentPageIndex <= 0) {
+    if (_currentPageIndex < 0) {
       _previousChapter();
     }
     _updateBookPosition();
-    _onRendered();
+    _onRendered('${_currentPageIndex + 1}|${pages.length}');
   }
 
   void _nextChapter() {
@@ -378,6 +381,7 @@ class EpubViewerController {
       _subChapterIndex++;
     } else if (_chapterIndex < _epubBook.chapters.length - 1) {
       _chapterIndex++;
+      _subChapterIndex = 0;
     }
     _currentPageIndex = 0;
     _loadChapter();
@@ -402,13 +406,25 @@ class EpubViewerController {
     }
     _loadChapter();
     if (oldChapterIndex != _chapterIndex || oldSubChapterIndex != _subChapterIndex) {
-      _currentPageIndex = pages.length - 1;
+      if (pages.isNotEmpty) {
+        _currentPageIndex = pages.length - 1;
+      }
     }
   }
 
   void _loadChapter() {
     _createWidgets();
     _paginate();
+    if (_currentPageIndex >= pages.length) {
+      _currentPageIndex = pages.length - 1;
+    } else if (_currentPageIndex < 0) {
+      _currentPageIndex = 0;
+    }
+    if (pages.isEmpty) {
+      _currentPageIndex = 0;
+    }
+    _updateBookPosition();
+    _onRendered('${_currentPageIndex + 1}|${pages.length}');
   }
 
 }
