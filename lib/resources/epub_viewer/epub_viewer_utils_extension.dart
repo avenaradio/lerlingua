@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'epub_viewer_controller.dart';
 
 extension EpubViewerUtilsExtension on EpubViewerController {
-  Future<double> measureWidgetHeight(BuildContext context, Widget widget) async {
+  Future<double> _measureWidgetHeight(BuildContext context, Widget widget) async {
     final GlobalKey key = GlobalKey();
     final completer = Completer<double>();
 

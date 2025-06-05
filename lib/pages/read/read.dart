@@ -17,21 +17,30 @@ class Read extends StatefulWidget {
 class _ReadState extends State<Read> {
   EpubViewerController epubViewerController = EpubViewerController();
   bool _showLibrary = false;
-  double _libraryFlex = 65; // Initial flex for Library/TestPage
-  double _webViewFlex = 40;  // Initial flex for WebView
-  double _dragOffset = 0.0; // Track the drag offset
+
+  final double _libraryFlex = 65; // Initial flex for Library/TestPage
+  final double _webViewFlex = 40;  // Initial flex for WebView
+  // double _dragOffset = 0.0; // Track the drag offset
+
   String _readingProgress = '0|0';
+
+  void _textSelected() async {
+    if (Settings().currentBook?.languageB == '') {
+      await editLanguageDialog(context);
+    }
+  }
 
   @override
   void initState() {
-    eventBus.on<CurrentBookChangedEvent>().listen((event) {
+    eventBus.on<CurrentBookChangedEvent>().listen((event) { // Listen for book changes
       _showLibrary = event.showLibrary;
       setState(() {});
     });
-    epubViewerController.onRendered((value) {
+    epubViewerController.onRendered((value) { // Listen for page changes
       _readingProgress = value;
       setState(() {});
     });
+    epubViewerController.onTextSelected(_textSelected); // Listen for text selection
     super.initState();
   }
 
@@ -73,7 +82,7 @@ class _ReadState extends State<Read> {
                 ),
                 (_showLibrary || Settings().currentBook == null) ? Container() : IconButton(
                   tooltip: 'Book language: ${Settings().currentBook?.languageB}',
-                  icon: const Icon(Icons.language_rounded),
+                  icon: const Icon(Icons.translate_rounded),
                   onPressed: () async {
                     await editLanguageDialog(context);
                   },
@@ -97,6 +106,7 @@ class _ReadState extends State<Read> {
                 ),
               ],
             ),
+            /*
             GestureDetector(
               onPanUpdate: (details) {
                 setState(() {
@@ -130,6 +140,12 @@ class _ReadState extends State<Read> {
                   ),
                 ), // Optional: Add an icon
               ),
+            ),
+             */
+            Container(
+              height: 2,
+              width: double.infinity,
+              color: Theme.of(context).colorScheme.primary,
             ),
             Expanded(
               flex: _webViewFlex.toInt(),

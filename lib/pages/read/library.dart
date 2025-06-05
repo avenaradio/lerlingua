@@ -49,7 +49,7 @@ class _LibraryState extends State<Library> {
           Book book = Settings().books[index];
           return ListTile(
             // Image from Uint8List
-            leading: book.cover != null ? Image.memory(book.cover!) : Icon(Icons.book_rounded, size: 40),
+            leading: book.cover != null ? SizedBox(width: 40, child: Image.memory(book.cover!)) : Icon(Icons.book_rounded, size: 40),
             title: Text(book.title),
             subtitle: Text(book.author),
             onTap: () {

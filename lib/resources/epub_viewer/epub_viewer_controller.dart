@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
+import 'package:lerlingua/general/string_extension.dart';
+import 'package:lerlingua/resources/epub_viewer/sentence_with_selection.dart';
 import '../event_bus.dart';
 import '../file_utils/book.dart';
 import '../settings.dart';
@@ -13,7 +15,8 @@ import '../settings.dart';
 class EpubViewerController {
   final double _fontSize = 16;
   late Size _parentWidgetSize;
-  late ValueChanged<String> _onRendered;
+  List<ValueChanged<String>> _onRendered = [];
+  late VoidCallback _onTextSelected;
   String log = 'PARSER LOG:\n';
   Book? _book;
   late epub_pro.EpubBook _epubBook;
@@ -37,11 +40,21 @@ class EpubViewerController {
 
   /// Returns page of chapter (1|44)
   onRendered(ValueChanged<String> onRendered) {
-    _onRendered = onRendered;
+    _onRendered.add(onRendered);
   }
-  void _fireOnRendered() => _onRendered('${_currentPageIndex + 1}|${_pages.length}');
+  void _fireOnRendered() {
+    for (ValueChanged<String> onRendered in _onRendered) {
+      onRendered('${_currentPageIndex + 1}|${_pages.length}');
+    }
+  }
 
-  Future<void> loadBook({required BuildContext context, required Size parentWidgetSize, Book? book, required VoidCallback onRendered}) async {
+  /// Fires when text is selected
+  onTextSelected(VoidCallback onTextSelected) {
+    _onTextSelected = onTextSelected;
+  }
+
+  Future<void> loadBook({required BuildContext context, required Size parentWidgetSize, Book? book, required ValueChanged<String> onRendered}) async {
+    _onRendered.add(onRendered);
     _parentWidgetSize = Size(parentWidgetSize.width, parentWidgetSize.height - 100);
     if (book == null) {
       _book = null;
@@ -175,46 +188,37 @@ class EpubViewerController {
   }
 
   /// List of selected words
-  List<String> selectedWords = [];
+  SentenceWithSelection sentenceWithSelection = SentenceWithSelection(words: [], selected: []);
   /// Is multi selection enabled
   bool isMultiSelection = false;
   /// Adds word to selection
-  _addToSelection(String word, List<String> sentence) {
-    if(!isMultiSelection || (selectedWords.isNotEmpty && !sentence.contains(selectedWords.first))) { // If not multi selection || word is from different sentence -> clear
-      selectedWords.clear();
-      selectedWords.add(word);
+  _addToSelection(int word, List<String> sentence) {
+    if(!isMultiSelection || sentenceWithSelection.words != sentence) { // If not multi selection || is different sentence -> clear
+      sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []);
+      sentenceWithSelection.selected.add(word);
+      _onTextSelected(); // Fire selection event
       isMultiSelection = false;
     }
-    if (isMultiSelection && selectedWords.contains(word)) {
-      selectedWords.remove(word); // Remove word
-      if (selectedWords.isEmpty) {
+    if (isMultiSelection && sentenceWithSelection.selected.contains(word)) {
+      sentenceWithSelection.selected.remove(word); // Remove word
+      if (sentenceWithSelection.selected.isEmpty) {
         isMultiSelection = false; // End selection
       }
-    } else if (isMultiSelection && !selectedWords.contains(word)) {
-      selectedWords.add(word); // Add word
+    } else if (isMultiSelection && !sentenceWithSelection.selected.contains(word)) {
+      sentenceWithSelection.selected.add(word); // Add word
+      _onTextSelected(); // Fire selection event
     }
   }
   /// Toggles multi selection
-  _toggleMultiSelection(String word, List<String> sentence) {
+  _toggleMultiSelection(int word, List<String> sentence) {
       if (!isMultiSelection) { // Start selection
-        selectedWords.clear();
+        sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []);
         isMultiSelection = true;
       }
-      if (selectedWords.isNotEmpty && !sentence.contains(selectedWords.first)) { // If word is from different sentence -> clear this wont trigger in _addToSelection again
-        selectedWords.clear();
+      if (sentenceWithSelection.words != sentence) { // If is different sentence -> clear this wont trigger in _addToSelection again
+        sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []);
       }
       _addToSelection(word, sentence);
-  }
-
-  String _cutOffStartOfImgSource(String input) {
-    // Use a regular expression to find the first letter or number
-    final RegExp regex = RegExp(r'[a-zA-Z0-9]');
-    final Match? match = regex.firstMatch(input);
-    // If a match is found, return the substring from the match to the end
-    if (match != null) {
-      return input.substring(match.start);
-    }
-    return input;
   }
 
   /// Returns Widgets from dom element
@@ -226,7 +230,7 @@ class EpubViewerController {
     if (element.localName == 'img') {
       for (int i = 0; i < _epubBook.content!.images.length; i++) {
       }
-      String src = _cutOffStartOfImgSource(element.attributes['src'] ?? '');
+      String src = (element.attributes['src'] ?? '').trimNonAlphanumeric();
       List<int>? image = _epubBook.content!.images[src]?.content;
       if (image == null) {
         return [];
@@ -240,22 +244,24 @@ class EpubViewerController {
       String sentence = sentences[i];
       List<String> splitSentence = sentence.split(' ');
       for (int j = 0; j < splitSentence.length; j++) {
-        String word = '${splitSentence[j]} '; // TODO check if correct adding space to each word
+        String word = '${splitSentence[j]} ';
         if (word.trim() != '') {
           Widget wordWidget = GestureDetector(
             onTap: () {
-              _addToSelection(word, splitSentence);
+              _addToSelection(j, splitSentence);
               // Create and fire the event
-              final event = WordBSelectedEvent(wordsB: selectedWords, sentenceListB: splitSentence);
+              final event = WordBSelectedEvent(wordB: sentenceWithSelection.selectedWordsJoined, sentenceB: sentenceWithSelection.sentenceWrapped);
               eventBus.fire(event);
+              _fireOnRendered();
             },
             onLongPress: () {
-              _toggleMultiSelection(word, splitSentence);
+              _toggleMultiSelection(j, splitSentence);
               // Create and fire the event
-              final event = WordBSelectedEvent(wordsB: selectedWords, sentenceListB: splitSentence);
+              final event = WordBSelectedEvent(wordB: sentenceWithSelection.selectedWordsJoined, sentenceB: sentenceWithSelection.sentenceWrapped);
               eventBus.fire(event);
+              _fireOnRendered();
             },
-            child: Text(word, style: selectedWords.contains(word) ? TextStyle(backgroundColor: Colors.yellow[200]) : null),
+            child: Text(word, style: (sentenceWithSelection.words == splitSentence && sentenceWithSelection.selected.contains(j)) ? TextStyle(backgroundColor: Colors.yellow[200]) : null), // TODO this needs to be rerenderd correctly
           );
           wordWidgetsWithSize.add(WidgetWithSize(widget: wordWidget, text: word, size: _getTextSize(word)));
         }
