@@ -223,14 +223,10 @@ class EpubViewerController {
     }
     if (element.localName == 'img') {
       for (int i = 0; i < _epubBook.content!.images.length; i++) {
-        print('---------------------------------------------------- ${_epubBook.content!.images.keys.toList()[i]}');
       }
-      print('---------------------------------------------------- ${element.attributes['src']}');
       String src = _cutOffStartOfImgSource(element.attributes['src'] ?? '');
-      print('---------------------------------------------------- $src');
       List<int>? image = _epubBook.content!.images[src]?.content;
       if (image == null) {
-        print('---------------------------------------------------Image not found for src: ${element.attributes['src']}');
         return [];
       }
       Uint8List? imageUint8List = Uint8List.fromList(image);
@@ -319,11 +315,7 @@ class EpubViewerController {
     List<Row> page = [];
     List<Widget> line = [];
     bool hasSizedBox = false;
-    bool bigWidget = false;
     for (int i = 0; i < _chapterWidgetsWithSize.length; i++) {
-      if (i >= _chapterWidgetsWithSize.length) {
-        break;
-      }
       countWidth += _chapterWidgetsWithSize[i].size.width.toInt();
       line.add(_chapterWidgetsWithSize[i].widget);
       hasSizedBox = _chapterWidgetsWithSize[i].widget.runtimeType == SizedBox;
@@ -345,27 +337,15 @@ class EpubViewerController {
         page.add(row);
         line.clear();
         hasSizedBox = false;
-        if (countHeight > _parentWidgetSize.height) {
-          if (page.isNotEmpty && page.length == 1) bigWidget = true;
-          if (!bigWidget) {
-            page.removeLast();
-          }
-          pages.add([...page]);
-          page.clear();
-          if (!bigWidget) {
-            i--;
-          }
-          bigWidget = false;
-          countHeight = 0;
-        }
         i--;
         countWidth = 0;
-      }
-    }
-    for (int i = 0; i < pages.length; i++) {
-      print('------------------------------------------------------------------------page $i');
-      for (int j = 0; j < pages[i].length; j++) {
-        print(pages[i][j]);
+        if (countHeight > _parentWidgetSize.height) {
+          page.removeLast();
+          pages.add([...page]);
+          page.clear();
+          i--;
+          countHeight = 0;
+        }
       }
     }
   }
