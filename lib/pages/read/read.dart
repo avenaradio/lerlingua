@@ -20,6 +20,7 @@ class _ReadState extends State<Read> {
   double _libraryFlex = 65; // Initial flex for Library/TestPage
   double _webViewFlex = 40;  // Initial flex for WebView
   double _dragOffset = 0.0; // Track the drag offset
+  String _readingProgress = '0|0';
 
   @override
   void initState() {
@@ -27,7 +28,10 @@ class _ReadState extends State<Read> {
       _showLibrary = event.showLibrary;
       setState(() {});
     });
-    epubViewerController.onRendered(() {setState(() {});});
+    epubViewerController.onRendered((value) {
+      _readingProgress = value;
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -76,6 +80,7 @@ class _ReadState extends State<Read> {
                 ),
                 //epubViewerController.isLoading ? SizedBox(height: 16, width: 16, child: const CircularProgressIndicator()) : Container(),
                 Spacer(),
+                Text(_readingProgress),
                 IconButton(
                   tooltip: 'Previous page',
                   icon: const Icon(Icons.navigate_before_rounded),
