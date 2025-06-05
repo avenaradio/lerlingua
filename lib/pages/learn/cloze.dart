@@ -19,13 +19,13 @@ class Cloze {
   final List<FocusNode> focusNodes = [];
   @visibleForTesting
   final List<String> hiddenTexts = [];
-  final TextStyle _commonTextStyle = const TextStyle(fontSize: 15.0);
+  static final TextStyle commonTextStyle = const TextStyle(fontSize: 16.0);
   @visibleForTesting
   bool showAnswers = false;
 
   Cloze({required VocabCard card, BuildContext? context}) : _context = context, _card = card {
     // Split sentenceB in %%
-    parts = card.sentenceB == '' ? ['', card.wordB] : card.sentenceB.split('%%');
+    parts = card.sentenceB == '' ? ['${card.languageB}: ', card.wordB] : ('${card.languageB}: ${card.sentenceB}').split('%%'); // TODO use SentenceWithSelectedWords for this
     _createWidgets();
   }
 
@@ -45,7 +45,11 @@ class Cloze {
 
   /// Function to add a text widget
   void _addTextWidget(String text) {
-    widgets.add(Text(text, style: const TextStyle(fontSize: 19)));
+    List<String> words = text.split(' ');
+    for (String word in words) {
+      widgets.add(Text('$word ', style: commonTextStyle));
+    }
+
   }
 
   /// Function to add an input widget
@@ -55,7 +59,7 @@ class Cloze {
     hiddenTexts.add(hiddenText);
     controllers.add(controller);
     focusNodes.add(focusNode);
-    final double textWidth = _calculateTextWidth(hiddenText, _commonTextStyle);
+    final double textWidth = _calculateTextWidth(hiddenText, commonTextStyle);
     widgets.add(
       SizedBox(
         height: 20,
@@ -63,10 +67,10 @@ class Cloze {
         child: TextField(
           focusNode: focusNode,
           controller: controller,
-          style: _commonTextStyle,
+          style: commonTextStyle,
           decoration: InputDecoration(
             hintText: '',
-            hintStyle: _commonTextStyle,
+            hintStyle: commonTextStyle,
             isDense: true,
             contentPadding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
           ),

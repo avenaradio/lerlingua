@@ -6,8 +6,14 @@ extension StringExtension on String {
     return this[0].toUpperCase() + substring(1);
   }
 
-  String trimNonAlphanumeric(String input) {
-    // Use a regular expression to match non-alphanumeric characters
-    return input.replaceAll(RegExp(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$'), '');
+  String trimNonAlphanumeric() {
+    if (isEmpty) {
+      return this;
+    }
+    String trimmed = replaceAll(RegExp(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$'), '');
+    if (trimmed.isEmpty) {
+      return this;
+    }
+    return trimmed;
   }
 }

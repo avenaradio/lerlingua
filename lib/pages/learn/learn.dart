@@ -92,24 +92,21 @@ class _LearnState extends State<Learn> {
                   _currentCard.vocabKey == -2 ? Container() : Center(
                     child: Text(
                       '${_currentCard.languageA}: ${_currentCard.wordA}',
-                      style: const TextStyle(fontSize: 19),
+                      style: Cloze.commonTextStyle),
                     ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    child: Container(color: Theme.of(context).primaryColor, height: 2),
                   ),
-                  SizedBox(height: 10),
                   // Cloze
-                  _currentCard.vocabKey == -2 ? Text('This box is empty', style: const TextStyle(fontSize: 19)) : Wrap(
+                  _currentCard.vocabKey == -2 ? Text('This box is empty', style: Cloze.commonTextStyle) : Wrap(
                     spacing: 8.0, // Space between items
                     runSpacing: 8.0, // Space between lines
-                    children: [
-                      Text(
-                        '${_currentCard.languageB}: ',
-                        style: const TextStyle(fontSize: 19),
-                      ),
-                      ..._cloze.widgets,
-                    ],
+                    children: _cloze.widgets,
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 16),
                   // Comment
+                  _currentCard.comment.isEmpty ? Container() :
                   Center(
                     child: Text(
                       _currentCard.comment,
@@ -117,7 +114,8 @@ class _LearnState extends State<Learn> {
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  _currentCard.comment.isEmpty ? Container() :
+                  SizedBox(height: 16),
                   // Buttons
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -137,12 +135,7 @@ class _LearnState extends State<Learn> {
                               );
                               _getCurrentCard();
                             },
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center, // Center the icon
-                              children: [Icon(Icons.close)],
-                            ),
+                            child: Icon(Icons.close, color: Colors.white),
                           ),
                         ),
                         SizedBox(width: 80),
@@ -163,12 +156,7 @@ class _LearnState extends State<Learn> {
                             onLongPress: () {
                               _cloze.toggleShowAnswers();
                             },
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center, // Center the icon
-                              children: [Icon(Icons.check)],
-                            ),
+                            child: Icon(Icons.check, color: Colors.white)
                           ),
                         ),
                       ],
@@ -315,6 +303,17 @@ class _LearnState extends State<Learn> {
                           : Container(),
                     ],
                   ),
+                  // Add Stack Button
+                  if (Settings().currentBox == 1 && Mirror().filterCards.filterByBoxNumber(0).cards.isNotEmpty && Mirror().filterCards.filterByBoxNumber(1).cards.isEmpty)
+                    ElevatedButton(
+                      child: const Text('Move new cards to first box'),
+                      onPressed: () {
+                        Mirror().addStack(stackSize: Settings().stackSize);
+                        _getCurrentCard();
+                      },
+                    ),
+                  if (Settings().currentBox == 1 && Mirror().filterCards.filterByBoxNumber(0).cards.isEmpty && Mirror().filterCards.filterByBoxNumber(1).cards.isEmpty)
+                    Text('You have no new cards in your inbox.'),
                   SizedBox(height: 10),
                 ],
               ),
