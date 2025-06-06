@@ -32,7 +32,7 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
     if (mounted) {
       await getWidgetSizeAfterBuild(context);
       if (mounted) {
-        widget.epubViewerController.loadBook(context: context, parentWidgetSize: parentWidgetSize, book: widget.book, onRendered: (value) {setState(() {});});
+        widget.epubViewerController.loadBook(context: context, parentWidgetSize: parentWidgetSize, book: widget.book, onRendered: (value) {if (mounted) setState(() {});});
         isLoading = false;
         setState(() {});
       }

@@ -20,7 +20,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ListView(
             children: [
-              const Divider(),
               const ListTile(
                 title: Text('Theme', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
@@ -101,19 +100,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 onTap: () {
                   Updater.update(forceUpdate: true);
                 }
-              ),
-              const Divider(),
-              const ListTile(
-                title: Text('Tutorial', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-              ListTile(
-                title: const Text('Load Tutorial Book'),
-                subtitle: const Text('Tap to load the manual'),
-                onTap: () {
-                  Settings().currentBook = null;
-                  Navigator.pushNamed(context, '/home');
-                },
-                // add switch
               ),
               const Divider(),
               const ListTile(

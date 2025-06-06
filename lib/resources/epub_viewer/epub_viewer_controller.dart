@@ -351,7 +351,7 @@ class EpubViewerController {
         if (lastI || (countHeight + _chapterWidgetsWithSize[i + 1].size.height > _parentWidgetSize.height)) { // If page + next would overflow
           if (_chapterWidgetsWithSize[i].widget.runtimeType == Image) { // If this is Image remove add Spacers
             page = [Expanded(child: ColorFiltered(
-                colorFilter: Settings().isDarkMode ? ThemeFilter.undoDark : ThemeFilter.none,
+                colorFilter: Settings().isDarkMode ? ThemeFilter.undoDark : ThemeFilter.undoLight,
                 child: Center(child: _chapterWidgetsWithSize[i].widget)))];
           }
           if (page.isNotEmpty) {

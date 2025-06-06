@@ -1,18 +1,12 @@
 import 'dart:math';
 import 'dart:ui';
 
-enum FilterType { dark, light, undoDark }
+enum FilterType { dark, light, undoDark, undoLight }
 class ThemeFilter {
   static ColorFilter get dark => ColorFilter.matrix(filterMatrix(filterType: FilterType.dark));
   static ColorFilter get light => ColorFilter.matrix(filterMatrix(filterType: FilterType.light));
   static ColorFilter get undoDark => ColorFilter.matrix(filterMatrix(filterType: FilterType.undoDark));
-  static ColorFilter get none => ColorFilter.matrix(<double>
-  [
-    1, 0, 0, 0, 0, // Red
-    0, 1, 0, 0, 0, // Green
-    0, 0, 1, 0, 0, // Blue
-    0, 0, 0, 1, 0,    // Alpha
-  ]);
+  static ColorFilter get undoLight => ColorFilter.matrix(filterMatrix(filterType: FilterType.undoLight));
 
   static List<double> filterMatrix({required FilterType filterType}) {
     double darkDegrees = -35;
@@ -26,6 +20,9 @@ class ThemeFilter {
         break;
       case FilterType.undoDark:
         degrees = - darkDegrees;
+        break;
+      case FilterType.undoLight:
+        degrees = -(180 + darkDegrees);
         break;
     }
     final double angle = degrees * pi / 180;
@@ -88,10 +85,12 @@ class ThemeFilter {
     finalMatrix[9]  += offsetG;  // G offset
     finalMatrix[14] += offsetB;  // B offset
 
-    hueRotateMatrix[4]  += 0.01 * 255;  // R offset
-    hueRotateMatrix[9]  -= 0.01 * 255;  // G offset
-    hueRotateMatrix[14] -= 0.02 * 255;  // B offset
-
+    const double hueOffsetR = 0.01 * 255;  // R offset
+    const double hueOffsetG = -0.01 * 255;  // G offset
+    const double hueOffsetB = -0.02 * 255;  // B offset
+    hueRotateMatrix[4]  += hueOffsetR;  // R offset
+    hueRotateMatrix[9]  += hueOffsetG;  // G offset
+    hueRotateMatrix[14] += hueOffsetB;  // B offset
 
     switch (filterType) {
       case FilterType.dark:
@@ -103,6 +102,11 @@ class ThemeFilter {
         finalMatrix[9]  -= offsetG;  // G offset
         finalMatrix[14] -= offsetB;  // B offset
         return finalMatrix;
+      case FilterType.undoLight:
+        hueRotateMatrix[4]  -= hueOffsetR;  // R offset
+        hueRotateMatrix[9]  -= hueOffsetG;  // G offset
+        hueRotateMatrix[14] -= hueOffsetB;  // B offset
+        return hueRotateMatrix;
     }
   }
 }

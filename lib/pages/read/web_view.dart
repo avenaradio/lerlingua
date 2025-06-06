@@ -42,27 +42,6 @@ class _WebViewState extends State<WebView> {
 })();
   ''';
   static final String _lightThemeJs = '''
-  // Override the matchMedia method to block dark theme detection
-(function() {
-    const originalMatchMedia = window.matchMedia;
-
-    window.matchMedia = function(query) {
-        // Check if the query is for prefers-color-scheme
-        if (query.includes('prefers-color-scheme')) {
-            // Return a MediaQueryList object indicating light mode preference
-            return {
-                matches: false, // Indicate that dark mode is not preferred
-                media: query,
-                onchange: null,
-                addListener: function() {},
-                removeListener: function() {},
-            };
-        }
-        // Call the original matchMedia for other queries
-        return originalMatchMedia.apply(this, arguments);
-    };
-})();
-
 // Create a new div element for the overlay
 var overlay = document.createElement('div');
 
@@ -72,7 +51,7 @@ overlay.style.top = '0';
 overlay.style.left = '0';
 overlay.style.width = '100%';
 overlay.style.height = '100%';
-overlay.style.backgroundColor = 'rgba(232, 207, 170, 0.12)'; // Beige color with some transparency
+overlay.style.backgroundColor = 'rgba(232, 207, 170, 0.05)'; // Beige color with some transparency
 overlay.style.pointerEvents = 'none'; // Allow clicks to pass through the overlay
 overlay.style.zIndex = '9999'; // Ensure it is on top of other elements
 

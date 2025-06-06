@@ -9,17 +9,17 @@ void main() {
     test('Splits sentenceB on %%', () {
       VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: 'This is a %%cloze%% with percent %%signs%%.', boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);
-      expect(cloze.parts, ['This is a ', 'cloze', ' with percent ', 'signs', '.']);
+      expect(cloze.parts, ['es: This is a ', 'cloze', ' with percent ', 'signs', '.']);
     });
     test('if sentenceB starts with %% first String should be empty', () {
       VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: '%%This%% is a %%cloze%% with percent %%signs%%.', boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);
-      expect(cloze.parts, ['', 'This', ' is a ', 'cloze', ' with percent ', 'signs', '.']);
+      expect(cloze.parts, ['es: ', 'This', ' is a ', 'cloze', ' with percent ', 'signs', '.']);
     });
     test('if sentenceB is empty use wordB', () {
       VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: null, boxNumber: 1, timeModified: 1,);
       Cloze cloze = Cloze(card: card,);
-      expect(cloze.parts, ['', 'prueba']);
+      expect(cloze.parts, ['es: ', 'prueba']);
     });
     test('createWidgets', () {
       VocabCard card =  VocabCard(vocabKey: 1, languageA: 'en', wordA: 'test', languageB: 'es', wordB: 'prueba', sentenceB: '%%This%% is a %%cloze%% with percent %%signs%%.', boxNumber: 1, timeModified: 1,);
@@ -34,7 +34,7 @@ void main() {
           inputWidgets++;
         }
       }
-      expect(textWidgets, 4);
+      expect(textWidgets, 6);
       expect(inputWidgets, 3);
     });
     /// #showCharacterOnSpace
