@@ -15,7 +15,7 @@ import '../settings.dart';
 class EpubViewerController {
   final double _fontSize = 16;
   late Size _parentWidgetSize;
-  List<ValueChanged<String>> _onRendered = [];
+  final List<ValueChanged<String>> _onRendered = [];
   late VoidCallback _onTextSelected;
   String log = 'PARSER LOG:\n';
   Book? _book;

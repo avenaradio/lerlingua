@@ -5,10 +5,7 @@ EventBus eventBus = EventBus();
 class WordBSelectedEvent {
   String wordB;
   String sentenceB;
-  WordBSelectedEvent({required this.wordB, required this.sentenceB}) {
-    print('eventBus: $wordB');
-    print('eventBus: $sentenceB');
-  }
+  WordBSelectedEvent({required this.wordB, required this.sentenceB});
 }
 
 /// Word in known language selected

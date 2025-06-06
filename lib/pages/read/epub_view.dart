@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:flutter/material.dart';
-import '../../resources/event_bus.dart';
 import '../../resources/settings.dart';
 import 'edit_language_page.dart';
 
