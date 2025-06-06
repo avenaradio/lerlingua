@@ -51,7 +51,7 @@ class _LibraryState extends State<Library> {
           return ListTile(
             // Image from Uint8List
             leading: book.cover != null ? SizedBox(width: 40, child: ColorFiltered(
-                colorFilter: Settings().isDarkMode ? ThemeFilter.undoDark : ThemeFilter.none,
+                colorFilter: Settings().isDarkMode ? ThemeFilter.undoDark : ThemeFilter.undoLight,
                 child: Image.memory(book.cover!))) : Icon(Icons.book_rounded, size: 40),
             title: Text(book.title),
             subtitle: Text(book.author),

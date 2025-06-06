@@ -45,7 +45,7 @@ class Cloze {
 
   /// Function to add a text widget
   void _addTextWidget(String text) {
-    List<String> words = text.split(' ');
+    List<String> words = text.trim().split(' ');
     for (String word in words) {
       widgets.add(Text('$word ', style: commonTextStyle));
     }
