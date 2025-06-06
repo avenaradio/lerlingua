@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:epub_pro/epub_pro.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/epub_viewer/epub_viewer_controller.dart';
 
@@ -13,8 +12,8 @@ Future<void> writeFile(String filePath, String data) async {
 }
 
 void main() async {
-  final byteData = File('test/assets/the_little_prince_public_domain.epub').readAsBytesSync();
-  EpubBook book = await EpubReader.readBook(byteData.buffer.asUint8List()); // from assets
+  //final byteData = File('test/assets/the_little_prince_public_domain.epub').readAsBytesSync();
+  //EpubBook book = await EpubReader.readBook(byteData.buffer.asUint8List()); // from assets
   EpubViewerController epubViewer = EpubViewerController();
 
   group('EpubParser Tests', () {
