@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -16,6 +18,85 @@ class WebView extends StatefulWidget {
 }
 
 class _WebViewState extends State<WebView> {
+  bool _isLoading = false;
+  final String _initialJs = '''
+  // Override the matchMedia method to block dark theme detection
+(function() {
+    const originalMatchMedia = window.matchMedia;
+
+    window.matchMedia = function(query) {
+        // Check if the query is for prefers-color-scheme
+        if (query.includes('prefers-color-scheme')) {
+            // Return a MediaQueryList object indicating light mode preference
+            return {
+                matches: false, // Indicate that dark mode is not preferred
+                media: query,
+                onchange: null,
+                addListener: function() {},
+                removeListener: function() {},
+            };
+        }
+        // Call the original matchMedia for other queries
+        return originalMatchMedia.apply(this, arguments);
+    };
+})();
+  ''';
+  static final String _lightThemeJs = '''
+  // Override the matchMedia method to block dark theme detection
+(function() {
+    const originalMatchMedia = window.matchMedia;
+
+    window.matchMedia = function(query) {
+        // Check if the query is for prefers-color-scheme
+        if (query.includes('prefers-color-scheme')) {
+            // Return a MediaQueryList object indicating light mode preference
+            return {
+                matches: false, // Indicate that dark mode is not preferred
+                media: query,
+                onchange: null,
+                addListener: function() {},
+                removeListener: function() {},
+            };
+        }
+        // Call the original matchMedia for other queries
+        return originalMatchMedia.apply(this, arguments);
+    };
+})();
+
+// Create a new div element for the overlay
+var overlay = document.createElement('div');
+
+// Set the style for the overlay
+overlay.style.position = 'fixed';
+overlay.style.top = '0';
+overlay.style.left = '0';
+overlay.style.width = '100%';
+overlay.style.height = '100%';
+overlay.style.backgroundColor = 'rgba(232, 207, 170, 0.12)'; // Beige color with some transparency
+overlay.style.pointerEvents = 'none'; // Allow clicks to pass through the overlay
+overlay.style.zIndex = '9999'; // Ensure it is on top of other elements
+
+// Append the overlay to the body
+document.body.appendChild(overlay);
+  ''';
+
+  static final String _darkThemeJs = '''
+  const style = document.createElement('style');
+// Add your CSS rule to the style element
+style.textContent = `
+  :root body {
+    filter: invert(100%) !important;
+  }
+`;
+// Append the style element to the head of the document
+try {
+  document.head.appendChild(style);
+} catch (error) {
+  console.error(error);
+}
+  ''';
+
+  final String _themeJs = Settings().isDarkMode ? _darkThemeJs : _lightThemeJs;
 
   final GlobalKey webViewKey = GlobalKey();
   InAppWebViewController? webViewController;
@@ -28,12 +109,14 @@ class _WebViewState extends State<WebView> {
   double progress = 0;
   final urlController = TextEditingController();
   String url = "";
-  String wordB = "lerlingua";
+  String wordB = "How to use Lerlingua:";
   String sentenceB = "";
   bool _wordBChanged = false;
   TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', injectJs: '');
 
   _search() {
+    _isLoading = true;
+    setState(() {});
     _translationService = Settings().currentTranslationService ?? _translationService;
     String url = _translationService.getUrl(wordB);
     if (url.isEmpty) {
@@ -232,16 +315,23 @@ class _WebViewState extends State<WebView> {
                 key: webViewKey,
                 initialUrlRequest: URLRequest(
                   url: WebUri(
-                    "https://translate.google.com/?sl=auto&tl=en&text=ler%20lingua",
+                    "https://github.com/avenaradio/lerlingua/blob/main/README.md#how-to-use",
                   ),
                 ),
                 contextMenu: contextMenu,
                 initialSettings: settings,
+                initialUserScripts: UnmodifiableListView([
+                  UserScript(
+                      source: _initialJs,
+                      injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+                  ),
+                ]),
                 onWebViewCreated: (controller) {
                   webViewController = controller;
                 },
                 onLoadStart: (controller, url) {
                   setState(() {
+                    _isLoading = true;
                     this.url = url.toString();
                     //urlController.text = this.url;
                   });
@@ -254,13 +344,20 @@ class _WebViewState extends State<WebView> {
                 },
 
                 onLoadStop: (controller, url) async {
-                  await controller.evaluateJavascript(source: _translationService.injectJs);
+                  await controller.evaluateJavascript(source: '$_themeJs\n${_translationService.injectJs}');
+                  // wait to load JS
+                  await Future.delayed(const Duration(milliseconds: 400));
                   setState(() {
                     this.url = url.toString();
                     urlController.text = wordB;
+                    _isLoading = false;
                   });
                 },
-                onReceivedError: (controller, request, error) {},
+                onReceivedError: (controller, request, error) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                },
                 onProgressChanged: (controller, progress) {
                   if (progress == 100) {}
                   setState(() {
@@ -276,12 +373,16 @@ class _WebViewState extends State<WebView> {
                 },
                 onConsoleMessage: (controller, consoleMessage) {
                   if (kDebugMode) {
-                    print(consoleMessage);
+                    //print(consoleMessage);
                   }
                 },
               ),
-              progress < 1.0
-                  ? LinearProgressIndicator(value: progress)
+              progress < 1.0 || _isLoading
+                  ? Container(height: double.infinity, width: double.infinity, color: Theme.of(context).colorScheme.surface, child: Column(
+                    children: [
+                      LinearProgressIndicator(value: progress),
+                    ],
+                  ))
                   : Container(),
             ],
           ),

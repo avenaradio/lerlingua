@@ -136,11 +136,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             alignment: Alignment.center,
             children: [
               !Settings().showFeedbackButton ? SizedBox.shrink() : Positioned(
-                left: 0,
+                right: 0,
                 bottom: 11,
                 child: IconButton(
                   icon: const Icon(Icons.feedback),
-                  color: Colors.deepOrange[400],
+                  color: Theme.of(context).colorScheme.secondary,
                   tooltip: 'Give Feedback',
                   onPressed: () {
                     try {

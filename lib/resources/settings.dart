@@ -66,6 +66,13 @@ class Settings {
     saveSettings();
   }
 
+  bool _isDarkMode = false;
+  bool get isDarkMode => _isDarkMode;
+  set isDarkMode(bool value) {
+    _isDarkMode = value;
+    saveSettings();
+  }
+
   // GitHub credentials
   String _token = '';
   String get token => _token;
@@ -232,6 +239,7 @@ class Settings {
     _autoUpdate = _sharedPreferences.getBool('autoUpdate') ?? true;
     _updateAvailable = _sharedPreferences.getBool('updateAvailable') ?? false;
     _showFeedbackButton = _sharedPreferences.getBool('showFeedbackButton') ?? true;
+    _isDarkMode = _sharedPreferences.getBool('isDarkMode') ?? false;
     // Load deleted cards
     String? deletedCardsString = _sharedPreferences.getString('deletedCards');
     if (deletedCardsString != null) addDeletedCards(deletedCardsString);
@@ -279,6 +287,7 @@ class Settings {
     await _sharedPreferences.setBool('autoUpdate', _autoUpdate);
     await _sharedPreferences.setBool('updateAvailable', _updateAvailable);
     await _sharedPreferences.setBool('showFeedbackButton', _showFeedbackButton);
+    await _sharedPreferences.setBool('isDarkMode', _isDarkMode);
     // Save deleted cards
     await _sharedPreferences.setString('deletedCards', _deletedCards.join('/'));
     // Save current translation service key

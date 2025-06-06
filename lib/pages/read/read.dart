@@ -17,6 +17,7 @@ class Read extends StatefulWidget {
 class _ReadState extends State<Read> {
   EpubViewerController epubViewerController = EpubViewerController();
   bool _showLibrary = false;
+  double _dragStartPosition = 0;
 
   final double _libraryFlex = 65; // Initial flex for Library/TestPage
   final double _webViewFlex = 40;  // Initial flex for WebView
@@ -51,9 +52,24 @@ class _ReadState extends State<Read> {
           children: [
             Expanded(
               flex: _libraryFlex.toInt(),
-              child: _showLibrary ? Library() : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: EpubViewerWidget(epubViewerController: epubViewerController, book: Settings().currentBook,),
+              child: _showLibrary ? Library() : GestureDetector(
+                onHorizontalDragStart: (details) {
+                  _dragStartPosition = details.localPosition.dx;
+                },
+                onHorizontalDragEnd: (details) {
+                  // On swipe left
+                  if (details.localPosition.dx - _dragStartPosition < 0) {
+                    epubViewerController.nextPage();
+                  }
+                  // On swipe right
+                  else if (details.localPosition.dx - _dragStartPosition > 0) {
+                    epubViewerController.previousPage();
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: EpubViewerWidget(epubViewerController: epubViewerController, book: Settings().currentBook,),
+                ),
               ),
             ),
             Row(

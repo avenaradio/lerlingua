@@ -33,7 +33,7 @@ class _LoadingState extends State<Loading> {
     // Circular progress indicator
     return SafeArea(
       child: Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(child: CircularProgressIndicator()), // ThemeColorsDisplay(),
       ),
     );
   }

@@ -7,8 +7,8 @@ This app contains two main features:
 ### Reading books
 - Go to the library page by clicking the book icon
 - There you can import a new book
-- Select a word to translate it
-- Then select the translation and "Add" it to your vocabulary
+- Select tap a word to translate it or long press to select multiple of a sentence
+- Then select the translation in the browser by long pressing it and tap "Add" to save it to your vocabulary
 ### Learning words
 - Your vocabulary is displayed in a vocabulary learning box
 - The new cards are stored in the inbox
