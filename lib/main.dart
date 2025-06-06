@@ -1,42 +1,39 @@
 import 'package:feedback_gitlab/feedback_gitlab.dart';
 import 'package:flutter/material.dart';
-import 'package:json_theme/json_theme.dart';
-import 'package:flutter/services.dart';
 import 'package:lerlingua/pages/home.dart';
-import 'dart:convert';
 import 'package:lerlingua/pages/loading.dart';
 import 'package:lerlingua/pages/read/library.dart';
 import 'package:lerlingua/pages/settings/settings_sync_log.dart';
 import 'package:lerlingua/pages/settings/settings_translation_services.dart';
+import 'package:lerlingua/theme_filter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final themeStr = await rootBundle.loadString('assets/appainter_theme_bright.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson)!;
-
-  runApp(BetterFeedback(child: MyApp(theme: theme)));
+  final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  final bool isDarkMode = sharedPreferences.getBool('isDarkMode') ?? false;
+  runApp(BetterFeedback(child: MyApp(isDarkMode: isDarkMode)));
 }
 
 class MyApp extends StatelessWidget {
-  final ThemeData theme;
-
-  const MyApp({super.key, required this.theme});
+  const MyApp({super.key, required this.isDarkMode});
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Named Routes',
-      initialRoute: '/',
-      routes: {
-        '/': (context) => Loading(),
-        '/home': (context) => Home(),
-        '/settings/translation_services': (context) => TranslationServicesList(),
-        'settings/sync_log': (context) => SettingsSyncLog(),
-        '/library': (context) => Library(),
-      },
-      //theme: theme,
+    return ColorFiltered(
+      colorFilter: isDarkMode ? ThemeFilter.dark : ThemeFilter.light,
+      child: MaterialApp(
+        title: 'Named Routes',
+        initialRoute: '/',
+        routes: {
+          '/': (context) => Loading(),
+          '/home': (context) => Home(),
+          '/settings/translation_services': (context) => TranslationServicesList(),
+          'settings/sync_log': (context) => SettingsSyncLog(),
+          '/library': (context) => Library(),
+        },
+      ),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
 import 'package:lerlingua/general/string_extension.dart';
 import 'package:lerlingua/resources/epub_viewer/sentence_with_selection.dart';
+import '../../theme_filter.dart';
 import '../event_bus.dart';
 import '../file_utils/book.dart';
 import '../settings.dart';
@@ -349,7 +350,9 @@ class EpubViewerController {
         countWidth = 0;
         if (lastI || (countHeight + _chapterWidgetsWithSize[i + 1].size.height > _parentWidgetSize.height)) { // If page + next would overflow
           if (_chapterWidgetsWithSize[i].widget.runtimeType == Image) { // If this is Image remove add Spacers
-            page = [Expanded(child: Center(child: _chapterWidgetsWithSize[i].widget))];
+            page = [Expanded(child: ColorFiltered(
+                colorFilter: Settings().isDarkMode ? ThemeFilter.undoDark : ThemeFilter.none,
+                child: Center(child: _chapterWidgetsWithSize[i].widget)))];
           }
           if (page.isNotEmpty) {
             _pages.add([...page]);
@@ -396,8 +399,6 @@ class EpubViewerController {
   }
 
   void _previousChapter() {
-    int oldChapterIndex = _chapterIndex;
-    int oldSubChapterIndex = _subChapterIndex;
     bool hasPreviousSubChapters = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty && _subChapterIndex > 0);
     bool hasPreviousChapters = (_chapterIndex > 0);
     if (hasPreviousSubChapters) {
@@ -412,12 +413,8 @@ class EpubViewerController {
       _chapterIndex = 0;
       _subChapterIndex = 0;
     }
+    _currentPageIndex = 999999999999999;
     _loadChapter();
-    if (oldChapterIndex != _chapterIndex || oldSubChapterIndex != _subChapterIndex) {
-      if (_pages.isNotEmpty) {
-        _currentPageIndex = _pages.length - 1;
-      }
-    }
   }
 
   void _loadChapter() {

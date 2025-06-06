@@ -1,3 +1,4 @@
+/* This is the old wev view based reader, can be removed in the future
 import 'dart:io';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:flutter/material.dart';
@@ -60,3 +61,4 @@ class _EpubViewState extends State<EpubView> {
     );
   }
 }
+ */

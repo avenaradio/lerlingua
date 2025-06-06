@@ -20,6 +20,37 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ListView(
             children: [
+              const Divider(),
+              const ListTile(
+                title: Text('Theme', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('Dark Mode'),
+                subtitle: const Text('Enable dark mode'),
+                trailing: Switch(
+                    value: Settings().isDarkMode,
+                    onChanged: (value) {
+                      setState(() {
+                        Settings().isDarkMode = value;
+                        setState(() {});
+                        // Show alert dialog to restart the app
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Theme changed'),
+                            content: const Text('You need to restart the app to apply the theme.'),
+                            actions: [
+                              TextButton(
+                                child: const Text('Close'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                    }),
+                // add switch
+              ),
               const ListTile(
                 title: Text('Synchronization', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
@@ -99,10 +130,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                         setState(() {});
                       });
                     }),
-                onTap: () {
-                  Settings().currentBook = null;
-                  Navigator.pushNamed(context, '/home');
-                },
                 // add switch
               ),
               SizedBox(height: 16.0),

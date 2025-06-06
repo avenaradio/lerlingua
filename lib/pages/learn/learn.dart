@@ -96,7 +96,7 @@ class _LearnState extends State<Learn> {
                     ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                    child: Container(color: Theme.of(context).primaryColor, height: 2),
+                    child: Container(color: Theme.of(context).primaryColor, height: 1),
                   ),
                   // Cloze
                   _currentCard.vocabKey == -2 ? Text('This box is empty', style: Cloze.commonTextStyle) : Wrap(
@@ -125,7 +125,8 @@ class _LearnState extends State<Learn> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              elevation: 0,
+                              backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
                             ),
                             onPressed: () {
                               Mirror().move(
@@ -143,7 +144,8 @@ class _LearnState extends State<Learn> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              elevation: 0,
+                              backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
                             ),
                             onPressed: () {
                               Mirror().move(
@@ -167,112 +169,120 @@ class _LearnState extends State<Learn> {
                     alignment: Alignment.topCenter,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(50, 30, 20, 30),
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 8,
-                              childAspectRatio: 1.0,
-                            ),
-                        itemCount: 8,
-                        itemBuilder: (context, index) {
-                          switch (index) {
-                            case 1:
-                              return GestureDetector(
-                                onTap: () {
-                                  Mirror().addStack(
-                                    stackSize: Settings().stackSize,
-                                  );
-                                  _getCurrentCard();
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: 400, // For big screens
+                        ),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 8,
+                                childAspectRatio: 1.0,
+                              ),
+                          itemCount: 8,
+                          itemBuilder: (context, index) {
+                            switch (index) {
+                              case 1:
+                                return GestureDetector(
+                                  onTap: () {
+                                    Mirror().addStack(
+                                      stackSize: Settings().stackSize,
+                                    );
+                                    _getCurrentCard();
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                    ),
+                                    child: Icon(Icons.trending_flat_rounded),
                                   ),
-                                  child: Icon(Icons.trending_flat_rounded),
-                                ),
-                              );
-                            case 7:
-                              return _currentCard.vocabKey == -2 ? Icon(Icons.more_vert_rounded, color: Colors.grey) : PopupMenuButton<String>(
-                                icon: Icon(Icons.more_vert_rounded),
-                                onSelected: (String value) {
-                                  switch (value) {
-                                    case 'Delete card':
-                                      Mirror().deleteCard(card: _currentCard);
-                                      _getCurrentCard();
-                                      break;
-                                    case 'Edit card':
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => EditCardPage(
-                                            card: _currentCard,
-                                          ),
-                                        ),
-                                      ).then((value) {
+                                );
+                              case 7:
+                                return _currentCard.vocabKey == -2 ? Icon(Icons.more_vert_rounded, color: Colors.grey) : PopupMenuButton<String>(
+                                  icon: Icon(Icons.more_vert_rounded),
+                                  onSelected: (String value) {
+                                    switch (value) {
+                                      case 'Delete card':
+                                        Mirror().deleteCard(card: _currentCard);
                                         _getCurrentCard();
-                                      });
-                                      break;
-                                    default:
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) {
-                                  double height = 30;
-                                  return [
-                                    PopupMenuItem<String>(
-                                      height: height,
-                                      value: 'Delete card',
-                                      child: Text('Delete card'),
-                                    ),
-                                    PopupMenuItem<String>(
-                                      height: height,
-                                      value: 'Edit card',
-                                      child: Text('Edit card'),
-                                    ),
-                                    /*
-                                    PopupMenuItem<String>(
-                                      height: height,
-                                      value: 'Option 3',
-                                      child: Text('Option 3'),
-                                    ),
-                                    */
-                                  ];
-                                },
-                              );
-                            default:
-                              return GestureDetector(
-                                onTap: () {
-                                  _selectBox(index == 0 ? 0 : index - 1);
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade500,
-                                    border: Border.all(
-                                      color:
-                                          Settings().currentBox ==
-                                                  (index == 0 ? 0 : index - 1)
-                                              ? Colors.grey.shade900
-                                              : Colors.transparent,
-                                      width: 1.0,
+                                        break;
+                                      case 'Edit card':
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => EditCardPage(
+                                              card: _currentCard,
+                                            ),
+                                          ),
+                                        ).then((value) {
+                                          _getCurrentCard();
+                                        });
+                                        break;
+                                      default:
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) {
+                                    double height = 30;
+                                    return [
+                                      PopupMenuItem<String>(
+                                        height: height,
+                                        value: 'Delete card',
+                                        child: Text('Delete card'),
+                                      ),
+                                      PopupMenuItem<String>(
+                                        height: height,
+                                        value: 'Edit card',
+                                        child: Text('Edit card'),
+                                      ),
+                                      /*
+                                      PopupMenuItem<String>(
+                                        height: height,
+                                        value: 'Option 3',
+                                        child: Text('Option 3'),
+                                      ),
+                                      */
+                                    ];
+                                  },
+                                );
+                              default:
+                                return GestureDetector(
+                                  onTap: () {
+                                    _selectBox(index == 0 ? 0 : index - 1);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(1),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                        border: Border.all(
+                                          color:
+                                              Settings().currentBox ==
+                                                      (index == 0 ? 0 : index - 1)
+                                                  ? Theme.of(context).colorScheme.primary
+                                                  : Colors.transparent,
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        Mirror().filterCards
+                                            .filterByBoxNumber(
+                                              index == 0 ? 0 : index - 1,
+                                            )
+                                            .cards
+                                            .length
+                                            .toString(),
+                                      ),
                                     ),
                                   ),
-                                  child: Text(
-                                    Mirror().filterCards
-                                        .filterByBoxNumber(
-                                          index == 0 ? 0 : index - 1,
-                                        )
-                                        .cards
-                                        .length
-                                        .toString(),
-                                  ),
-                                ),
-                              );
-                          }
-                        },
+                                );
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ),

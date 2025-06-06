@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../resources/file_utils/book.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/settings.dart';
+import '../../theme_filter.dart';
 
 class Library extends StatefulWidget {
   const Library({super.key});
@@ -49,7 +50,9 @@ class _LibraryState extends State<Library> {
           Book book = Settings().books[index];
           return ListTile(
             // Image from Uint8List
-            leading: book.cover != null ? SizedBox(width: 40, child: Image.memory(book.cover!)) : Icon(Icons.book_rounded, size: 40),
+            leading: book.cover != null ? SizedBox(width: 40, child: ColorFiltered(
+                colorFilter: Settings().isDarkMode ? ThemeFilter.undoDark : ThemeFilter.none,
+                child: Image.memory(book.cover!))) : Icon(Icons.book_rounded, size: 40),
             title: Text(book.title),
             subtitle: Text(book.author),
             onTap: () {
