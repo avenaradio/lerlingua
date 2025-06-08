@@ -82,6 +82,7 @@ class _ReadState extends State<Read> {
                   },
                 ),
                 IconButton(
+                  key: const Key('nextPageButton'),
                   tooltip: 'Next page',
                   icon: const Icon(Icons.navigate_next_rounded),
                   onPressed: () {

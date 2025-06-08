@@ -17,7 +17,7 @@ extension SyncUtils on Sync {
   }
 
   /// Converts a csv string to a List&lt;String&gt; <br>
-  /// - Indirect Test of vocabCardsFromCsv
+  /// - Indirect Test by vocabCardsFromCsv
   List<String> csvDecode(String csv) {
     syncLog += ('Decoding csv string...\n');
     List<String> csvList = csv.split('\n');
