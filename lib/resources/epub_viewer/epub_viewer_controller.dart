@@ -70,7 +70,7 @@ class EpubViewerController {
       // Load book from asset
       Uint8List bytes = await rootBundle.load('assets/books/default.epub').then((value) => value.buffer.asUint8List());
       _epubBook = await epub_pro.EpubReader.readBook(bytes);
-      _chapterIndex = 1;
+      _chapterIndex = 0;
       _subChapterIndex = 0;
       _currentPageIndex = 0;
     } else {
