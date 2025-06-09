@@ -44,8 +44,16 @@ class EpubViewerController {
     _onRendered.add(onRendered);
   }
   void _fireOnRendered() {
+    String chapterName = '';
+    if (_epubBook.chapters.isEmpty) {
+      return;
+    } else if (_epubBook.chapters[_chapterIndex].subChapters.isEmpty) {
+      chapterName = '${_chapterIndex + 1}';
+    } else {
+      chapterName = '${_chapterIndex + 1}.${_subChapterIndex + 1}';
+    }
     for (ValueChanged<String> onRendered in _onRendered) {
-      onRendered('${_currentPageIndex + 1}|${_pages.length}');
+      onRendered('$chapterName ${_currentPageIndex + 1}|${_pages.length}');
     }
   }
 
@@ -60,7 +68,7 @@ class EpubViewerController {
     if (book == null) {
       _book = null;
       // Load book from asset
-      Uint8List bytes = await rootBundle.load('assets/books/the_little_prince_public_domain.epub').then((value) => value.buffer.asUint8List());
+      Uint8List bytes = await rootBundle.load('assets/books/default.epub').then((value) => value.buffer.asUint8List());
       _epubBook = await epub_pro.EpubReader.readBook(bytes);
       _chapterIndex = 1;
       _subChapterIndex = 0;
@@ -116,7 +124,7 @@ class EpubViewerController {
     for (int i = 0; i < _epubBook.chapters.length; i++) {
       if (i == _chapterIndex) {
         bool hasSubChapters = _epubBook.chapters[i].subChapters.isNotEmpty;
-        if (hasSubChapters) {
+        if (hasSubChapters && _subChapterIndex >= 0) {
           for (int j = 0; j < _epubBook.chapters[i].subChapters.length; j++) {
             if (j == _subChapterIndex) {
               html = _epubBook.chapters[i].subChapters[j].htmlContent;
@@ -369,7 +377,8 @@ class EpubViewerController {
     _currentPageIndex++;
     // If this next _currentPositionIndex is out of rage load next chapter
     if (_currentPageIndex >= _pages.length) {
-      _nextChapter();
+      _currentPageIndex = _pages.length - 1;
+      nextChapter();
     }
     _updateBookPosition();
     _fireOnRendered();
@@ -380,40 +389,57 @@ class EpubViewerController {
     _currentPageIndex--;
     // If _currentPositionIndex <= 0 load previous chapter
     if (_currentPageIndex < 0) {
-      _previousChapter();
+      _currentPageIndex = 0;
+      previousChapter();
     }
     _updateBookPosition();
     _fireOnRendered();
   }
 
-  void _nextChapter() {
+  void nextChapter() {
     bool hasSubChaptersLeft = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty && _subChapterIndex < _epubBook.chapters[_chapterIndex].subChapters.length - 1);
     if (hasSubChaptersLeft) {
       _subChapterIndex++;
+      _currentPageIndex = 0;
+      _loadChapter();
     } else if (_chapterIndex < _epubBook.chapters.length - 1) {
       _chapterIndex++;
-      _subChapterIndex = 0;
+      _subChapterIndex = -1;
+      _currentPageIndex = 0;
+      _loadChapter();
     }
-    _currentPageIndex = 0;
-    _loadChapter();
   }
 
-  void _previousChapter() {
-    bool hasPreviousSubChapters = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty && _subChapterIndex > 0);
-    bool hasPreviousChapters = (_chapterIndex > 0);
-    if (hasPreviousSubChapters) {
-      _subChapterIndex--; // Go to previous subchapter
-    } else if (hasPreviousChapters) {
-      _chapterIndex--; // Go to previous chapter
-      bool hasSubChapters = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty);
-      if (hasSubChapters) {
-        _subChapterIndex = _epubBook.chapters[_chapterIndex].subChapters.length - 1; // Go to last subchapter
-      }
+  void previousChapter({bool? goToFirstPage}) {
+    if (_currentPageIndex > 0) {
+      _currentPageIndex = 0;
     } else {
-      _chapterIndex = 0;
-      _subChapterIndex = 0;
+      goToFirstPage = goToFirstPage ?? false;
+      bool hasPreviousSubChapters = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty && _subChapterIndex > -1);
+      bool hasPreviousChapters = (_chapterIndex > 0);
+      if (hasPreviousSubChapters) {
+        _subChapterIndex--; // Go to previous subchapter
+        if (goToFirstPage) {
+          _currentPageIndex = 0;
+        } else {
+          _currentPageIndex = 999999;
+        }
+      } else if (hasPreviousChapters) {
+        _chapterIndex--; // Go to previous chapter
+        bool hasSubChapters = (_epubBook.chapters[_chapterIndex].subChapters.isNotEmpty);
+        if (hasSubChapters) {
+          _subChapterIndex = _epubBook.chapters[_chapterIndex].subChapters.length - 1; // Go to last subchapter
+        }
+        if (goToFirstPage) {
+          _currentPageIndex = 0;
+        } else {
+          _currentPageIndex = 999999;
+        }
+      } else {
+        _chapterIndex = 0;
+        _subChapterIndex = -1;
+      }
     }
-    _currentPageIndex = 999999999999999;
     _loadChapter();
   }
 

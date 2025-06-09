@@ -77,16 +77,22 @@ class _ReadState extends State<Read> {
                 IconButton(
                   tooltip: 'Previous page',
                   icon: const Icon(Icons.navigate_before_rounded),
-                  onPressed: () {
+                  onPressed: _showLibrary ? null : () {
                     epubViewerController.previousPage();
+                  },
+                  onLongPress: _showLibrary ? null : () {
+                    epubViewerController.previousChapter(goToFirstPage: true);
                   },
                 ),
                 IconButton(
                   key: const Key('nextPageButton'),
                   tooltip: 'Next page',
                   icon: const Icon(Icons.navigate_next_rounded),
-                  onPressed: () {
+                  onPressed: _showLibrary ? null : () {
                     epubViewerController.nextPage();
+                  },
+                  onLongPress: _showLibrary ? null : () {
+                    epubViewerController.nextChapter();
                   },
                 ),
                 IconButton(
@@ -110,15 +116,21 @@ class _ReadState extends State<Read> {
                 IconButton(
                   tooltip: 'Previous page',
                   icon: const Icon(Icons.navigate_before_rounded),
-                  onPressed: () {
+                  onPressed: _showLibrary ? null : () {
                     epubViewerController.previousPage();
+                  },
+                  onLongPress: _showLibrary ? null : () {
+                    epubViewerController.previousChapter(goToFirstPage: true);
                   },
                 ),
                 IconButton(
                   tooltip: 'Next page',
                   icon: const Icon(Icons.navigate_next_rounded),
-                  onPressed: () {
+                  onPressed: _showLibrary ? null : () {
                     epubViewerController.nextPage();
+                  },
+                  onLongPress: _showLibrary ? null : () {
+                    epubViewerController.nextChapter();
                   },
                 ),
               ],

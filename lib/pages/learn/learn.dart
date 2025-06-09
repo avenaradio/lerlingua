@@ -316,6 +316,9 @@ class _LearnState extends State<Learn> {
                   // Add Stack Button
                   if (Settings().currentBox == 1 && Mirror().filterCards.filterByBoxNumber(0).cards.isNotEmpty && Mirror().filterCards.filterByBoxNumber(1).cards.isEmpty)
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                      ),
                       child: const Text('Move new cards to first box'),
                       onPressed: () {
                         Mirror().addStack(stackSize: Settings().stackSize);

@@ -9,6 +9,7 @@ import '../../resources/database/vocab_card.dart';
 import '../../resources/settings.dart';
 import '../../resources/translation_service.dart';
 import '../list/edit_card_page.dart';
+import 'edit_language_page.dart';
 
 class WebView extends StatefulWidget {
   const WebView({super.key});
@@ -95,7 +96,9 @@ try {
 
   _search() {
     _isLoading = true;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     _translationService = Settings().currentTranslationService ?? _translationService;
     String url = _translationService.getUrl(wordB);
     if (url.isEmpty) {
@@ -112,7 +115,9 @@ try {
         SnackBar(content: Text('This translation service has no valid url.')),
       );
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   _saveVocabCard(String? selectedText) async {
@@ -121,7 +126,7 @@ try {
         vocabKey: -1,
         languageA: _translationService.languageA,
         wordB: wordB,
-        sentenceB: sentenceB,
+        sentenceB: _wordBChanged ? '' : sentenceB,
         languageB: Settings().currentBook?.languageB ?? '',
         wordA: selectedText,
         boxNumber: 0,
@@ -130,7 +135,7 @@ try {
       card = Mirror().writeCard(card: card, addNewUndo: false);
       if (_wordBChanged) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Learning language is ${card.languageB}.'),
+          SnackBar(content: Text('Foreign language is ${card.languageB}.'),
             action: SnackBarAction(
               label: 'Edit Card',
               onPressed: () {
@@ -161,7 +166,25 @@ try {
             id: 1,
             title: "Add",
             action: () async {
-              _saveVocabCard(await webViewController?.getSelectedText());
+              String?  selectedText = await webViewController?.getSelectedText();
+              if (Settings().currentBook?.languageB == '') {
+                if (mounted) {
+                  await editLanguageDialog(context);
+                }
+              }
+              if (selectedText != null && selectedText.trim().isNotEmpty && Settings().currentBook?.languageB != '') {
+                _saveVocabCard(selectedText);
+              } else {
+                String message = 'No text selected.';
+                if (Settings().currentBook?.languageB == '') {
+                  message = 'No book language set.';
+                }
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(message)),
+                  );
+                }
+              }
             })
       ],
     );
@@ -309,11 +332,13 @@ try {
                   webViewController = controller;
                 },
                 onLoadStart: (controller, url) {
-                  setState(() {
-                    _isLoading = true;
-                    this.url = url.toString();
-                    //urlController.text = this.url;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = true;
+                      this.url = url.toString();
+                      //urlController.text = this.url;
+                    });
+                  }
                 },
                 onPermissionRequest: (controller, request) async {
                   return PermissionResponse(
@@ -326,29 +351,37 @@ try {
                   await controller.evaluateJavascript(source: '$_themeJs\n${_translationService.injectJs}');
                   // wait to load JS
                   await Future.delayed(const Duration(milliseconds: 400));
-                  setState(() {
+                  if (mounted) {
+                    setState(() {
                     this.url = url.toString();
                     urlController.text = wordB;
                     _isLoading = false;
                   });
+                  }
                 },
                 onReceivedError: (controller, request, error) {
-                  setState(() {
+                  if (mounted) {
+                    setState(() {
                     _isLoading = false;
                   });
+                  }
                 },
                 onProgressChanged: (controller, progress) {
-                  if (progress == 100) {}
-                  setState(() {
+                  //if (progress == 100) {}
+                  if (mounted) {
+                    setState(() {
                     this.progress = progress / 100;
                     //urlController.text = url;
                   });
+                  }
                 },
                 onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                  setState(() {
+                  if (mounted) {
+                    setState(() {
                     this.url = url.toString();
                     //urlController.text = this.url;
                   });
+                  }
                 },
                 onConsoleMessage: (controller, consoleMessage) {
                   if (kDebugMode) {
@@ -362,7 +395,7 @@ try {
                       LinearProgressIndicator(value: progress),
                     ],
                   ))
-                  : Container(),
+                  : Container(key: Key('webViewIsLoaded'),),
             ],
           ),
         ),

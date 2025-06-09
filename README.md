@@ -32,7 +32,6 @@ This app contains two main features:
       - Click Repository permissions
       - For 'Contents' select 'read & write'
       - *Copy the token* you can't see it again
-3. Add the token, repo owner and repo name to the app
-During upload the file size is 1.34 times the file size on GitHub due base64 to the encoding.
+3. Add the token, repo owner and repo name to app settings
 # Download
 [Releases](https://github.com/avenaradio/lerlingua/releases)

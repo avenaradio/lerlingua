@@ -17,13 +17,6 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
         title: Text('Translation Services'),
         actions: [
           IconButton(
-            icon: Icon(Icons.rotate_left_rounded),
-            onPressed: () {
-              Settings().addDefaultTranslationServices();
-              setState(() {});
-            },
-          ),
-          IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
               _showEditOrAddTranslationServiceDialog(null);
@@ -40,6 +33,7 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
             title: Text('${translationService.languageB} -> ${translationService.languageA}'),
             subtitle: Text(Uri.parse(translationService.url).authority),
             onTap: () {
+              if (translationService.key < 100) return;
               _showEditOrAddTranslationServiceDialog(translationService);
             },
             onLongPress: () {
@@ -60,7 +54,7 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
+              translationService.key < 100 ? Container() : ListTile(
                 title: Text('Delete'),
                 onTap: () {
                   Settings().deleteTranslationService(translationService);
@@ -134,7 +128,7 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
                     TextField(
                       controller: languageAController,
                       decoration: InputDecoration(
-                        labelText: 'Known Language',
+                        labelText: 'Native Language',
                       ),
                     ),
                     TextField(

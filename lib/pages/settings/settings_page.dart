@@ -69,6 +69,40 @@ class _SettingsWidgetState extends State<SettingsWidget> {
               ),
               const Divider(),
               const ListTile(
+                title: Text('Learning', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: const Text('Set number of cards to add to first box'),
+                subtitle: Text('Actual: ${Settings().stackSize}'),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Set number of cards to add to first box'),
+                      content: TextField(
+                        controller: TextEditingController(text: Settings().stackSize.toString()),
+                        onChanged: (value) {
+                          int newSize = int.tryParse(value) ?? Settings().stackSize;
+                          Settings().stackSize = newSize;
+                          setState(() {});
+                        },
+                      ),
+                      actions: [
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        TextButton(
+                          child: const Text('Save'),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              const Divider(),
+              const ListTile(
                 title: Text('Translation', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
               ListTile(

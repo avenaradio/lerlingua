@@ -24,6 +24,25 @@ class _EditCardPageState extends State<EditCardPage> {
   late TextEditingController _commentController;
   late TextEditingController _boxNumberController;
 
+  InputDecoration _customDecoration(String label, bool errorCondition) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+      errorText: errorCondition ? 'Required' : null,
+      border: OutlineInputBorder(),
+      errorStyle: TextStyle(
+        color: Theme.of(context).colorScheme.primary, // Change the error text color
+        fontSize: 14.0, // You can also change the font size if needed
+      ),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2.0), // Change the error border color
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2.0), // Change the focused error border color
+      ),
+    );
+  }
+
   @override
   void initState() {
     if (widget.card != null) {
@@ -113,12 +132,9 @@ class _EditCardPageState extends State<EditCardPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
+                        key: Key('languageAInput'),
                         controller: _languageAController,
-                        decoration: InputDecoration(
-                          labelText: 'Known Language',
-                          errorText: _languageAController.text.isEmpty ? 'Required' : null,
-                          border: OutlineInputBorder(),
-                        ),
+                        decoration: _customDecoration('Native Language', _languageAController.text.isEmpty),
                         onChanged: (value) {
                           _card.languageA = value;
                           setState(() {});
@@ -130,12 +146,9 @@ class _EditCardPageState extends State<EditCardPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
+                        key: Key('languageBInput'),
                         controller: _languageBController,
-                        decoration: InputDecoration(
-                          labelText: 'Learning Language',
-                          errorText: _languageBController.text.isEmpty ? 'Required' : null,
-                          border: OutlineInputBorder(),
-                        ),
+                        decoration: _customDecoration('Foreign Language', _languageBController.text.isEmpty),
                         onChanged: (value) {
                           _card.languageB = value;
                           setState(() {});
@@ -148,13 +161,10 @@ class _EditCardPageState extends State<EditCardPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
+                  key: Key('wordAInput'),
                   maxLines: _wordAMaxLines,
                   controller: _wordAController,
-                  decoration: InputDecoration(
-                    labelText: 'Known Word',
-                    errorText: _wordAController.text.isEmpty ? 'Required' : null,
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: _customDecoration('Native Word', _wordAController.text.isEmpty),
                   onChanged: (value) {
                     _card.wordA = value;
                     setState(() {
@@ -166,13 +176,10 @@ class _EditCardPageState extends State<EditCardPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
+                  key: Key('wordBInput'),
                   maxLines: _wordBMaxLines,
                   controller: _wordBController,
-                  decoration: InputDecoration(
-                    labelText: 'Learning Word',
-                    errorText: _wordBController.text.isEmpty ? 'Required' : null,
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: _customDecoration('Foreign Word', _wordBController.text.isEmpty),
                   onChanged: (value) {
                     _card.wordB = value;
                     setState(() {
@@ -187,7 +194,7 @@ class _EditCardPageState extends State<EditCardPage> {
                   maxLines: _sentenceBMaxLines,
                   controller: _sentenceBController,
                   decoration: InputDecoration(
-                    labelText: 'Sentence (Wrap words with % to create cloze)',
+                    labelText: 'Sentence (Wrap words with %% to create cloze)',
                     border: OutlineInputBorder(),
                   ),
                   onChanged: (value) {

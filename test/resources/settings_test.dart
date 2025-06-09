@@ -93,13 +93,16 @@ void main() {
     group('translationServices', () {
       test('currentTranslationService getter and setter should work correctly', () async {
          SharedPreferences.setMockInitialValues({ 'firstRun': false });
+         await settings.loadSettings();
+         Settings().translationServicesSet.clear();
+
         // Assert
-        await settings.loadSettings();
         expect(settings.currentTranslationService?.key, null);
         expect(settings.translationServices.isEmpty, true);
+        await settings.loadSettings();
 
         // Arrange
-        TranslationService translationService = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
+        TranslationService translationService = TranslationService(key: 101, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
 
         // Act
         settings.currentTranslationService = translationService;
@@ -107,38 +110,37 @@ void main() {
 
         // Assert
         await settings.loadSettings();
-        expect(settings.currentTranslationService?.key, 1);
-        expect(settings.translationServices.first.key, 1);
+        expect(settings.currentTranslationService?.key, 101);
 
         // Clear
         settings.deleteTranslationService(translationService);
       });
       test('currentTranslationService getter should return first if none set', () async {
          SharedPreferences.setMockInitialValues({ 'firstRun': false });
+         await settings.loadSettings();
+         Settings().translationServicesSet.clear();
 
         // Arrange
-        TranslationService translationService = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
+        TranslationService translationService = TranslationService(key: 101, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
 
         // Act
         settings.addOrUpdateTranslationService(translationService);
-        await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert
-        await settings.loadSettings();
-        expect(settings.currentTranslationService?.key, 1);
-        expect(settings.translationServices.first.key, 1);
+        expect(settings.currentTranslationService?.key, 101);
+        expect(settings.translationServices.first.key, 101);
 
         // Act
         settings.deleteTranslationService(translationService);
-        await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert
-        await settings.loadSettings();
         expect(settings.currentTranslationService?.key, null);
         expect(settings.translationServices.isEmpty, true);
       });
       test('add and delete translation services', () async {
          SharedPreferences.setMockInitialValues({ 'firstRun': false });
+         await settings.loadSettings();
+         Settings().translationServicesSet.clear();
 
         // Arrange
         TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
@@ -147,20 +149,16 @@ void main() {
         // Act
         settings.addOrUpdateTranslationService(translationService1);
         settings.addOrUpdateTranslationService(translationService2);
-        await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert
-        await settings.loadSettings();
         expect(settings.translationServices.length, 2);
         expect(settings.translationServices.first.languageB, 'es');
         expect(settings.translationServices.last.languageB, 'fr');
 
         // Act
         settings.deleteTranslationService(translationService1);
-        await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert
-        await settings.loadSettings();
         expect(settings.translationServices.length, 1);
         expect(settings.translationServices.first.languageB, 'fr');
 
@@ -169,6 +167,8 @@ void main() {
       });
       test('get translation services should order correctly', () async {
          SharedPreferences.setMockInitialValues({ 'firstRun': false });
+         await settings.loadSettings();
+         Settings().translationServicesSet.clear();
 
         // Arrange
         TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'fr', languageB: 'en', url: '', injectJs: '');
@@ -183,10 +183,8 @@ void main() {
         settings.addOrUpdateTranslationService(translationService3);
         settings.addOrUpdateTranslationService(translationService4);
         settings.addOrUpdateTranslationService(translationService5);
-        await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert
-        await settings.loadSettings();
         expect(settings.translationServices.length, 5);
         expect(settings.translationServices[0].key, 5);
         expect(settings.translationServices[1].key, 2);
@@ -197,10 +195,8 @@ void main() {
         // Act
         translationService3.languageB = 'de';
         settings.addOrUpdateTranslationService(translationService3);
-        await Future.delayed(const Duration(milliseconds: 500));
 
         // Assert
-        await settings.loadSettings();
         expect(settings.translationServices.length, 5);
         expect(settings.translationServices[0].key, 5);
         expect(settings.translationServices[1].key, 3);
@@ -215,22 +211,29 @@ void main() {
         settings.deleteTranslationService(translationService4);
         settings.deleteTranslationService(translationService5);
       });
-      test('load default translation services on first run', () async {
+      test('override default translation services on startup', () async {
         SharedPreferences.setMockInitialValues({});
+        await settings.loadSettings();
 
         // Assert
-        await settings.loadSettings();
         expect(settings.translationServices.length, TranslationService.defaults.length);
-        expect(Settings().firstRun, false);
 
-        TranslationService? translationService = Settings().currentTranslationService;
-        translationService?.languageA = 'test';
-        settings.addOrUpdateTranslationService(translationService!); // Change value of one of the default translation services
-        Settings().firstRun = true;
+        Settings().translationServicesSet.clear();
+
+        // Act
+        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'fr', languageB: 'en', url: '', injectJs: '');
+        TranslationService translationService2 = TranslationService(key: 2, icon: Icons.translate, languageA: 'es', languageB: 'en', url: '', injectJs: '');
+
+        settings.addOrUpdateTranslationService(translationService1);
+        settings.addOrUpdateTranslationService(translationService2);
+
+        // Assert
+        expect(settings.translationServices.length, 2);
+
         await Future.delayed(const Duration(milliseconds: 500));
 
         await settings.loadSettings();
-        expect(settings.translationServices.length, TranslationService.defaults.length + 1);
+        expect(settings.translationServices.length, TranslationService.defaults.length);
       });
     });
     group('books', () {

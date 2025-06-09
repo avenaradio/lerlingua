@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:lerlingua/resources/translation_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -114,10 +115,11 @@ class Settings {
   ------------ TRANSLATION SERVICES -------------
   ---------------------------------------------*/
   int _currentTranslationServiceKey = 0;
-  final Set<TranslationService> _translationServices = <TranslationService>{};
+  @visibleForTesting
+  final Set<TranslationService> translationServicesSet = <TranslationService>{};
   /// Returns List&lt;TranslationService&gt; ordered by languageB, then languageA, then key
   /// - Tested
-  List<TranslationService> get translationServices => _translationServices.toList()..sort((a, b) {
+  List<TranslationService> get translationServices => translationServicesSet.toList()..sort((a, b) {
     int compareLanguageB = a.languageB.compareTo(b.languageB);
     if (compareLanguageB != 0) return compareLanguageB;
     int compareLanguageA = a.languageA.compareTo(b.languageA);
@@ -128,13 +130,13 @@ class Settings {
   /// - Tested
   TranslationService? get currentTranslationService {
     // check if there is a translation services with current key
-    if(_translationServices.where((element) => element.key == _currentTranslationServiceKey).firstOrNull == null) _currentTranslationServiceKey = 0;
-    if(_currentTranslationServiceKey == 0 && _translationServices.isEmpty) return null;
+    if(translationServicesSet.where((element) => element.key == _currentTranslationServiceKey).firstOrNull == null) _currentTranslationServiceKey = 0;
+    if(_currentTranslationServiceKey == 0 && translationServicesSet.isEmpty) return null;
     if(_currentTranslationServiceKey == 0) {
-      currentTranslationService = _translationServices.first;
-      return _translationServices.first;
+      currentTranslationService = translationServicesSet.first;
+      return translationServicesSet.first;
     }
-    return _translationServices.firstWhere((element) => element.key == _currentTranslationServiceKey);
+    return translationServicesSet.firstWhere((element) => element.key == _currentTranslationServiceKey);
   }
   /// Sets the current translation service
   /// - Tested
@@ -151,27 +153,24 @@ class Settings {
   /// - Tested
   void addOrUpdateTranslationService(TranslationService translationService) {
     // If TranslationService with key already exists, delete it
-    if(_translationServices.any((element) => element.key == translationService.key)) {
-      _translationServices.removeWhere((element) => element.key == translationService.key);
+    if(translationServicesSet.any((element) => element.key == translationService.key)) {
+      translationServicesSet.removeWhere((element) => element.key == translationService.key);
     }
-    _translationServices.add(translationService);
+    translationServicesSet.add(translationService);
     saveSettings();
   }
   /// Deletes a translation service
   /// - Tested
   void deleteTranslationService(TranslationService translationService) {
-    _translationServices.removeWhere((element) => element.key == translationService.key);
+    translationServicesSet.removeWhere((element) => element.key == translationService.key);
     saveSettings();
   }
   /// Adds default translation services if not services with same values already exist
   /// - Tested
-  void addDefaultTranslationServices() {
+  void overrideDefaultTranslationServices() {
     List<TranslationService> defaultTranslationServices = TranslationService.defaults;
-    // Add default translation services if not already exist services with same values
+    // Override default translation services
     for (TranslationService translationService in defaultTranslationServices) {
-      // Add index of translation service to its key to make keys unique
-      translationService.key += defaultTranslationServices.indexOf(translationService);
-      if((_translationServices.any((element) => element.equals(translationService)))) continue; // If TranslationService with same values already exists, skip
       addOrUpdateTranslationService(translationService);
     }
   }
@@ -268,11 +267,12 @@ class Settings {
     }
     // If this is the first run
     if(_firstRun) {
-      addDefaultTranslationServices();
       _currentBookKey = null;
       _firstRun = false;
       saveSettings();
     }
+    // Override default translation services
+    overrideDefaultTranslationServices();
   }
 
   /// Saves settings to SharedPreferences
@@ -293,7 +293,7 @@ class Settings {
     // Save current translation service key
     await _sharedPreferences.setInt('currentTranslationServiceKey', _currentTranslationServiceKey);
     // Save translation services Set
-    await _sharedPreferences.setString('translationServices', jsonEncode(_translationServices.map((e) => e.toMap()).toList()));
+    await _sharedPreferences.setString('translationServices', jsonEncode(translationServicesSet.map((e) => e.toMap()).toList()));
     // Save current book key
     await _sharedPreferences.setInt('currentBookKey', _currentBookKey ?? -1);
     // Save books Set

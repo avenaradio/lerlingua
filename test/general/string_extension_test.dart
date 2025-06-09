@@ -28,5 +28,7 @@ void main() {
     expect(test8.trimNonAlphanumeric(), "test");
     expect(test9.trimNonAlphanumeric(), "");
     expect(test10.trimNonAlphanumeric(), "+-'");
+    expect('testé'.trimNonAlphanumeric(), 'testé');
+    expect('!ひらがな '.trimNonAlphanumeric(), 'ひらがな');
   });
 }

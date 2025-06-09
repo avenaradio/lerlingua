@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../resources/settings.dart';
 
-editLanguageDialog(BuildContext context) async {
-  showDialog<String>(
+Future<String?> editLanguageDialog(BuildContext context) async {
+  return showDialog<String>(
     context: context,
     // Text field to set book language
     builder: (BuildContext context) => AlertDialog(

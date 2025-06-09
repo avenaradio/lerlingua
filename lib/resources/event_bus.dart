@@ -1,14 +1,14 @@
 import 'package:event_bus/event_bus.dart';
 EventBus eventBus = EventBus();
 
-/// Word in learning language selected
+/// Word in foreign language selected
 class WordBSelectedEvent {
   String wordB;
   String sentenceB;
   WordBSelectedEvent({required this.wordB, required this.sentenceB});
 }
 
-/// Word in known language selected
+/// Word in native language selected
 class WordASelectedEvent {
   String wordA;
   WordASelectedEvent(this.wordA);

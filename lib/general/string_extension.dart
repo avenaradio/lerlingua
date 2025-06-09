@@ -10,7 +10,8 @@ extension StringExtension on String {
     if (isEmpty) {
       return this;
     }
-    String trimmed = replaceAll(RegExp(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$'), '');
+    final pattern = RegExp(r'^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$', unicode: true);
+    final trimmed = replaceAll(pattern, '');
     if (trimmed.isEmpty) {
       return this;
     }

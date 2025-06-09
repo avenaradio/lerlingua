@@ -53,7 +53,7 @@ class TranslationService {
   static List<TranslationService> get defaults {
     return [
       TranslationService(
-        key: null,
+        key: 1,
         icon: Icons.g_translate_rounded,
         languageA: 'EN',
         languageB: 'XX',
@@ -71,7 +71,7 @@ class TranslationService {
   '''
       ),
       TranslationService(
-          key: null,
+          key: 2,
           icon: Icons.g_translate_rounded,
           languageA: 'EN',
           languageB: 'DE',
@@ -89,7 +89,7 @@ class TranslationService {
   '''
       ),
       TranslationService(
-        key: null,
+        key: 3,
         icon: Icons.sync_rounded,
         languageA: 'EN',
         languageB: 'DE',
