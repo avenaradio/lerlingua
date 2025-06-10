@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lerlingua/resources/database/mirror_utils_extension.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_utils_extension.dart';
 
-import '../../resources/database/mirror.dart';
-import '../../resources/database/vocab_card.dart';
+import '../../resources/database/mirror/mirror.dart';
+import '../../resources/database/mirror/vocab_card.dart';
 import 'edit_card_page.dart';
 
 enum SelectionAction { delete }

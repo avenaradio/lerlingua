@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lerlingua/resources/database/mirror_utils_extension.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
-import '../../resources/database/mirror.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_utils_extension.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
+import '../../resources/database/mirror/mirror.dart';
 
 class EditCardPage extends StatefulWidget {
   const EditCardPage({super.key, this.card});
