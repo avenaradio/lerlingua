@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
-import 'package:lerlingua/resources/database/cards_filter.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
+import 'package:lerlingua/resources/database/mirror/cards_filter.dart';
 
 void main() {
   group('CardsFilter', () {

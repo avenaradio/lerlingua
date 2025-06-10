@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/global_variables.dart';
-import 'package:lerlingua/resources/database/sync.dart';
+import 'package:lerlingua/global_variables/global_variables.dart';
+import 'package:lerlingua/resources/database/sync/sync.dart';
 
 void main() {
   test('token variable from enviroment should not be empty', () {

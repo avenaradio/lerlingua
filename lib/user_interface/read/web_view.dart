@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../resources/event_bus.dart';
-import '../../resources/database/mirror.dart';
-import '../../resources/database/vocab_card.dart';
-import '../../resources/settings.dart';
+import '../../resources/database/mirror/mirror.dart';
+import '../../resources/database/mirror/vocab_card.dart';
+import '../../resources/settings/settings.dart';
 import '../../resources/translation_service.dart';
-import '../list/edit_card_page.dart';
+import '../cards/edit_card_page.dart';
 import 'edit_language_page.dart';
 
 class WebView extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../resources/settings.dart';
+import '../../resources/settings/settings.dart';
 import '../../resources/translation_service.dart';
 
 class TranslationServicesList extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/general/move_direction.dart';
-import 'package:lerlingua/resources/database/mirror.dart';
-import 'package:lerlingua/resources/database/mirror_utils_extension.dart';
-import 'package:lerlingua/resources/database/mirror_undo_extension.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/resources/database/mirror/mirror.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_utils_extension.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_undo_extension.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 
 void main () {
   test('time now propertys', () async {

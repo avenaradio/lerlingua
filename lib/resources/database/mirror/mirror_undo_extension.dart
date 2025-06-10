@@ -1,5 +1,5 @@
-import 'package:lerlingua/resources/database/mirror.dart';
-import 'package:lerlingua/resources/database/undo.dart';
+import 'package:lerlingua/resources/database/mirror/mirror.dart';
+import 'package:lerlingua/resources/database/mirror/undo.dart';
 
 extension MirrorUndoExtension on Mirror {
   //List<Undo> undoList = []; in mirror class

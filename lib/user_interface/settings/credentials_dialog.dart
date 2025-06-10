@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../resources/settings.dart';
+import '../../resources/settings/settings.dart';
 
 class CredentialsDialog {
   void show(BuildContext context) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../resources/database/sync.dart';
+import '../../resources/database/sync/sync.dart';
 
 class SettingsSyncLog extends StatefulWidget {
   const SettingsSyncLog({super.key});

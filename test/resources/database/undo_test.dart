@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/resources/database/undo.dart';
+import 'package:lerlingua/resources/database/mirror/undo.dart';
 
 void main() {
   test('undo', () {

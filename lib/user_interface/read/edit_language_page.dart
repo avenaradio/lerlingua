@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../resources/settings.dart';
+import '../../resources/settings/settings.dart';
 
 Future<String?> editLanguageDialog(BuildContext context) async {
   return showDialog<String>(

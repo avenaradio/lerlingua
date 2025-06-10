@@ -1,8 +1,8 @@
-import 'package:lerlingua/resources/database/sql_database.dart';
-import 'package:lerlingua/resources/database/sync.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/resources/database/sqlite/sqlite_database.dart';
+import 'package:lerlingua/resources/database/sync/sync.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 
-import '../../general/tuple.dart';
+import '../../../general/tuple.dart';
 
 extension SyncUtils on Sync {
   /// Converts a List&lt;VocabCard&gt; to a csv string.

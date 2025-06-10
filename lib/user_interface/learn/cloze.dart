@@ -1,10 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:lerlingua/resources/database/mirror_utils_extension.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_utils_extension.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 import '../../general/move_direction.dart';
 import '../../resources/event_bus.dart';
-import '../../resources/database/mirror.dart';
+import '../../resources/database/mirror/mirror.dart';
 
 class Cloze {
   final VocabCard _card;

@@ -7,10 +7,10 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
 import 'package:lerlingua/general/string_extension.dart';
 import 'package:lerlingua/resources/epub_viewer/sentence_with_selection.dart';
-import '../../theme_filter.dart';
+import '../../user_interface/theme/theme_filter.dart';
 import '../event_bus.dart';
 import '../file_utils/book.dart';
-import '../settings.dart';
+import '../settings/settings.dart';
 
 // TODO NEEDS TESTING!
 class EpubViewerController {
@@ -84,9 +84,13 @@ class EpubViewerController {
         _subChapterIndex = 0;
         _currentPageIndex = 0;
       } else {
-        _chapterIndex = int.tryParse(book.readingLocation.split('/')[0]) ?? 0;
-        _subChapterIndex = int.tryParse(book.readingLocation.split('/')[1]) ?? 0;
-        _currentPageIndex = int.tryParse(book.readingLocation.split('/')[2]) ?? 0;
+        bool isCfi = book.readingLocation.contains('/');
+        if (isCfi) {
+          book.readingLocation = '0|0|0';
+        }
+        _chapterIndex = int.tryParse(book.readingLocation.split('|')[0]) ?? 0;
+        _subChapterIndex = int.tryParse(book.readingLocation.split('|')[1]) ?? 0;
+        _currentPageIndex = int.tryParse(book.readingLocation.split('|')[2]) ?? 0;
       }
     }
     _loadChapter();
@@ -94,7 +98,7 @@ class EpubViewerController {
 
   void _updateBookPosition() {
     if (_book != null) {
-      _book?.readingLocation = '$_chapterIndex/$_subChapterIndex/$_currentPageIndex';
+      _book?.readingLocation = '$_chapterIndex|$_subChapterIndex|$_currentPageIndex';
       _book?.lastReadTime = DateTime.now().millisecondsSinceEpoch;
       Settings().addOrUpdateBook(_book!);
     }

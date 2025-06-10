@@ -1,10 +1,10 @@
 // Singleton
-import 'package:lerlingua/global_variables.dart';
-import 'package:lerlingua/resources/database/mirror_undo_extension.dart';
-import 'package:lerlingua/resources/settings.dart';
-import 'package:lerlingua/resources/database/sql_database.dart';
-import 'package:lerlingua/resources/database/undo.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/global_variables/global_variables.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_undo_extension.dart';
+import 'package:lerlingua/resources/settings/settings.dart';
+import 'package:lerlingua/resources/database/sqlite/sqlite_database.dart';
+import 'package:lerlingua/resources/database/mirror/undo.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 
 class Mirror {
   List<VocabCard> dbMirror = [];

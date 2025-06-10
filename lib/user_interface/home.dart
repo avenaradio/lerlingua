@@ -1,16 +1,16 @@
 import 'package:feedback_gitlab/feedback_gitlab.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:lerlingua/pages/settings/credentials_dialog.dart';
-import 'package:lerlingua/pages/settings/settings_page.dart';
-import 'package:lerlingua/pages/learn/learn.dart';
-import 'package:lerlingua/pages/read/read.dart';
-import 'package:lerlingua/resources/database/mirror_sync_extension.dart';
-import '../global_variables.dart';
+import 'package:lerlingua/user_interface/settings/credentials_dialog.dart';
+import 'package:lerlingua/user_interface/settings/settings_page.dart';
+import 'package:lerlingua/user_interface/learn/learn.dart';
+import 'package:lerlingua/user_interface/read/read.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_sync_extension.dart';
+import '../global_variables/global_variables.dart';
 import '../resources/event_bus.dart';
-import '../resources/database/mirror.dart';
-import '../resources/settings.dart';
-import 'list/list.dart';
+import '../resources/database/mirror/mirror.dart';
+import '../resources/settings/settings.dart';
+import 'cards/cards.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lerlingua/resources/epub_viewer/epub_viewer_widget.dart';
-import 'package:lerlingua/pages/read/web_view.dart';
+import 'package:lerlingua/user_interface/read/web_view.dart';
 import '../../resources/epub_viewer/epub_viewer_controller.dart';
 import '../../resources/event_bus.dart';
-import '../../resources/settings.dart';
+import '../../resources/settings/settings.dart';
 import 'edit_language_page.dart';
 import 'library.dart';
 

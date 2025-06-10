@@ -1,9 +1,9 @@
 name: Build only # DONT RENAME THIS OR FILE WILL RESET github.run_number
 
 on:
-  #push:
-  #  branches:
-  #    - main
+  pull_request:
+    branches:
+      - release
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 

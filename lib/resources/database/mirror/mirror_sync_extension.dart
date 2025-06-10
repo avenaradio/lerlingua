@@ -1,10 +1,10 @@
-import 'package:lerlingua/resources/settings.dart';
-import 'package:lerlingua/resources/database/sql_database.dart';
-import 'package:lerlingua/resources/database/sync.dart';
-import 'package:lerlingua/resources/database/sync_utils_extension.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/resources/settings/settings.dart';
+import 'package:lerlingua/resources/database/sqlite/sqlite_database.dart';
+import 'package:lerlingua/resources/database/sync/sync.dart';
+import 'package:lerlingua/resources/database/sync/sync_utils_extension.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 
-import '../../general/tuple.dart';
+import '../../../general/tuple.dart';
 import 'mirror.dart';
 
 extension MirrorSync on Mirror {

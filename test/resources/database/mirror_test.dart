@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lerlingua/resources/database/mirror.dart';
-import 'package:lerlingua/resources/settings.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/resources/database/mirror/mirror.dart';
+import 'package:lerlingua/resources/settings/settings.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

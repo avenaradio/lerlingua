@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:lerlingua/resources/database/mirror_undo_extension.dart';
-import 'package:lerlingua/resources/database/mirror_utils_extension.dart';
-import 'package:lerlingua/resources/settings.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_undo_extension.dart';
+import 'package:lerlingua/resources/database/mirror/mirror_utils_extension.dart';
+import 'package:lerlingua/resources/settings/settings.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 
 import '../../general/move_direction.dart';
 import '../../resources/event_bus.dart';
-import '../../resources/database/mirror.dart';
-import '../list/edit_card_page.dart';
+import '../../resources/database/mirror/mirror.dart';
+import '../cards/edit_card_page.dart';
 import 'cloze.dart';
 
 class Learn extends StatefulWidget {

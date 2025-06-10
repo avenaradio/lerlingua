@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../resources/file_utils/book.dart';
 import '../../resources/event_bus.dart';
-import '../../resources/settings.dart';
-import '../../theme_filter.dart';
+import '../../resources/settings/settings.dart';
+import '../theme/theme_filter.dart';
 
 class Library extends StatefulWidget {
   const Library({super.key});

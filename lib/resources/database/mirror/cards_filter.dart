@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lerlingua/resources/database/vocab_card.dart';
+import 'package:lerlingua/resources/database/mirror/vocab_card.dart';
 
 class CardsFilter {
   @visibleForTesting
