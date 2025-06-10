@@ -1,6 +1,6 @@
 name: Test only # DONT RENAME THIS OR FILE WILL RESET github.run_number
 
-on:
+on: 
   push:
     branches:
       - main
