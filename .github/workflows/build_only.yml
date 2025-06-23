@@ -1,9 +1,6 @@
 name: Build only # DONT RENAME THIS OR FILE WILL RESET github.run_number
 
 on:
-  pull_request:
-    branches:
-      - release
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -31,7 +28,7 @@ jobs:
           
           # Print variables for debugging
           echo "Full app name: $FULL_APP_NAME"
-          echo "Version and build number: $VERSION_NAME"
+          echo "Version: $VERSION_NAME"
         # --------- THIS SECTION CAN BE REUSED IN OTHER BUILD WORKFLOWS
       - uses: actions/setup-java@v3
         with:
