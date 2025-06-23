@@ -1,0 +1,9 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
+class Settings {
+  String wordA = '';
+
+  // Obtain shared preferences.
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+}

@@ -1,0 +1,90 @@
+name: Test, Build, Sign and Release # DONT RENAME THIS OR FILE WILL RESET github.run_number
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  flutter_test:
+    name: Run Flutter Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2' # FLUTTER VERSION
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter --version
+      - run: flutter analyze
+      - run: flutter test --dart-define=IS_TEST=true --dart-define=SYNC_TEST_TOKEN=${{ secrets.SYNC_TEST_TOKEN}}
+      - run: flutter test test/resources/database/mirror_with_sql_test.dart --dart-define=IS_TEST=false
+
+  build_androidApk:
+    name: Build and release Flutter App (Android)
+    needs: [ flutter_test ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # --------- THIS SECTION CAN BE REUSED IN OTHER BUILD WORKFLOWS
+      - name: Set environment variables
+        run: |
+          # Get variables
+          APP_NAME=$(grep 'name:' pubspec.yaml | sed 's/.*: //')
+          VERSION_NAME=$(grep 'version:' pubspec.yaml | sed 's/.*: //; s/+.*//')
+
+          # Capitalize the first letter of APP_NAME
+          APP_NAME_CAPITALIZED="$(tr '[:lower:]' '[:upper:]' <<< "${APP_NAME:0:1}")${APP_NAME:1}"
+          # Full app name
+          FULL_APP_NAME="${APP_NAME_CAPITALIZED}_${VERSION_NAME}"
+
+          # Give variables to github environment
+          echo "full_app_name=$FULL_APP_NAME" >> $GITHUB_ENV
+          echo "version_name=$VERSION_NAME" >> $GITHUB_ENV
+
+          # Print variables for debugging
+          echo "Full app name: $FULL_APP_NAME"
+          echo "Version and build number: $VERSION_NAME"
+        # --------- THIS SECTION CAN BE REUSED IN OTHER BUILD WORKFLOWS
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2' # FLUTTER VERSION
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter clean
+      - name: Decode Keystore # https://medium.com/@colonal/automating-flutter-builds-and-releases-with-github-actions-77ccf4a1ccdd
+        run: |
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/app/key.properties
+          echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/app/key.properties
+          echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> android/app/key.properties
+          echo "storeFile=keystore.jks" >> android/app/key.properties
+      - name: List files in android/app
+        run: |
+          ls -la android/app
+          ls -la android
+      - run: flutter build apk --release --build-name=${{ env.version_name }} --build-number=${{ github.run_number }} --dart-define=FEEDBACK_TOKEN=${{ secrets.FEEDBACK_TOKEN }} --no-tree-shake-icons
+      - name: Rename Signed APK
+        run: |
+          APK_PATH="build/app/outputs/apk/release/app-release.apk"
+          NEW_APK_NAME="${{ env.full_app_name }}.apk"
+          mv "$APK_PATH" "$NEW_APK_NAME"
+          echo "Renamed APK to $NEW_APK_NAME"
+
+          # Give variables to github environment
+          echo "new_apk_name=$NEW_APK_NAME" >> $GITHUB_ENV
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${{ github.workspace }}/${{ env.new_apk_name }}"
+          tag: v${{ env.version_name }}
+          token: ${{ secrets.TOKEN }}

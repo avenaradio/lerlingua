@@ -1,0 +1,37 @@
+
+// Singleton
+class Database {
+  late SharedPreferences _db;
+
+  // Private constructor
+  Database._internal();
+
+  // Static instance of the class
+  static final Database _instance = Database._internal();
+
+  // Factory constructor to always return the same instance
+  factory Database() {
+    return _instance;
+  }
+
+  // Fields
+  String _wordA = '';
+
+  String get wordA => _wordA;
+  set wordA(String value) {
+    _wordA = value;
+    saveDatabase();
+  }
+
+  // Method to load database
+  Future<void> loadDatabase() async{
+    // Obtain shared preferences
+    _db = await SharedPreferences.getInstance();
+    // Write all database to Database()
+    _wordA = _db.getString('wordA') ?? '';
+  }
+
+  saveDatabase() async{
+    await _db.setString('wordA', _wordA);
+  }
+}
