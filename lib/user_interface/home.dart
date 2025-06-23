@@ -136,7 +136,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             alignment: Alignment.center,
             children: [
               !Settings().showFeedbackButton ? SizedBox.shrink() : Positioned(
-                right: 0,
+                left: 4,
                 bottom: 11,
                 child: IconButton(
                   icon: const Icon(Icons.feedback),

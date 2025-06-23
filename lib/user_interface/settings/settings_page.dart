@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lerlingua/user_interface/settings/credentials_dialog.dart';
 import '../../resources/settings/settings.dart';
-import '../app_start/updater.dart';
+import '../../resources/settings/updater.dart';
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({super.key});
