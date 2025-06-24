@@ -123,42 +123,47 @@ class _LearnState extends State<Learn> {
                       children: [
                         // Red cancel button
                         Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+                          child: GestureDetector(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+                              ),
+                              onPressed: () {
+                                Mirror().move(
+                                  card: _currentCard,
+                                  direction: Direction.first,
+                                  addNewUndo: true,
+                                );
+                                _getCurrentCard();
+                              },
+                              child: Icon(Icons.close, color: Colors.white),
                             ),
-                            onPressed: () {
-                              Mirror().move(
-                                card: _currentCard,
-                                direction: Direction.first,
-                                addNewUndo: true,
-                              );
-                              _getCurrentCard();
-                            },
-                            child: Icon(Icons.close, color: Colors.white),
+                            onTapDown: (_) {_cloze.toggleShowAnswers();},
+                            onPanEnd: (_) {_cloze.toggleShowAnswers();},
                           ),
                         ),
                         SizedBox(width: 80),
                         // Green check button
                         Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+                          child: GestureDetector(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+                              ),
+                              onPressed: () {
+                                Mirror().move(
+                                  card: _currentCard,
+                                  direction: Direction.next,
+                                  addNewUndo: true,
+                                );
+                                _getCurrentCard();
+                              },
+                              child: Icon(Icons.check, color: Colors.white)
                             ),
-                            onPressed: () {
-                              Mirror().move(
-                                card: _currentCard,
-                                direction: Direction.next,
-                                addNewUndo: true,
-                              );
-                              _getCurrentCard();
-                            },
-                            onLongPress: () {
-                              _cloze.toggleShowAnswers();
-                            },
-                            child: Icon(Icons.check, color: Colors.white)
+                            onTapDown: (_) {_cloze.toggleShowAnswers();},
+                            onPanEnd: (_) {_cloze.toggleShowAnswers();},
                           ),
                         ),
                       ],
