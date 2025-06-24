@@ -132,7 +132,7 @@ class Cloze {
   }
 
   /// Function to move focus to the next field if the current field is correct
-  /// - No unit test because it needs a context, but it works
+  /// - No unit test because it needs a context, but it works TODO write widget test
   void _moveFocusIfCorrect({required String hiddenText, required TextEditingController controller, required FocusNode focusNode}) {
     if (controller.text == hiddenText) {
       if (focusNodes.indexOf(focusNode) < focusNodes.length - 1) {
@@ -143,10 +143,12 @@ class Cloze {
       }
       // Check if all fields are correct
       if (controllers.every((controller) => controller.text == hiddenTexts[controllers.indexOf(controller)])) {
+        // Remove focus to prevent multiple moves while waiting
+        FocusScope.of(_context!).unfocus();
         Mirror().move( card: _card, direction: Direction.next, addNewUndo: true);
         // Fire LearningPage event
         LearningPageNewDataEvent event = LearningPageNewDataEvent();
-        eventBus.fire(event);
+        Future.delayed(const Duration(milliseconds: 1000), () => eventBus.fire(event));
       }
     }
   }
