@@ -202,36 +202,46 @@ class EpubViewerController {
 
   /// List of selected words
   SentenceWithSelection sentenceWithSelection = SentenceWithSelection(words: [], selected: []);
-  /// Is multi selection enabled
-  bool isMultiSelection = false;
-  /// Adds word to selection
-  _addToSelection(int word, List<String> sentence) {
-    if(!isMultiSelection || sentenceWithSelection.words != sentence) { // If not multi selection || is different sentence -> clear
-      sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []);
-      sentenceWithSelection.selected.add(word);
-      _onTextSelected(); // Fire selection event
-      isMultiSelection = false;
+  bool _nextLongPressStartsAreaSelection = false;
+  /// Select words
+  @visibleForTesting
+  multiSelection(int wordIndex, List<String> sentence, bool isLongPress) {
+    if (sentenceWithSelection.words != sentence) {
+      sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []); // If is different sentence -> clear
+      _nextLongPressStartsAreaSelection = false;
     }
-    if (isMultiSelection && sentenceWithSelection.selected.contains(word)) {
-      sentenceWithSelection.selected.remove(word); // Remove word
-      if (sentenceWithSelection.selected.isEmpty) {
-        isMultiSelection = false; // End selection
+    if (_nextLongPressStartsAreaSelection && isLongPress) {
+      int i = sentenceWithSelection.selected.last;
+      while (i >= 0 && i < sentenceWithSelection.words.length) {
+        if (i < wordIndex) {
+          sentenceWithSelection.selected.add(i);
+          i++;
+        } else if (i > wordIndex) {
+          sentenceWithSelection.selected.add(i);
+          i--;
+        } else {
+          break;
+        }
       }
-    } else if (isMultiSelection && !sentenceWithSelection.selected.contains(word)) {
-      sentenceWithSelection.selected.add(word); // Add word
+      _nextLongPressStartsAreaSelection = false;
+    } else if (!_nextLongPressStartsAreaSelection && isLongPress) {
+      _nextLongPressStartsAreaSelection = true;
+      sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []);// Long press -> clear
+    } else {
+      _nextLongPressStartsAreaSelection = false;
+    }
+    if (sentenceWithSelection.selected.contains(wordIndex)) {
+      sentenceWithSelection.selected.remove(wordIndex); // Remove word
+    } else {
+      sentenceWithSelection.selected.add(wordIndex); // Add word
+    }
+    if (sentenceWithSelection.selected.isNotEmpty) {
+      // Create and fire the event
+      final event = WordBSelectedEvent(wordB: sentenceWithSelection.selectedWordsJoined, sentenceB: sentenceWithSelection.sentenceWrapped);
+      eventBus.fire(event);
       _onTextSelected(); // Fire selection event
     }
-  }
-  /// Toggles multi selection
-  _toggleMultiSelection(int word, List<String> sentence) {
-      if (!isMultiSelection) { // Start selection
-        sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []);
-        isMultiSelection = true;
-      }
-      if (sentenceWithSelection.words != sentence) { // If is different sentence -> clear this wont trigger in _addToSelection again
-        sentenceWithSelection = SentenceWithSelection(words: sentence, selected: []);
-      }
-      _addToSelection(word, sentence);
+    _fireOnRendered();
   }
 
   /// Returns Widgets from dom element
@@ -262,18 +272,10 @@ class EpubViewerController {
           bool isWordSelected = sentenceWithSelection.words == splitSentence && sentenceWithSelection.selected.contains(j);
           Widget wordWidget = GestureDetector(
             onTap: () {
-              _addToSelection(j, splitSentence);
-              // Create and fire the event
-              final event = WordBSelectedEvent(wordB: sentenceWithSelection.selectedWordsJoined, sentenceB: sentenceWithSelection.sentenceWrapped);
-              eventBus.fire(event);
-              _fireOnRendered();
+              multiSelection(j, splitSentence, false);
             },
             onLongPress: () {
-              _toggleMultiSelection(j, splitSentence);
-              // Create and fire the event
-              final event = WordBSelectedEvent(wordB: sentenceWithSelection.selectedWordsJoined, sentenceB: sentenceWithSelection.sentenceWrapped);
-              eventBus.fire(event);
-              _fireOnRendered();
+              multiSelection(j, splitSentence, true);
             },
             child: Text(word, style: (TextStyle(fontSize: _fontSize, backgroundColor: isWordSelected ? Colors.yellow[200] : null))), // TODO this needs to be rerenderd correctly
           );
