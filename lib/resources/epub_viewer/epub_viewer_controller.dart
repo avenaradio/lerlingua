@@ -25,10 +25,12 @@ class EpubViewerController {
   late int _chapterIndex;
   late int _subChapterIndex;
   late int _currentPageIndex;
-  List<WidgetWithSize> _chapterWidgetsWithSize = [];
-  final List<List<Widget>> _pages = [];
+  List<WidgetData> _chapterWidgetsData = [];
+  final List<List<WidgetData>> _pages = [];
 
-  List<Widget> get currentPage {
+  /// Build current page
+  List<Widget> currentPage(BuildContext context) {
+    List<Widget> currentPage = [];
     if (_pages.isEmpty) return [];
     if (_currentPageIndex >= _pages.length) {
       _currentPageIndex = _pages.length - 1;
@@ -36,7 +38,11 @@ class EpubViewerController {
     if (_currentPageIndex < 0) {
       _currentPageIndex = 0;
     }
-    return _pages[_currentPageIndex];
+    // Build widgets
+    for (WidgetData widgetData in _pages[_currentPageIndex]) {
+      currentPage.add(widgetData.build(context));
+    }
+    return currentPage;
   }
 
   /// Returns page of chapter (1|44)
@@ -116,9 +122,9 @@ class EpubViewerController {
     for (dom.Element element in bodyElements) {
       log += '${element.outerHtml}\n';
     }
-    _chapterWidgetsWithSize = [];
+    _chapterWidgetsData = [];
     for (int i = 0; i < bodyElements.length; i++) {
-      _chapterWidgetsWithSize.addAll(_domElementToWidgets(bodyElements[i]));
+      _chapterWidgetsData.addAll(_domElementToWidgets(bodyElements[i]));
     }
   }
 
@@ -201,7 +207,7 @@ class EpubViewerController {
   }
 
   /// List of selected words
-  SentenceWithSelection sentenceWithSelection = SentenceWithSelection(words: [], selected: []);
+  static SentenceWithSelection sentenceWithSelection = SentenceWithSelection(words: [], selected: []);
   bool _nextLongPressStartsAreaSelection = false;
   /// Select words
   @visibleForTesting
@@ -245,7 +251,7 @@ class EpubViewerController {
   }
 
   /// Returns Widgets from dom element
-  List<WidgetWithSize> _domElementToWidgets(dom.Element? element) {
+  List<WidgetData> _domElementToWidgets(dom.Element? element) {
     if (element == null) {
       log += 'domElementToWidget: element is null\n';
       return [];
@@ -259,32 +265,43 @@ class EpubViewerController {
         return [];
       }
       Uint8List? imageUint8List = Uint8List.fromList(image);
-      return [WidgetWithSize(widget: Image.memory(imageUint8List), text: '', size: Size(_parentWidgetSize.width, _parentWidgetSize.height))];
+      return [WidgetData(
+          builder: (_, _, _) => Image.memory(imageUint8List),
+          widgetType: Image,
+          size: Size(_parentWidgetSize.width, _parentWidgetSize.height),
+      )];
     }
     List<String> sentences = splitParagraphIntoSentences(_cleanText(element.text));
-    List<WidgetWithSize> wordWidgetsWithSize = [];
+    List<WidgetData> wordWidgetsWithSize = [];
     for (int i = 0; i < sentences.length; i++) {
       String sentence = sentences[i];
       List<String> splitSentence = sentence.split(' ');
       for (int j = 0; j < splitSentence.length; j++) {
         String word = '${splitSentence[j]} ';
         if (word.trim() != '') {
-          bool isWordSelected = sentenceWithSelection.words == splitSentence && sentenceWithSelection.selected.contains(j);
-          Widget wordWidget = GestureDetector(
-            onTap: () {
-              multiSelection(j, splitSentence, false);
-            },
-            onLongPress: () {
-              multiSelection(j, splitSentence, true);
-            },
-            child: Text(word, style: (TextStyle(fontSize: _fontSize, backgroundColor: isWordSelected ? Colors.yellow[200] : null))), // TODO this needs to be rerenderd correctly
-          );
-          wordWidgetsWithSize.add(WidgetWithSize(widget: wordWidget, text: word, size: _getTextSize(word)));
+          wordWidgetsWithSize.add(WidgetData(
+              builder: (children, highlight, context) => GestureDetector(
+                onTap: () {
+                  multiSelection(j, splitSentence, false);
+                },
+                onLongPress: () {
+                  multiSelection(j, splitSentence, true);
+                },
+                child: Text(word, style: (TextStyle(fontSize: _fontSize, backgroundColor: highlight ? Theme.of(context).colorScheme.inversePrimary : null))),
+              ),
+              widgetType: GestureDetector,
+              sentence: SentenceWithSelection(words: splitSentence, selected: [j]),
+              size: _getTextSize(word),
+          ));
         }
       }
     }
     if (wordWidgetsWithSize.isNotEmpty) {
-      wordWidgetsWithSize.add(WidgetWithSize(widget: SizedBox(height: 0, width: _parentWidgetSize.width), text: '', size: Size(_parentWidgetSize.width, 0)));
+      wordWidgetsWithSize.add(WidgetData(
+          builder: (_, _, _) => SizedBox(height: 0, width: _parentWidgetSize.width),
+          widgetType: SizedBox,
+          size: Size(_parentWidgetSize.width, 0),
+      ));
     }
     return wordWidgetsWithSize;
   }
@@ -340,34 +357,50 @@ class EpubViewerController {
     _pages.clear();
     int countWidth = 0;
     int countHeight = 0;
-    List<Widget> page = [];
-    List<Widget> line = [];
+    List<WidgetData> line = [];
+    List<WidgetData> page = [];
     bool lastI = false;
-    for (int i = 0; i < _chapterWidgetsWithSize.length; i++) {
-      if (i == _chapterWidgetsWithSize.length - 1) lastI = true;
-      countWidth += _chapterWidgetsWithSize[i].size.width.toInt();
-      line.add(_chapterWidgetsWithSize[i].widget);
-      line.add(Spacer());
-      if (lastI || (countWidth + _chapterWidgetsWithSize[i + 1].size.width > _parentWidgetSize.width)) { // If line + next would overflow or last
-        if (_chapterWidgetsWithSize[lastI ? i : i + 1].widget.runtimeType == SizedBox) { // If next is SizedBox remove Spacers (or if last i and it is a SizedBox)
+    for (int i = 0; i < _chapterWidgetsData.length; i++) {
+      if (i == _chapterWidgetsData.length - 1) lastI = true;
+      countWidth += (_chapterWidgetsData[i].size?.width ?? 0).toInt();
+      line.add(_chapterWidgetsData[i]);
+      line.add(WidgetData(
+        builder: (_, _, _) => Spacer(),
+        widgetType: Spacer,
+        size: Size(0, 0),
+      ));
+      if (lastI || (countWidth + (_chapterWidgetsData[i + 1].size?.width ?? 0) > _parentWidgetSize.width)) { // If line + next would overflow or last
+        if (_chapterWidgetsData[lastI ? i : i + 1].widgetType == SizedBox) { // If next is SizedBox remove Spacers (or if last i and it is a SizedBox)
           for (int j = 0; j < line.length; j++) {
             if (line[j].runtimeType == Spacer) {
               line.removeAt(j);
-              line.insert(j, SizedBox(width: 3));
+              line.insert(j, WidgetData(
+                  builder: (_, _, _) => SizedBox(width: 3),
+                  widgetType: SizedBox,
+                  size: Size(3, 0),
+              ));
             }
           }
         }
         line.removeLast(); // Remove last Spacer
-        Row row = Row(mainAxisAlignment: MainAxisAlignment.start, children: [...line]);
-        countHeight += _chapterWidgetsWithSize[i].size.height.toInt();
+        WidgetData row = WidgetData(
+            builder: (children, _, _) => Row(mainAxisAlignment: MainAxisAlignment.start, children: children),
+            widgetType: Row,
+            size: Size(_parentWidgetSize.width, 0),
+            childrenBuilders: [...line]);
+        countHeight += (_chapterWidgetsData[i].size?.height ?? 0).toInt(); // Why to int?
         page.add(row);
         line.clear();
         countWidth = 0;
-        if (lastI || (countHeight + _chapterWidgetsWithSize[i + 1].size.height > _parentWidgetSize.height)) { // If page + next would overflow
-          if (_chapterWidgetsWithSize[i].widget.runtimeType == Image) { // If this is Image remove add Spacers
-            page = [Expanded(child: ColorFiltered(
+        if (lastI || (countHeight + (_chapterWidgetsData[i + 1].size?.height ?? 0) > _parentWidgetSize.height)) { // If page + next would overflow
+          if (_chapterWidgetsData[i].widgetType == Image) { // If this is Image remove add Spacers
+            page = [WidgetData(builder: (children, _, _) => Expanded(child: ColorFiltered(
                 colorFilter: Settings().isDarkMode ? ThemeFilter.undoDark : ThemeFilter.undoLight,
-                child: Center(child: _chapterWidgetsWithSize[i].widget)))];
+                child: children.first)),
+                widgetType: Expanded,
+                size: Size(_parentWidgetSize.width, _parentWidgetSize.height),
+                childrenBuilders: [_chapterWidgetsData[i]],
+            )];
           }
           if (page.isNotEmpty) {
             _pages.add([...page]);
@@ -467,9 +500,28 @@ class EpubViewerController {
 
 }
 
-class WidgetWithSize {
-  final Widget widget;
-  final Size size;
-  final String text;
-  WidgetWithSize({required this.widget, required this.text, required this.size});
+class WidgetData {
+  final Widget Function(List<Widget> children, bool highlight, BuildContext context) builder;
+  final Type widgetType;
+  final List<WidgetData>? childrenBuilders;
+  final Size? size;
+  //final String word;
+  final SentenceWithSelection? sentence;
+  WidgetData({required this.builder, required this.widgetType, this.sentence, this.size, this.childrenBuilders});
+
+  Widget build(BuildContext context) {
+    List<Widget> childrenWidgets = [];
+    if (childrenBuilders != null && childrenBuilders!.isNotEmpty) {
+      for (WidgetData child in childrenBuilders!) {
+        childrenWidgets.add(child.build(context));
+      }
+    }
+    bool highlight = false;
+    if (EpubViewerController.sentenceWithSelection.words == sentence?.words) {
+      if(EpubViewerController.sentenceWithSelection.selected.contains(sentence?.selected.firstOrNull ?? -1)) {
+        highlight = true;
+      }
+    }
+    return builder(childrenWidgets, highlight, context);
+  }
 }

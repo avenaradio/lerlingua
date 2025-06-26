@@ -60,7 +60,7 @@ class _EpubViewerWidgetState extends State<EpubViewerWidget> {
               ),
               child: IntrinsicHeight(
                 // IntrinsicHeight lets the Column size itself properly
-                child: ChildColumn(children: widget.epubViewerController.currentPage),
+                child: ChildColumn(children: widget.epubViewerController.currentPage(context)),
               ),
             ),
           );

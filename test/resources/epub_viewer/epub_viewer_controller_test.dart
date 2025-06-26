@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lerlingua/resources/epub_viewer/epub_viewer_controller.dart';
+import 'package:flutter/material.dart';
 
 Future<void> writeFile(String filePath, String data) async {
   final file = File(filePath);
@@ -29,5 +30,25 @@ void main() async {
     String paragraph = 'Hello. How are you? I am coding... too much! Thanks... Bananas: 🍌. 100%';
     List<String> sentences = epubViewer.splitParagraphIntoSentences(paragraph);
     expect(sentences, ['Hello.', 'How are you?', 'I am coding... too much!', 'Thanks...', 'Bananas: 🍌.', '100%']);
+  });
+
+  testWidgets('should parse widget data', (WidgetTester tester) async {
+    WidgetData widgetData = WidgetData(
+      builder: (_, _, _) => Text(''),
+      widgetType: Text,
+    );
+
+    // Build empty scaffold to get context
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Container(), // Call the builder to get the widget
+        ),
+      ),
+    );
+    BuildContext context = tester.element(find.byType(Scaffold));
+    Widget widget = widgetData.build(context);
+
+    expect(widget, isA<Text>());
   });
 }
