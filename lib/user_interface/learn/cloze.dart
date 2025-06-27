@@ -22,6 +22,7 @@ class Cloze {
   static final TextStyle commonTextStyle = const TextStyle(fontSize: 16.0);
   @visibleForTesting
   bool showAnswers = false;
+  bool _firstSpaceInput = false;
 
   Cloze({required VocabCard card, BuildContext? context}) : _context = context, _card = card {
     // Split sentenceB in %%
@@ -107,6 +108,13 @@ class Cloze {
   ///  - Tested
   @visibleForTesting
   void showCharacterOnSpace({required String hiddenText, required TextEditingController controller}) {
+    if (_firstSpaceInput && controller.text == ' ') {
+      _firstSpaceInput = false;
+      controller.text = '';
+      return;
+    } else if (controller.text == ' ' && !_firstSpaceInput && !hiddenText.startsWith(' ')) {
+      _firstSpaceInput = true;
+    }
     // If last character is not a space, do nothing
     if (controller.text.endsWith(' ')) {
       if (controller.text != hiddenText) {
@@ -138,13 +146,14 @@ class Cloze {
       if (focusNodes.indexOf(focusNode) < focusNodes.length - 1) {
         // Mounted check
         if (!(_context?.mounted ?? false)) return;
-        FocusScope.of(_context!).requestFocus(
-            focusNodes[focusNodes.indexOf(focusNode) + 1]);
+        FocusScope.of(_context!).requestFocus(focusNodes[focusNodes.indexOf(focusNode) + 1]);
+        _firstSpaceInput = true;
       }
       // Check if all fields are correct
       if (controllers.every((controller) => controller.text == hiddenTexts[controllers.indexOf(controller)])) {
         // Remove focus to prevent multiple moves while waiting
         FocusScope.of(_context!).unfocus();
+        _firstSpaceInput = false;
         Mirror().move( card: _card, direction: Direction.next, addNewUndo: true);
         // Fire LearningPage event
         LearningPageNewDataEvent event = LearningPageNewDataEvent();
