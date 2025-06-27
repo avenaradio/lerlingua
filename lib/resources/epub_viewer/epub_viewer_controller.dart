@@ -372,7 +372,7 @@ class EpubViewerController {
       if (lastI || (countWidth + (_chapterWidgetsData[i + 1].size?.width ?? 0) > _parentWidgetSize.width)) { // If line + next would overflow or last
         if (_chapterWidgetsData[lastI ? i : i + 1].widgetType == SizedBox) { // If next is SizedBox remove Spacers (or if last i and it is a SizedBox)
           for (int j = 0; j < line.length; j++) {
-            if (line[j].runtimeType == Spacer) {
+            if (line[j].widgetType == Spacer) {
               line.removeAt(j);
               line.insert(j, WidgetData(
                   builder: (_, _, _) => SizedBox(width: 3),
