@@ -319,7 +319,7 @@ class _LearnState extends State<Learn> {
                     ],
                   ),
                   // Add Stack Button
-                  if (Settings().currentBox == 1 && Mirror().filterCards.filterByBoxNumber(0).cards.isNotEmpty && Mirror().filterCards.filterByBoxNumber(1).cards.isEmpty)
+                  if (Settings().currentBox == 1 && Mirror().filterCards.filterByBoxNumber(0).cards.isNotEmpty && Mirror().filterCards.filterByBoxNumber(1).cards.length < 6)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
