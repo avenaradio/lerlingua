@@ -22,6 +22,9 @@ class _LearnState extends State<Learn> {
   late Cloze _cloze;
 
   _getCurrentCard() {
+    if (Mirror().filterCards.filterByBoxNumber(Settings().currentBox).cards.isEmpty && Settings().currentBox > 1) {
+      _selectBox(Settings().currentBox);
+    }
     // Mounted check
     if (mounted) {
       setState(() {
