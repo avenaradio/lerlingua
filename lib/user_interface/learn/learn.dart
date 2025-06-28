@@ -142,7 +142,7 @@ class _LearnState extends State<Learn> {
                                   return GestureDetector(
                                     onTap: () {
                                       Mirror().addStack(
-                                        stackSize: Settings().stackSize,
+                                        stackSize: 1,
                                       );
                                       _getCurrentCard();
                                     },
