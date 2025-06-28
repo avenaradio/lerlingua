@@ -125,7 +125,7 @@ class _LearnState extends State<Learn> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(50, 30, 20, 30),
+                        padding: const EdgeInsets.fromLTRB(50, 30, 50, 0),
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
                             maxWidth: 400, // For big screens
@@ -135,10 +135,10 @@ class _LearnState extends State<Learn> {
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 8,
+                                  crossAxisCount: 7,
                                   childAspectRatio: 1.0,
                                 ),
-                            itemCount: 8,
+                            itemCount: 7,
                             itemBuilder: (context, index) {
                               switch (index) {
                                 case 1:
@@ -156,54 +156,6 @@ class _LearnState extends State<Learn> {
                                       ),
                                       child: Icon(Icons.trending_flat_rounded),
                                     ),
-                                  );
-                                case 7:
-                                  return _currentCard.vocabKey == -2 ? Icon(Icons.more_vert_rounded, color: Colors.grey) : PopupMenuButton<String>(
-                                    icon: Icon(Icons.more_vert_rounded),
-                                    onSelected: (String value) {
-                                      switch (value) {
-                                        case 'Delete card':
-                                          Mirror().deleteCard(card: _currentCard);
-                                          _getCurrentCard();
-                                          break;
-                                        case 'Edit card':
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => EditCardPage(
-                                                card: _currentCard,
-                                              ),
-                                            ),
-                                          ).then((value) {
-                                            _getCurrentCard();
-                                          });
-                                          break;
-                                        default:
-                                          break;
-                                      }
-                                    },
-                                    itemBuilder: (BuildContext context) {
-                                      double height = 30;
-                                      return [
-                                        PopupMenuItem<String>(
-                                          height: height,
-                                          value: 'Delete card',
-                                          child: Text('Delete card'),
-                                        ),
-                                        PopupMenuItem<String>(
-                                          height: height,
-                                          value: 'Edit card',
-                                          child: Text('Edit card'),
-                                        ),
-                                        /*
-                                        PopupMenuItem<String>(
-                                          height: height,
-                                          value: 'Option 3',
-                                          child: Text('Option 3'),
-                                        ),
-                                        */
-                                      ];
-                                    },
                                   );
                                 default:
                                   return GestureDetector(
@@ -242,6 +194,37 @@ class _LearnState extends State<Learn> {
                           ),
                         ),
                       ),
+                    ),
+                    // Edit / Delete Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit_rounded),
+                          color: Colors.grey,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditCardPage(
+                                  card: _currentCard,
+                                ),
+                              ),
+                            ).then((value) {
+                              _getCurrentCard();
+                            });
+                          },
+                        ),
+                        SizedBox(width: 20),
+                        IconButton(
+                          icon: const Icon(Icons.delete_rounded),
+                          color: Colors.grey,
+                          onPressed: () {
+                            Mirror().deleteCard(card: _currentCard);
+                            _getCurrentCard();
+                          },
+                        ),
+                      ],
                     ),
                     // Undo
                     Row(
