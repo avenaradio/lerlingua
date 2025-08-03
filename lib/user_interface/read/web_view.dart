@@ -89,7 +89,7 @@ try {
   double progress = 0;
   final urlController = TextEditingController();
   String url = "";
-  String wordB = "How to use Lerlingua:";
+  String wordB = "";
   String sentenceB = "";
   bool _wordBChanged = false;
   TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', injectJs: '');
