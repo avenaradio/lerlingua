@@ -31,7 +31,7 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
           return ListTile(
             leading: Icon(translationService.icon),
             title: Text('${translationService.languageB} -> ${translationService.languageA}'),
-            subtitle: Text(Uri.parse(translationService.url).authority),
+            subtitle: Text('${Uri.parse(translationService.urlAtoB).authority}\n${Uri.parse(translationService.urlBtoA).authority}'),
             onTap: () {
               if (translationService.key < 100) return;
               _showEditOrAddTranslationServiceDialog(translationService);
@@ -70,7 +70,8 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
                     icon: translationService.icon,
                     languageA: translationService.languageA,
                     languageB: translationService.languageB,
-                    url: translationService.url,
+                    urlAtoB: translationService.urlAtoB,
+                    urlBtoA: translationService.urlBtoA,
                     injectJs: translationService.injectJs,
                   );
                   Settings().addOrUpdateTranslationService(newService);
@@ -88,7 +89,8 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
   void _showEditOrAddTranslationServiceDialog(TranslationService? translationService) {
     final languageAController = TextEditingController(text: translationService?.languageA ?? '');
     final languageBController = TextEditingController(text: translationService?.languageB ?? '');
-    final urlController = TextEditingController(text: translationService?.url ?? '');
+    final urlAtoBController = TextEditingController(text: translationService?.urlAtoB ?? '');
+    final urlBtoAController = TextEditingController(text: translationService?.urlBtoA ?? '');
     final injectJsController = TextEditingController(text: translationService?.injectJs ?? '');
     IconData selectedIcon = translationService?.icon ?? Icons.language_rounded;
 
@@ -132,9 +134,15 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
                       ),
                     ),
                     TextField(
-                      controller: urlController,
+                      controller: urlAtoBController,
                       decoration: InputDecoration(
-                        labelText: 'URL',
+                        labelText: 'Reanslation URL',
+                      ),
+                    ),
+                    TextField(
+                      controller: urlBtoAController,
+                      decoration: InputDecoration(
+                        labelText: 'Reverse Translation URL',
                       ),
                     ),
                     Padding(
@@ -167,7 +175,8 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
                       icon: selectedIcon,
                       languageA: languageAController.text,
                       languageB: languageBController.text,
-                      url: urlController.text,
+                      urlAtoB: urlAtoBController.text,
+                      urlBtoA: urlBtoAController.text,
                       injectJs: injectJsController.text,
                     );
                     Settings().addOrUpdateTranslationService(updatedTranslationService);

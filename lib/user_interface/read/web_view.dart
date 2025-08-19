@@ -92,7 +92,7 @@ try {
   String wordB = "";
   String sentenceB = "";
   bool _wordBChanged = false;
-  TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', url: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', injectJs: '');
+  TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', urlAtoB: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.com/?sl=es&tl=auto&text=%search%', injectJs: ''); // TODO check this
 
   _search() {
     _isLoading = true;
@@ -100,7 +100,7 @@ try {
       setState(() {});
     }
     _translationService = Settings().currentTranslationService ?? _translationService;
-    String url = _translationService.getUrl(wordB);
+    String url = _translationService.getUrl(wordB, TranslationDirection.AtoB); // TODO CHANGE THIS
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('This translation service has not placeholder %search%.')),

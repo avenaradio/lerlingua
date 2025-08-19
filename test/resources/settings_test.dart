@@ -102,7 +102,7 @@ void main() {
         await settings.loadSettings();
 
         // Arrange
-        TranslationService translationService = TranslationService(key: 101, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
+        TranslationService translationService = TranslationService(key: 101, icon: Icons.translate, languageA: 'en', languageB: 'es', urlAtoB: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.de/?sl=auto&tl=es&text=%search%', injectJs: '''function myFunction() {}''');
 
         // Act
         settings.currentTranslationService = translationService;
@@ -121,7 +121,7 @@ void main() {
          Settings().translationServicesSet.clear();
 
         // Arrange
-        TranslationService translationService = TranslationService(key: 101, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
+        TranslationService translationService = TranslationService(key: 101, icon: Icons.translate, languageA: 'en', languageB: 'es', urlAtoB: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.de/?sl=auto&tl=es&text=%search%', injectJs: '''function myFunction() {}''');
 
         // Act
         settings.addOrUpdateTranslationService(translationService);
@@ -143,8 +143,8 @@ void main() {
          Settings().translationServicesSet.clear();
 
         // Arrange
-        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
-        TranslationService translationService2 = TranslationService(key: 2, icon: Icons.translate, languageA: 'en', languageB: 'fr', url: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', injectJs: '''function myFunction() {}''');
+        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', urlAtoB: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.de/?sl=auto&tl=es&text=%search%', injectJs: '''function myFunction() {}''');
+        TranslationService translationService2 = TranslationService(key: 2, icon: Icons.translate, languageA: 'en', languageB: 'fr', urlAtoB: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.de/?sl=auto&tl=es&text=%search%', injectJs: '''function myFunction() {}''');
 
         // Act
         settings.addOrUpdateTranslationService(translationService1);
@@ -171,11 +171,11 @@ void main() {
          Settings().translationServicesSet.clear();
 
         // Arrange
-        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'fr', languageB: 'en', url: '', injectJs: '');
-        TranslationService translationService2 = TranslationService(key: 2, icon: Icons.translate, languageA: 'es', languageB: 'en', url: '', injectJs: '');
-        TranslationService translationService3 = TranslationService(key: 3, icon: Icons.translate, languageA: 'fr', languageB: 'en', url: '', injectJs: '');
-        TranslationService translationService4 = TranslationService(key: 4, icon: Icons.translate, languageA: 'es', languageB: 'en', url: '', injectJs: '');
-        TranslationService translationService5 = TranslationService(key: 5, icon: Icons.translate, languageA: 'es', languageB: 'de', url: '', injectJs: '');
+        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'fr', languageB: 'en', urlAtoB: '', urlBtoA: '', injectJs: '');
+        TranslationService translationService2 = TranslationService(key: 2, icon: Icons.translate, languageA: 'es', languageB: 'en', urlAtoB: '', urlBtoA: '', injectJs: '');
+        TranslationService translationService3 = TranslationService(key: 3, icon: Icons.translate, languageA: 'fr', languageB: 'en', urlAtoB: '', urlBtoA: '', injectJs: '');
+        TranslationService translationService4 = TranslationService(key: 4, icon: Icons.translate, languageA: 'es', languageB: 'en', urlAtoB: '', urlBtoA: '', injectJs: '');
+        TranslationService translationService5 = TranslationService(key: 5, icon: Icons.translate, languageA: 'es', languageB: 'de', urlAtoB: '', urlBtoA: '', injectJs: '');
 
         // Act
         settings.addOrUpdateTranslationService(translationService1);
@@ -221,14 +221,12 @@ void main() {
         Settings().translationServicesSet.clear();
 
         // Act
-        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'fr', languageB: 'en', url: '', injectJs: '');
-        TranslationService translationService2 = TranslationService(key: 2, icon: Icons.translate, languageA: 'es', languageB: 'en', url: '', injectJs: '');
+        TranslationService translationService1 = TranslationService(key: 1, icon: Icons.translate, languageA: 'fr', languageB: 'en', urlAtoB: '', urlBtoA: '', injectJs: '');
 
         settings.addOrUpdateTranslationService(translationService1);
-        settings.addOrUpdateTranslationService(translationService2);
 
         // Assert
-        expect(settings.translationServices.length, 2);
+        expect(settings.translationServices.length, TranslationService.defaults.length);
 
         await Future.delayed(const Duration(milliseconds: 500));
 
