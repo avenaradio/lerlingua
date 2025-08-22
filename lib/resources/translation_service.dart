@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 enum TranslationDirection {
-  AtoB,
-  BtoA,
+  aToB,
+  bToA,
 }
 
 class TranslationService {
@@ -28,7 +28,7 @@ class TranslationService {
   /// Returns the URL for the given word
   /// - Tested
   String getUrl(String wordB, TranslationDirection direction) {
-    String url = direction == TranslationDirection.AtoB ? urlAtoB : urlBtoA;
+    String url = direction == TranslationDirection.aToB ? urlAtoB : urlBtoA;
     if (!url.contains('%search%')) return '';
     return url.replaceAll('%search%', wordB).replaceAll(' ', '%20');
   }

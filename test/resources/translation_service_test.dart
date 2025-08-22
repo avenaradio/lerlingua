@@ -14,15 +14,15 @@ void main() {
     expect(translationService.urlAtoB, 'https://translate.google.de/?sl=auto&tl=en&text=%search%');
     expect(translationService.urlBtoA, 'https://translate.google.de/?sl=auto&tl=es&text=%search%');
     expect(translationService.injectJs, '''function myFunction() {}''');
-    expect(translationService.getUrl('test word', TranslationDirection.AtoB), 'https://translate.google.de/?sl=auto&tl=en&text=test%20word');
-    expect(translationService.getUrl('test word', TranslationDirection.BtoA), 'https://translate.google.de/?sl=auto&tl=es&text=test%20word');
-    expect(translationService.getUrl('%search test word', TranslationDirection.AtoB), 'https://translate.google.de/?sl=auto&tl=en&text=%search%20test%20word');
-    expect(translationService.getUrl('%search test word', TranslationDirection.BtoA), 'https://translate.google.de/?sl=auto&tl=es&text=%search%20test%20word');
+    expect(translationService.getUrl('test word', TranslationDirection.aToB), 'https://translate.google.de/?sl=auto&tl=en&text=test%20word');
+    expect(translationService.getUrl('test word', TranslationDirection.bToA), 'https://translate.google.de/?sl=auto&tl=es&text=test%20word');
+    expect(translationService.getUrl('%search test word', TranslationDirection.aToB), 'https://translate.google.de/?sl=auto&tl=en&text=%search%20test%20word');
+    expect(translationService.getUrl('%search test word', TranslationDirection.bToA), 'https://translate.google.de/?sl=auto&tl=es&text=%search%20test%20word');
   });
   test('getUrl should return empty string if no %search% contained', () async {
     TranslationService translationService = TranslationService(icon: Icons.translate, languageA: 'en', languageB: 'es', urlAtoB: 'https://translate.google.de/?sl=auto&tl=en&text=', urlBtoA: 'https://translate.google.de/?sl=auto&tl=es&text=', injectJs: '''function myFunction() {}''');
-    expect(translationService.getUrl('test word', TranslationDirection.AtoB), '');
-    expect(translationService.getUrl('test word', TranslationDirection.BtoA), '');
+    expect(translationService.getUrl('test word', TranslationDirection.aToB), '');
+    expect(translationService.getUrl('test word', TranslationDirection.bToA), '');
   });
   test('toMap', () async {
     TranslationService translationService = TranslationService(key: 1, icon: Icons.translate, languageA: 'en', languageB: 'es', urlAtoB: 'https://translate.google.de/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.de/?sl=auto&tl=es&text=%search%', injectJs: '''function myFunction() {}''');

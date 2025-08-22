@@ -30,8 +30,8 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
           TranslationService translationService = Settings().translationServices[index];
           return ListTile(
             leading: Icon(translationService.icon),
-            title: Text('${translationService.languageB} -> ${translationService.languageA}'),
-            subtitle: Text('${Uri.parse(translationService.urlAtoB).authority}\n${Uri.parse(translationService.urlBtoA).authority}'),
+            title: Text('${translationService.languageB} - ${translationService.languageA}'),
+            subtitle: Text(Uri.parse(translationService.urlAtoB).authority),
             onTap: () {
               if (translationService.key < 100) return;
               _showEditOrAddTranslationServiceDialog(translationService);
@@ -134,15 +134,15 @@ class _TranslationServicesListState extends State<TranslationServicesList> {
                       ),
                     ),
                     TextField(
-                      controller: urlAtoBController,
+                      controller: urlBtoAController,
                       decoration: InputDecoration(
-                        labelText: 'Reanslation URL',
+                        labelText: 'Book to Native Translation URL',
                       ),
                     ),
                     TextField(
-                      controller: urlBtoAController,
+                      controller: urlAtoBController,
                       decoration: InputDecoration(
-                        labelText: 'Reverse Translation URL',
+                        labelText: 'Native to Book Translation URL',
                       ),
                     ),
                     Padding(

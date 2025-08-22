@@ -87,23 +87,24 @@ try {
   );
   late ContextMenu contextMenu;
   double progress = 0;
-  final urlController = TextEditingController();
+  final wordBController = TextEditingController();
+  final wordAController = TextEditingController();
   String url = "";
-  String wordB = "";
+  String receivedWordB = ""; // book / foreign word
   String sentenceB = "";
-  bool _wordBChanged = false;
-  TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'xx', urlAtoB: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.com/?sl=es&tl=auto&text=%search%', injectJs: ''); // TODO check this
+  TranslationDirection lastSearchDirection = TranslationDirection.bToA;
+  TranslationService _translationService = TranslationService(key: 0, icon: Icons.translate, languageA: 'en', languageB: 'es', urlAtoB: 'https://translate.google.com/?sl=auto&tl=en&text=%search%', urlBtoA: 'https://translate.google.com/?sl=es&tl=auto&text=%search%', injectJs: '');
 
-  _search() {
+  _search() async {
     _isLoading = true;
     if (mounted) {
       setState(() {});
     }
     _translationService = Settings().currentTranslationService ?? _translationService;
-    String url = _translationService.getUrl(wordB, TranslationDirection.AtoB); // TODO CHANGE THIS
+    String url = _translationService.getUrl(lastSearchDirection == TranslationDirection.aToB ? wordAController.text : wordBController.text, lastSearchDirection);
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('This translation service has not placeholder %search%.')),
+        SnackBar(content: Text('This translation service has no placeholder %search%.')),
       );
       return;
     }
@@ -120,20 +121,20 @@ try {
     }
   }
 
-  _saveVocabCard(String? selectedText) async {
-    if (selectedText != null && selectedText.isNotEmpty && wordB.isNotEmpty) {
+  _saveVocabCard() async {
+    if (wordBController.text.isNotEmpty && wordAController.text.isNotEmpty) {
       VocabCard card = VocabCard(
         vocabKey: -1,
         languageA: _translationService.languageA,
-        wordB: wordB,
-        sentenceB: _wordBChanged ? '' : sentenceB,
-        languageB: Settings().currentBook?.languageB ?? '',
-        wordA: selectedText,
+        wordB: wordBController.text,
+        sentenceB: receivedWordB == wordBController.text ? sentenceB : '',
+        languageB: _translationService.languageB,
+        wordA: wordAController.text,
         boxNumber: 0,
         timeModified: DateTime.now().millisecondsSinceEpoch,
       );
       card = Mirror().writeCard(card: card, addNewUndo: false);
-      if (_wordBChanged) {
+      if (receivedWordB != wordBController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Foreign language is ${card.languageB}.'),
             action: SnackBarAction(
@@ -153,27 +154,44 @@ try {
   void initState() {
     // Subscribe to the event bus
     eventBus.on<WordBSelectedEvent>().listen((event) {
-      _wordBChanged = false;
-      wordB = event.wordB;
+      receivedWordB = event.wordB;
+      wordBController.text = event.wordB;
       sentenceB = event.sentenceB;
       _search();
     });
     // Set up context menu see https://inappwebview.dev/docs/webview/context-menu
     contextMenu = ContextMenu(
-      settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: true),
+      onCreateContextMenu: (contextMenu) async {
+        String?  selectedText = await webViewController?.getSelectedText();
+        if (lastSearchDirection == TranslationDirection.bToA) {
+          wordAController.text = selectedText ?? '';
+        } else {
+          wordBController.text = selectedText ?? '';
+        }
+        if (mounted) {
+          setState(() {});
+        }
+      },
+      settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: false),
       menuItems: [
+        /*
         ContextMenuItem(
             id: 1,
             title: "Add",
             action: () async {
               String?  selectedText = await webViewController?.getSelectedText();
+              if (lastSearchDirection == TranslationDirection.BtoA) {
+                wordAController.text = selectedText ?? '';
+              } else {
+                wordBController.text = selectedText ?? '';
+              }
               if (Settings().currentBook?.languageB == '') {
                 if (mounted) {
                   await editLanguageDialog(context);
                 }
               }
               if (selectedText != null && selectedText.trim().isNotEmpty && Settings().currentBook?.languageB != '') {
-                _saveVocabCard(selectedText);
+                _saveVocabCard();
               } else {
                 String message = 'No text selected.';
                 if (Settings().currentBook?.languageB == '') {
@@ -185,12 +203,11 @@ try {
                   );
                 }
               }
-            })
+            })*/
       ],
     );
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _wordBChanged = false;
       _search();
     });
   }
@@ -258,7 +275,7 @@ try {
                         children: [
                           Icon(service.icon),
                           SizedBox(width: 10),
-                          Text('${service.languageB} -> ${service.languageA}'),
+                          Text('${service.languageB} - ${service.languageA}'),
                         ],
                       ),
                     );
@@ -288,23 +305,76 @@ try {
                 },
                 icon: Icon(_translationService.icon), // Current translation service icon
               ),
+              IconButton(
+                icon: Icon(Icons.add),
+                tooltip: 'Add Card',
+                onPressed: wordAController.text.isEmpty || wordBController.text.isEmpty ? null : () async {
+                  if (Settings().currentBook?.languageB == '') {
+                    if (mounted) {
+                      await editLanguageDialog(context);
+                    }
+                  }
+                  _saveVocabCard();
+                  wordAController.clear();
+                  wordBController.clear();
+                  setState(() {});
+                },
+              ),
+              GestureDetector(
+                child: Icon(
+                  Icons.clear,
+                  color: Colors.grey,
+                  size: 18,
+                ),
+                onTap: () {
+                  wordBController.clear();
+                  wordAController.clear();
+                  setState(() {});
+                },
+              ),
               SizedBox(
                 width: 300,
-                child: TextField(
-                  controller: urlController,
-                  keyboardType: TextInputType.url,
-                  onSubmitted: (value) {
-                    var url = WebUri(value);
-                    if (url.scheme.isEmpty) {
-                      if(wordB != value) _wordBChanged = true;
-                      wordB = value;
-                      _search();
-                      return;
-                    }
-                    webViewController?.loadUrl(
-                      urlRequest: URLRequest(url: url),
-                    );
-                  },
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text('${_translationService.languageB}: '),
+                        Flexible(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              isDense: true,
+                            ),
+                            controller: wordBController,
+                            keyboardType: TextInputType.text,
+                            onChanged: (value) => setState(() {}),
+                            onSubmitted: (value) {
+                              lastSearchDirection = TranslationDirection.bToA;
+                              _search();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('${_translationService.languageA}: '),
+                        Flexible(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              isDense: true,
+                            ),
+                            controller: wordAController,
+                            keyboardType: TextInputType.text,
+                            onChanged: (value) => setState(() {}),
+                            onSubmitted: (value) {
+                              lastSearchDirection = TranslationDirection.aToB;
+                              _search();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -346,7 +416,6 @@ try {
                     action: PermissionResponseAction.GRANT,
                   );
                 },
-
                 onLoadStop: (controller, url) async {
                   await controller.evaluateJavascript(source: '$_themeJs\n${_translationService.injectJs}');
                   // wait to load JS
@@ -354,7 +423,7 @@ try {
                   if (mounted) {
                     setState(() {
                     this.url = url.toString();
-                    urlController.text = wordB;
+                    //urlBController.text = wordB;
                     _isLoading = false;
                   });
                   }
