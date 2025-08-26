@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../resources/event_bus.dart';
 import '../../resources/database/mirror/mirror.dart';
@@ -172,38 +173,17 @@ try {
           setState(() {});
         }
       },
-      settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: false),
+      settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: true),
       menuItems: [
-        /*
         ContextMenuItem(
             id: 1,
-            title: "Add",
+            title: "Copy",
             action: () async {
               String?  selectedText = await webViewController?.getSelectedText();
-              if (lastSearchDirection == TranslationDirection.BtoA) {
-                wordAController.text = selectedText ?? '';
-              } else {
-                wordBController.text = selectedText ?? '';
+              if (selectedText != null) {
+                Clipboard.setData(ClipboardData(text: selectedText));
               }
-              if (Settings().currentBook?.languageB == '') {
-                if (mounted) {
-                  await editLanguageDialog(context);
-                }
-              }
-              if (selectedText != null && selectedText.trim().isNotEmpty && Settings().currentBook?.languageB != '') {
-                _saveVocabCard();
-              } else {
-                String message = 'No text selected.';
-                if (Settings().currentBook?.languageB == '') {
-                  message = 'No book language set.';
-                }
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(message)),
-                  );
-                }
-              }
-            })*/
+            })
       ],
     );
     super.initState();
