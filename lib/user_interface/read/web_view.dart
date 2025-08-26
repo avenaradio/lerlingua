@@ -130,7 +130,7 @@ try {
         sentenceB: receivedWordB == wordBController.text ? sentenceB : '',
         languageB: _translationService.languageB,
         wordA: wordAController.text,
-        boxNumber: 0,
+        boxNumber: receivedWordB == wordBController.text ? 0 : 1,
         timeModified: DateTime.now().millisecondsSinceEpoch,
       );
       card = Mirror().writeCard(card: card, addNewUndo: false);
