@@ -8,6 +8,7 @@ import '../../resources/event_bus.dart';
 import '../../resources/database/mirror/mirror.dart';
 import '../../resources/database/mirror/vocab_card.dart';
 import '../../resources/settings/settings.dart';
+import '../../resources/share_handler.dart';
 import '../../resources/translation_service.dart';
 import '../cards/edit_card_page.dart';
 import 'edit_language_page.dart';
@@ -186,6 +187,7 @@ try {
             })
       ],
     );
+    ShareHandler().initPlatformState(context);
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _search();
