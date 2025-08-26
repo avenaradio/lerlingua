@@ -167,7 +167,7 @@ class _LearnState extends State<Learn> {
                                       child: Container(
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.primaryContainer,
+                                          color: (index == 0 || index == 6) ? Colors.grey[300] : Theme.of(context).colorScheme.primaryContainer,
                                           border: Border.all(
                                             color:
                                                 Settings().currentBox ==
