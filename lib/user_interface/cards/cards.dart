@@ -125,7 +125,14 @@ class _ListPageState extends State<ListPage> {
                     _startSelection(card);
                   },
                   onTap: () {
-                    _toggleSelection(card);
+                    if (!_selectionModeEnabled) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EditCardPage(card: card,)),
+                      ).then((value) => _updateCards());
+                    } else {
+                      _toggleSelection(card);
+                    }
                   },
                   child: Column(
                     children: [
