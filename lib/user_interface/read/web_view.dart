@@ -367,11 +367,12 @@ try {
             children: [
               InAppWebView(
                 key: webViewKey,
+                /*
                 initialUrlRequest: URLRequest(
                   url: WebUri(
                     "https://github.com/avenaradio/lerlingua/blob/main/README.md#how-to-use",
                   ),
-                ),
+                ),*/
                 contextMenu: contextMenu,
                 initialSettings: settings,
                 initialUserScripts: UnmodifiableListView([

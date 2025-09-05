@@ -70,15 +70,51 @@ class TranslationService {
           urlAtoB: 'https://translate.google.com/?sl=de&tl=es&text=%search%',
           urlBtoA: 'https://translate.google.com/?sl=es&tl=de&text=%search%',
           injectJs: '''
-  document.body.style.zoom = '75%';
-  // First element with class will be removed.
-  var classNames = ['pGxpHc', 'VjFXz', 'hgbeOc EjH7wc', 'VlPnLc', 'cJ1Ndf'];
-  // For each class name in classNames remove elemen
-  classNames.forEach(function(className) {
-    var elements = document.getElementsByClassName(className)[0];
-    elements.remove();
-  })
-  window.scrollTo(0, document.body.scrollHeight);
+          function waitForText(className, callback) {
+            var interval = setInterval(function() {
+              var element = document.getElementsByClassName(className)[0];
+              if (element && element.textContent.trim() !== '') {
+                clearInterval(interval);
+                callback(element.textContent);
+              }
+            }, 100); // Check every 100 milliseconds
+          }
+          try {
+            document.body.style.zoom = '75%';
+          } catch (e) {
+            console.log(e);
+          }
+          // First element with class will be removed.
+          var classNames = ['pGxpHc', 'VjFXz', 'hgbeOc EjH7wc', 'VlPnLc', 'cJ1Ndf'];
+          // For each class name in classNames remove elemen
+          try {
+            classNames.forEach(function(className) {
+            var elements = document.getElementsByClassName(className)[0];
+            elements.remove();
+          })
+          } catch (e) {
+            console.log(e);
+          }
+          try {
+            window.scrollTo(0, document.body.scrollHeight);
+          } catch (e) {
+            console.log(e);
+          }
+          try {
+            console.log('Waiting for text...');
+            waitForText('ryNqvb', function(text) {
+              console.log('Element has text:', text);
+              var textElement = document.getElementsByClassName('ryNqvb')[0];
+              var range = document.createRange();
+              range.selectNodeContents(textElement);
+              window.getSelection().removeAllRanges();
+              window.getSelection().addRange(range);
+              window.flutter_inappwebview.callHandler('showContextMenu', 'selection info');
+
+            });
+          } catch (e) {
+            console.log('Wait for text error:', e);
+          }
   '''
       ),
     ];
